@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">ScoreLine</string>
+    <string name="Home">News</string>
+    <string name="Statistics">Matches</string>
+    <string name="More">More</string>
+    <string name="TRansfers">Transfers</string>
+    <string name="Leagues">Leagues</string>
+    <string name="pref_appearance">Appearance</string>
+    <string name="pref_dark_theme">Dark theme</string>
+    <string name="pref_dark_theme_follow">Follow system</string>
+    <string name="pref_dark_theme_off">Off</string>
+    <string name="pref_dark_theme_on">On</string>
+    <string name="pref_app_theme">App theme</string>
+    <string name="theme_dynamic">Dynamic</string>
+    <string name="theme_green">Green</string>
+    <string name="theme_peach">Peach</string>
+    <string name="theme_yellow">Yellow</string>
+    <string name="theme_lavender">Lavender</string>
+    <string name="theme_black_and_white">Black and white</string>
+    <string name="pref_pure_black">Pure black dark theme</string>
+    <string name="theme_blue">Blue</string>
+    <string name="pref_boardtheme_accent">Apply accent colors</string>
+    <string name="pref_boardtheme_accent_subtitle">Make your sudoku board more colorful</string>
+    <string name="pref_board_theme_title">Sudoku board theme</string>
+    <string name="pref_board_theme_subtitle">Customize the look of the sudoku board</string>
+    <string name="board_theme_title">Board theme</string>
+    <string name="pref_board_font_size">Board font size</string>
+    <string name="pref_board_font_size_small">Small</string>
+    <string name="pref_board_font_size_medium">Medium</string>
+    <string name="pref_board_font_size_large">Large</string>
+    <string name="label_default">Default</string>
+</resources>
