@@ -49,6 +49,9 @@ android {
 
 dependencies {
 
+    implementation(project(":core"))
+    implementation(project(":core-network"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -100,4 +103,10 @@ dependencies {
     //coroutines
     implementation(libs.coroutines)
     implementation(libs.coroutines.android)
+
+    implementation(libs.retrofit)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp)
+
+    implementation(libs.coil)
 }

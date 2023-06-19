@@ -2,6 +2,9 @@
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -45,11 +48,64 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
 
     implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+
+    //compose lifecycle
+    implementation(libs.compose.lyfecycle)
+
+    //compose util
+    implementation(libs.compose.util)
+
+    //navigation
+    implementation(libs.compose.navigation)
+    implementation(libs.accompanist.animation)
+
+    implementation(libs.accompanist.pager) // Pager
+    implementation(libs.accompanist.pager.indicators) // Pager Indicators
+
+    // System UI Controller - Accompanist
+    implementation(libs.accompanist.systemuicontroller)
+
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
+    // when using Kotlin
+    kapt(libs.hilt.compiler)
+
+    //datastore
+    implementation(libs.datastore)
+
+    //material icons
+    implementation(libs.material.icons)
+
+    //support library
+    implementation(libs.appcompat)
+
+    //coroutines
+    implementation(libs.coroutines)
+    implementation(libs.coroutines.android)
+
+    implementation(libs.retrofit)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp)
+
+    //gson
+    implementation(libs.gson)
 }

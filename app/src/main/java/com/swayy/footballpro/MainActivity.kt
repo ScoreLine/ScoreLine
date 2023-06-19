@@ -46,7 +46,7 @@ import com.swayy.compose_ui.theme.AppTheme
 import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.core.util.Route
 import com.swayy.leagues.LeaguesScreen
-import com.swayy.matches.ui.MatchesScreen
+import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.news.NewsScreen
 import com.swayy.transfers.TransfersScreen
 import dagger.hilt.android.AndroidEntryPoint
