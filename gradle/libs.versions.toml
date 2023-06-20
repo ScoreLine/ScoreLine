@@ -27,6 +27,7 @@ gson = "2.9.0"
 glide = "4.12.0"
 glide-compiler = "4.10.0"
 coil = "2.1.0"
+room = "2.5.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -68,6 +69,9 @@ gson = {group = "com.squareup.retrofit2", name = "converter-gson",version.ref = 
 glide = {group = "com.github.bumptech.glide",name = "glide:glide",version.ref = "glide"}
 glide-compiler = {group = "com.github.bumptech.glide",name = "compiler",version.ref = "glide-compiler"}
 coil = {group = "io.coil-kt",name = "coil-compose",version.ref = "coil"}
+room = {group = "androidx.room",name = "room-ktx",version.ref = "room"}
+room-compiler = {group = "androidx.room",name = "room-compiler",version.ref = "room"}
+room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "room"}
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

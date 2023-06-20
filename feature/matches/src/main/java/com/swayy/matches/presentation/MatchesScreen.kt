@@ -2,7 +2,15 @@ package com.swayy.matches.presentation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,12 +24,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
@@ -29,13 +42,20 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,8 +68,10 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.swayy.matches.R
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -212,64 +234,352 @@ fun TabScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp)
+                            .padding(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)
                     ) {
                         Column {
-                            Text(
-                                text = leagueName,
-                                modifier = Modifier.padding(10.dp),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                            )
-                            Divider(thickness = 0.5.dp)
-                            fixtures.forEach { fixture ->
-                                Column (modifier = Modifier.fillMaxWidth()){
-                                    Row(modifier = Modifier
-                                        .align(Alignment.CenterHorizontally)
-                                        .padding(top = 10.dp)) {
-                                        Text(
-                                            text = fixture.teams.home.name,
-                                            modifier = Modifier.padding(10.dp),
-                                            fontSize = 14.sp,
-                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        val image =fixture.teams.home.logo
+                            var isArrowUp by remember { mutableStateOf(true) }
 
+                            Row(modifier = Modifier.padding(start = 4.dp)) {
+                                val logo =
+                                    matchState.matches.filter { it.league.name == leagueName }
 
-                                        //test
-                                        val painter = rememberAsyncImagePainter(
-                                            ImageRequest.Builder(LocalContext.current)
-                                                .data(data = image).apply(block = fun ImageRequest.Builder.() {
-                                                    crossfade(true)
-                                                }).build()
-                                        )
-                                        Image(painter = painter, contentDescription = "", modifier = Modifier.size(26.dp))
-                                        val imageone =fixture.teams.away.logo
+                                logo.take(1).forEach { it ->
+                                    val image = it.league.logo
 
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        //test
-                                        val painterone = rememberAsyncImagePainter(
-                                            ImageRequest.Builder(LocalContext.current)
-                                                .data(data = imageone).apply(block = fun ImageRequest.Builder.() {
-                                                    crossfade(true)
-                                                }).build()
-                                        )
-                                        Image(painter = painterone, contentDescription = "", modifier = Modifier.size(26.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = fixture.teams.away.name,
-                                            modifier = Modifier.padding(10.dp),
-                                            fontSize = 14.sp,
-                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                    //test
+                                    val painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(data = image)
+                                            .apply(block = fun ImageRequest.Builder.() {
+                                                crossfade(true)
+                                            }).build()
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Image(
+                                        painter = painter,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .align(Alignment.CenterVertically),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Text(
+                                        text = leagueName,
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .align(Alignment.CenterVertically),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Spacer(modifier = Modifier.weight(2f))
+                                    IconButton(
+                                        onClick = { isArrowUp = !isArrowUp },
+                                    ) {
+                                        Icon(
+                                            painter = if (isArrowUp) painterResource(id = R.drawable.baseline_keyboard_arrow_up_24) else painterResource(
+                                                id = R.drawable.baseline_keyboard_arrow_down_24
+                                            ),
+                                            contentDescription = null
                                         )
                                     }
-
                                 }
+                            }
+
+
+                            Divider(thickness = 0.5.dp)
+                            fixtures.forEach { fixture ->
+                                AnimatedVisibility(
+                                    visible = isArrowUp,
+                                    enter = fadeIn() + expandVertically(),
+                                    exit = fadeOut() + shrinkVertically()
+                                ) {
+                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                        Row(
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
+                                                .padding(top = 10.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                        ) {
+                                            if (fixture.fixture.status.long == "First Half") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
+                                                ) {
+
+                                                    Text(
+                                                        text = fixture.fixture.status.elapsed.toString(),
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+                                            if (fixture.fixture.status.long == "Second Half") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
+                                                ) {
+
+                                                    Text(
+                                                        text = fixture.fixture.status.elapsed.toString(),
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+
+                                            if (fixture.fixture.status.short == "FT") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(alpha = .4f))
+                                                ) {
+
+                                                    Text(
+                                                        text = "FT",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                    )
+                                                }
+                                            }
+                                            if (fixture.fixture.status.short == "HT") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
+                                                ) {
+
+                                                    Text(
+                                                        text = "HT",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+
+                                            Text(
+                                                text = fixture.teams.home.name,
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .width(50.dp)
+                                                    .align(Alignment.CenterVertically),
+                                                fontSize = 14.sp,
+                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 2
+                                            )
+                                            Spacer(modifier = Modifier.width(2.dp))
+                                            val image = fixture.teams.home.logo
+
+                                            //test
+                                            val painter = rememberAsyncImagePainter(
+                                                ImageRequest.Builder(LocalContext.current)
+                                                    .data(data = image)
+                                                    .apply(block = fun ImageRequest.Builder.() {
+                                                        crossfade(true)
+                                                    }).build()
+                                            )
+                                            Image(
+                                                painter = painter,
+                                                contentDescription = "",
+                                                modifier = Modifier
+                                                    .size(26.dp)
+                                                    .align(Alignment.CenterVertically),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                            val imageone = fixture.teams.away.logo
+                                            Spacer(modifier = Modifier.width(4.dp))
+
+
+                                            if (fixture.fixture.status.short == "NS") {
+                                                Text(
+                                                    text = convertTimestampToTime(fixture.fixture.timestamp.toLong()),
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.short == "HT") {
+                                                val halfhome =
+                                                    (fixture.score.halftime.home as? Double)?.toInt()
+                                                        ?: 0
+                                                val halfaway =
+                                                    (fixture.score.halftime.away as? Double)?.toInt()
+                                                        ?: 0
+                                                Text(
+                                                    text = halfhome.toString() + " - " + halfaway.toString(),
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+
+
+                                            if (fixture.fixture.status.long == "First Half") {
+                                                val halfhome = fixture.score.halftime.home
+                                                val halfaway = fixture.score.halftime.away
+                                                Text(
+                                                    text = halfhome.toString() + " - " + halfaway.toString(),
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.long == "Second Half") {
+                                                val halfhome = fixture.goals.home
+                                                val halfaway = fixture.goals.away
+                                                Text(
+                                                    text = halfhome.toString() + " - " + halfaway.toString(),
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.short == "CANC") {
+                                                Text(
+                                                    text = "CANC",
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.short == "PST") {
+                                                Text(
+                                                    text = "PP",
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.short == "  SUSP") {
+                                                Text(
+                                                    text = "SUSP",
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                            if (fixture.fixture.status.short == "TBD") {
+                                                Text(
+                                                    text = "TBD",
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            val scorehome =
+                                                (fixture.score.fulltime.home as? Double)?.toInt()
+                                                    ?: 0
+                                            val scoreaway =
+                                                (fixture.score.fulltime.away as? Double)?.toInt()
+                                                    ?: 0
+
+                                            if (fixture.fixture.status.short == "FT") {
+                                                Text(
+                                                    text = scorehome.toString() + " - " + scoreaway,
+                                                    modifier = Modifier
+                                                        .padding(10.dp)
+                                                        .align(Alignment.CenterVertically),
+                                                    fontSize = 14.sp,
+                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            //test
+                                            val painterone = rememberAsyncImagePainter(
+                                                ImageRequest.Builder(LocalContext.current)
+                                                    .data(data = imageone)
+                                                    .apply(block = fun ImageRequest.Builder.() {
+                                                        crossfade(true)
+                                                    }).build()
+                                            )
+                                            Image(
+                                                painter = painterone,
+                                                contentDescription = "",
+                                                modifier = Modifier
+                                                    .size(26.dp)
+                                                    .align(Alignment.CenterVertically),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                            Spacer(modifier = Modifier.width(2.dp))
+                                            Text(
+                                                text = fixture.teams.away.name,
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .width(60.dp)
+                                                    .align(Alignment.CenterVertically),
+                                                fontSize = 14.sp,
+                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 2
+                                            )
+                                        }
+
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -284,8 +594,19 @@ fun TabScreen(
                 color = androidx.compose.material3.MaterialTheme.colorScheme.primary
             )
         }
-    }
 
+        if (matchState.error.isNotBlank()) {
+            Text(
+                text = matchState.error,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 
 }
 
@@ -345,4 +666,10 @@ fun Header() {
 
     }
 
+}
+
+fun convertTimestampToTime(timestamp: Long): String {
+    val sdf = SimpleDateFormat("h:mm a", Locale.US)
+    val date = Date(timestamp * 1000) // Convert seconds to milliseconds
+    return sdf.format(date)
 }

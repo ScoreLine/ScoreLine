@@ -1,8 +1,10 @@
 package com.swayy.matches.data.repository
 
 import com.swayy.core.util.Resource
+import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_network.LiveScoreApi
 import com.swayy.matches.data.mapper.toDomain
+import com.swayy.matches.data.mapper.toEntity
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.repository.MatchRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,30 +13,35 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class MatchRepositoryImpl(
-    private val liveScoreApi: LiveScoreApi
+    private val liveScoreApi: LiveScoreApi,
+    private val matchesDao: MatchesDao
 ) : MatchRepository {
     override fun getMatch(date: String): Flow<Resource<List<Match>>> = flow {
 
-        emit(Resource.Loading())
+        val getMatchesFromDb = matchesDao.getMatches().map { it.toDomain() }
+        emit(Resource.Loading(data = getMatchesFromDb))
 
         try {
+            val apiResponse = liveScoreApi.getFixturesByDate(date = date)
+            matchesDao.deleteMatches()
+            matchesDao.insertMatches(apiResponse.response.map { it.toEntity() })
         } catch (exception: IOException) {
             emit(
                 Resource.Error(
-                    message = "Connection Lost"
+                    message = "Connection Lost",
+                    data = getMatchesFromDb
                 )
             )
         } catch (exception: HttpException) {
             emit(
                 Resource.Error(
-                    message = exception.message()
+                    message = exception.message(),
+                    data = getMatchesFromDb
                 )
             )
         }
-        val matches = liveScoreApi.getFixturesByDate(
-            date = date
-        ).response.map { it.toDomain() }
-        emit(Resource.Success(matches))
+        val allMatches = matchesDao.getMatches().map { it.toDomain() }
+        emit(Resource.Success(allMatches))
 
     }
 
