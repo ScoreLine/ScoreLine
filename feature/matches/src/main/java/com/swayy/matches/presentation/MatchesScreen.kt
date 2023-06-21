@@ -224,7 +224,7 @@ fun TabScreen(
     LaunchedEffect(key1 = true) {
         viewModel.getMatches(date = date)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)) {
 
         LazyColumn() {
             val leaguesWithFixtures = matchState.matches.groupBy { it.league.name }
@@ -236,7 +236,7 @@ fun TabScreen(
                             .fillMaxWidth()
                             .padding(12.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)
+                        colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
                     ) {
                         Column {
                             var isArrowUp by remember { mutableStateOf(true) }
@@ -347,7 +347,112 @@ fun TabScreen(
                                                     )
                                                 }
                                             }
+                                            if (fixture.fixture.status.short == "NS") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
+                                                ) {
 
+                                                    Text(
+                                                        text = "",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+
+                                            if (fixture.fixture.status.short == "PST") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
+                                                ) {
+
+                                                    Text(
+                                                        text = "",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+                                            if (fixture.fixture.status.short == "SUSP") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
+                                                ) {
+
+                                                    Text(
+                                                        text = "",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+                                            if (fixture.fixture.status.short == "TBD") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
+                                                ) {
+
+                                                    Text(
+                                                        text = "",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+                                            if (fixture.fixture.status.short == "CANC") {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding()
+                                                        .align(
+                                                            Alignment.CenterVertically
+                                                        )
+                                                        .clip(RoundedCornerShape(100.dp))
+                                                        .size(28.dp)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
+                                                ) {
+
+                                                    Text(
+                                                        text = "",
+                                                        fontSize = 14.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
                                             if (fixture.fixture.status.short == "FT") {
                                                 Box(
                                                     modifier = Modifier
@@ -394,7 +499,7 @@ fun TabScreen(
                                                 text = fixture.teams.home.name,
                                                 modifier = Modifier
                                                     .padding(10.dp)
-                                                    .width(50.dp)
+                                                    .width(56.dp)
                                                     .align(Alignment.CenterVertically),
                                                 fontSize = 14.sp,
                                                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
@@ -503,7 +608,7 @@ fun TabScreen(
                                                     color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
-                                            if (fixture.fixture.status.short == "  SUSP") {
+                                            if (fixture.fixture.status.short == "SUSP") {
                                                 Text(
                                                     text = "SUSP",
                                                     modifier = Modifier
