@@ -9,6 +9,10 @@ import com.swayy.core_network.model.Fixtures.Goals
 import com.swayy.core_network.model.Fixtures.League
 import com.swayy.core_network.model.Fixtures.Score
 import com.swayy.core_network.model.Fixtures.Teams
+import com.swayy.core_network.model.lineup.Coach
+import com.swayy.core_network.model.lineup.StartXI
+import com.swayy.core_network.model.lineup.Substitute
+import com.swayy.core_network.model.lineup.Team
 
 @ProvidedTypeConverter
 class Converters(private val gson : Gson) {
@@ -61,6 +65,46 @@ class Converters(private val gson : Gson) {
     @TypeConverter
     fun toTeams(str: String): Teams {
         return Gson().fromJson(str, object : TypeToken<Teams>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromTeam(str: Team): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toTeam(str: String): Team {
+        return Gson().fromJson(str, object : TypeToken<Team>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromCoach(str: Coach): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toCoach(str: String): Coach {
+        return Gson().fromJson(str, object : TypeToken<Coach>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromLine(str: List<StartXI>): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toLine(str: String): List<StartXI> {
+        return Gson().fromJson(str, object : TypeToken<List<StartXI>>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromSubstitute(str: List<Substitute>): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toSubstitute(str: String): List<Substitute> {
+        return Gson().fromJson(str, object : TypeToken<List<Substitute>>() {}.type)
     }
 
 }

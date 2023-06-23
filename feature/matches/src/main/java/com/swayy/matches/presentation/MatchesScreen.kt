@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,6 +79,7 @@ import java.util.Locale
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MatchesScreen(
+    navigateMatchDetails: (Int,String) -> Unit,
     viewModel: MatchViewmodel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -88,7 +90,6 @@ fun MatchesScreen(
             .padding(top = 56.dp)
     ) {
 
-
         Column(modifier = Modifier.fillMaxSize()) {
             Header()
             Spacer(modifier = Modifier.height(8.dp))
@@ -98,7 +99,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayBeforeYesterday(3)
+                            getFormattedDayBeforeYesterday(3),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -107,7 +109,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayBeforeYesterday(2)
+                            getFormattedDayBeforeYesterday(2),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -116,7 +119,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayBeforeYesterday(1)
+                            getFormattedDayBeforeYesterday(1),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -125,7 +129,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            LocalDate.now().toString()
+                            LocalDate.now().toString(),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -134,7 +139,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayAfterTomorrow(1)
+                            getFormattedDayAfterTomorrow(1),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -143,7 +149,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayAfterTomorrow(2)
+                            getFormattedDayAfterTomorrow(2),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -152,7 +159,8 @@ fun MatchesScreen(
                     screen = {
                         TabScreen(
                             viewModel,
-                            getFormattedDayAfterTomorrow(3)
+                            getFormattedDayAfterTomorrow(3),
+                            navigateMatchDetails
                         )
                     }
                 ),
@@ -199,6 +207,7 @@ fun MatchesScreen(
                 HorizontalPager(
                     count = tabRowItems.size,
                     state = pagerState,
+                    userScrollEnabled = false
                 ) {
                     tabRowItems[pagerState.currentPage].screen()
                 }
@@ -216,7 +225,8 @@ data class TabRowItem(
 @Composable
 fun TabScreen(
     viewModel: MatchViewmodel,
-    date: String
+    date: String,
+    navigateMatchDetails: (Int,String) -> Unit
 ) {
 
     val matchState = viewModel.matches.value
@@ -224,7 +234,11 @@ fun TabScreen(
     LaunchedEffect(key1 = true) {
         viewModel.getMatches(date = date)
     }
-    Box(modifier = Modifier.fillMaxSize().background(androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)
+    ) {
 
         LazyColumn() {
             val leaguesWithFixtures = matchState.matches.groupBy { it.league.name }
@@ -301,8 +315,16 @@ fun TabScreen(
                                         Row(
                                             modifier = Modifier
                                                 .align(Alignment.CenterHorizontally)
-                                                .padding(top = 10.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
-                                                .fillMaxWidth(),
+                                                .padding(
+                                                    top = 10.dp,
+                                                    bottom = 10.dp,
+                                                    start = 10.dp,
+                                                    end = 10.dp
+                                                )
+                                                .fillMaxWidth()
+                                                .clickable(onClick = {
+                                                    navigateMatchDetails(fixture.fixture.id,date)
+                                                }),
                                             horizontalArrangement = Arrangement.SpaceEvenly
                                         ) {
                                             if (fixture.fixture.status.long == "First Half") {
@@ -462,7 +484,11 @@ fun TabScreen(
                                                         )
                                                         .clip(RoundedCornerShape(100.dp))
                                                         .size(28.dp)
-                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(alpha = .4f))
+                                                        .background(
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(
+                                                                alpha = .4f
+                                                            )
+                                                        )
                                                 ) {
 
                                                     Text(
@@ -557,8 +583,6 @@ fun TabScreen(
                                                     color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
-
-
 
                                             if (fixture.fixture.status.long == "First Half") {
                                                 val halfhome = fixture.score.halftime.home

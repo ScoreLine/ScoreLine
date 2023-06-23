@@ -1,7 +1,9 @@
 package com.swayy.footballpro
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -49,6 +51,7 @@ import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.core.util.Route
 import com.swayy.leagues.LeaguesScreen
 import com.swayy.matches.presentation.MatchesScreen
+import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
 import com.swayy.transfers.TransfersScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,6 +61,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,7 +133,13 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             animatedComposable(Route.STATISTICS) {
-                                MatchesScreen()
+                                MatchesScreen(
+                                    navigateMatchDetails = { id, date ->
+                                        navController.navigate(
+                                            "match/${id}/$date"
+                                        )
+                                    }
+                                )
                             }
                             animatedComposable(Route.LEAGUE) {
                                 LeaguesScreen()
@@ -146,6 +156,25 @@ class MainActivity : AppCompatActivity() {
                                     hiltViewModel(),
                                     navigateBoardSettings = { navController.navigate("settings_board_theme") }
                                 )
+                            }
+                            animatedComposable(
+                                route = Route.MATCH_DETAILS,
+                                arguments = listOf(
+                                    navArgument("id") { type = NavType.IntType },
+                                    navArgument("date") { type = NavType.StringType },
+                                )
+                            ) {
+                                val arguments = requireNotNull(it.arguments)
+                                val id = arguments.getInt("id")
+                                val date = arguments.getString("date")
+                                if (date != null) {
+                                    MatchDetailsScreen(
+                                        navigateBack = { navController.popBackStack() },
+                                        id = id,
+                                        date = date
+                                    )
+                                }
+
                             }
 
                         }

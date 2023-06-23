@@ -22,15 +22,7 @@ object Constants {
 
     const val BASE_URL = "https://v3.football.api-sports.io/"
 
-    // Headers
-    const val API_KEY = "ac94f94bb2msh209b8322dafe16ep19e183jsnabc6710bd5a9"
-    const val X_RAPID_KEY = "X-RapidAPI-Key"
-    const val X_RAPID_HOST = "X-RapidAPI-Host"
-    const val HOST_VALUE = "api-football-v1.p.rapidapi.com"
-
     // Endpoints
     const val GET_FIXTURES = "fixtures"
-    const val GET_STANDINGS = "v3/standings"
-    const val GET_LIVE_FIXTURES = "v3/fixtures"
-    const val GET_TOP_SCORERS = "v3/players/{stat_type}"
+    const val GET_LINEUP = "fixtures/lineups"
 }

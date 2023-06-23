@@ -5,6 +5,9 @@ import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_network.LiveScoreApi
 import com.swayy.matches.data.mapper.toDomain
 import com.swayy.matches.data.mapper.toEntity
+import com.swayy.matches.data.mapper.toLineupDomain
+import com.swayy.matches.data.mapper.toLineupEntity
+import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.repository.MatchRepository
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +46,33 @@ class MatchRepositoryImpl(
         val allMatches = matchesDao.getMatches().map { it.toDomain() }
         emit(Resource.Success(allMatches))
 
+    }
+
+    override fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>> = flow {
+        val getMatchesFromDb = matchesDao.getLineup().map { it.toLineupDomain() }
+        emit(Resource.Loading(data = getMatchesFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getLineup(fixture = fixture)
+            matchesDao.deleteLineup()
+            matchesDao.insertLineup(apiResponse.response.map { it.toLineupEntity() })
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getMatchesFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getMatchesFromDb
+                )
+            )
+        }
+        val allMatches = matchesDao.getLineup().map { it.toLineupDomain() }
+        emit(Resource.Success(allMatches))
     }
 
 }
