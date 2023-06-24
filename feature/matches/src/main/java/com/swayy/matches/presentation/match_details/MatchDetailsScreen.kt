@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.Layout
 import android.text.StaticLayout
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,9 +48,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
@@ -67,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -83,6 +87,7 @@ import com.swayy.matches.presentation.TabRowItem
 import com.swayy.matches.presentation.TabScreen
 import com.swayy.matches.presentation.getFormattedDayBeforeYesterday
 import com.swayy.matches.presentation.state.LineupState
+import com.swayy.matches.presentation.state.MatchState
 import kotlinx.coroutines.launch
 
 
@@ -95,6 +100,7 @@ fun MatchDetailsScreen(
     lineupViewmodel: LineupViewmodel = hiltViewModel(),
     date: String
 ) {
+    Log.e("Tag", "THIS IS THE ID ${id}")
 
     val matchState = viewModel.matches.value
     val lineupState = lineupViewmodel.lineup.value
@@ -264,7 +270,9 @@ fun MatchDetailsScreen(
                                 LineupScreen(
                                     lineupState,
                                     MaterialTheme.colorScheme.primary,
-                                    context
+                                    context,
+                                    match.teams.away.name,
+                                    match.teams.home.name
                                 )
                             }
                         ),
@@ -274,7 +282,9 @@ fun MatchDetailsScreen(
                                 LineupScreen(
                                     lineupState,
                                     MaterialTheme.colorScheme.primary,
-                                    context
+                                    context,
+                                    match.teams.away.name,
+                                    match.teams.home.name
                                 )
                             }
                         ),
@@ -284,7 +294,9 @@ fun MatchDetailsScreen(
                                 LineupScreen(
                                     lineupState,
                                     MaterialTheme.colorScheme.primary,
-                                    context
+                                    context,
+                                    match.teams.away.name,
+                                    match.teams.home.name
                                 )
                             }
                         ),
@@ -294,7 +306,9 @@ fun MatchDetailsScreen(
                                 LineupScreen(
                                     lineupState,
                                     MaterialTheme.colorScheme.primary,
-                                    context
+                                    context,
+                                    match.teams.away.name,
+                                    match.teams.home.name
                                 )
                             }
                         ),
@@ -304,7 +318,9 @@ fun MatchDetailsScreen(
                                 LineupScreen(
                                     lineupState,
                                     MaterialTheme.colorScheme.primary,
-                                    context
+                                    context,
+                                    match.teams.away.name,
+                                    match.teams.home.name
                                 )
                             }
                         ),
@@ -379,180 +395,301 @@ fun MatchDetailsScreen(
 fun LineupScreen(
     lineupState: LineupState,
     background: Color,
-    context: Context
+    context: Context,
+    hometeam: String,
+    awayteam: String
 ) {
-    lineupState.lineup.take(1).forEach {
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        item {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1000.dp)
             ) {
-                item {
-                    Canvas(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1000.dp)
-                    ) {
-                        val canvasWidth = size.width
-                        val canvasHeight = size.height
+                val canvasWidth = size.width
+                val canvasHeight = size.height
 
-                        // Background
-                        drawRect(color = background, size = Size(canvasWidth, canvasHeight))
+                // Background
+                drawRect(color = background, size = Size(canvasWidth, canvasHeight))
 
-                        // Goal Posts
-                        val goalPostWidth = canvasWidth * 0.03f
 
-                        drawLine(
-                            color = Color.White.copy(alpha = 0.3f),
-                            start = Offset(goalPostWidth, 0f),
-                            end = Offset(goalPostWidth, canvasHeight),
-                            strokeWidth = 5f
-                        )
+                drawRect(
+                    color = Color.Green.copy(alpha = 0.04f),
+                    topLeft = Offset(0f, 0f),
+                    size = Size(canvasWidth, 100.dp.toPx()),
+                )
 
-                        drawLine(
-                            color = Color.White.copy(alpha = 0.3f),
-                            start = Offset(canvasWidth - goalPostWidth, 0f),
-                            end = Offset(canvasWidth - goalPostWidth, canvasHeight),
-                            strokeWidth = 5f
-                        )
+                drawRect(
+                    color = Color.Green.copy(alpha = 0.04f),
+                    topLeft = Offset(0f, 200.dp.toPx()),
+                    size = Size(canvasWidth, 100.dp.toPx()),
+                )
+                drawRect(
+                    color = Color.Green.copy(alpha = 0.04f),
+                    topLeft = Offset(0f, 400.dp.toPx()),
+                    size = Size(canvasWidth, 100.dp.toPx()),
+                )
+                drawRect(
+                    color = Color.Green.copy(alpha = 0.04f),
+                    topLeft = Offset(0f, 600.dp.toPx()),
+                    size = Size(canvasWidth, 100.dp.toPx()),
+                )
+                drawRect(
+                    color = Color.Green.copy(alpha = 0.04f),
+                    topLeft = Offset(0f, 800.dp.toPx()),
+                    size = Size(canvasWidth, 100.dp.toPx()),
+                )
 
-                        // Circle at the Middle
-                        val circleRadius = minOf(canvasWidth, canvasHeight) * 0.1f
-                        val circleCenter = Offset(canvasWidth / 2, canvasHeight / 2)
+                // Goal Posts
+                val goalPostWidth = canvasWidth * 0.03f
 
-                        drawCircle(
-                            color = Color.White.copy(alpha = 0.3f),
-                            style = Stroke(width = 5f),
-                            radius = circleRadius,
-                            center = circleCenter
-                        )
+                //topline
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(canvasWidth * 0.03f, canvasHeight * 0.03f),
+                    end = Offset(canvasWidth * 0.97f, canvasHeight * 0.03f),
+                    strokeWidth = 5f
+                )
 
-                        // Additional Lines
-                        val lineWidth = 5f
+                //bottom line
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(canvasWidth * 0.03f, canvasHeight * 0.97f),
+                    end = Offset(canvasWidth * 0.97f, canvasHeight * 0.97f),
+                    strokeWidth = 5f
+                )
 
-                        // Midfield Line
-                        drawLine(
-                            color = Color.White.copy(alpha = 0.3f),
-                            start = Offset(canvasWidth * 0.03f, canvasHeight / 2),
-                            end = Offset(canvasWidth * 0.97f, canvasHeight / 2),
-                            strokeWidth = lineWidth
-                        )
+                //left line
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(goalPostWidth, canvasHeight * 0.03f),
+                    end = Offset(goalPostWidth, canvasHeight * 0.97f),
+                    strokeWidth = 5f
+                )
 
-                        // Penalty Areas
-                        val penaltyAreaWidth = canvasWidth * 0.6f
-                        val penaltyAreaHeight = canvasHeight * 0.1f
+                //right line
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(canvasWidth - goalPostWidth, canvasHeight * 0.03f),
+                    end = Offset(canvasWidth - goalPostWidth, canvasHeight * 0.97f),
+                    strokeWidth = 5f
+                )
 
-                        val penaltyAreaWidthone = canvasWidth * 0.3f
-                        val penaltyAreaHeightone = canvasHeight * 0.05f
+                // Circle at the Middle
+                val circleRadius = minOf(canvasWidth, canvasHeight) * 0.1f
+                val circleCenter = Offset(canvasWidth / 2, canvasHeight / 2)
 
-                        drawRect(
-                            color = Color.White.copy(alpha = 0.3f),
-                            topLeft = Offset((canvasWidth - penaltyAreaWidth) / 2, 0f),
-                            size = Size(penaltyAreaWidth, penaltyAreaHeight),
-                            style = Stroke(width = lineWidth)
-                        )
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.4f),
+                    style = Stroke(width = 5f),
+                    radius = circleRadius,
+                    center = circleCenter
+                )
 
-                        drawRect(
-                            color = Color.White.copy(alpha = 0.3f),
-                            topLeft = Offset((canvasWidth - penaltyAreaWidthone) / 2, 0f),
-                            size = Size(penaltyAreaWidthone, penaltyAreaHeightone),
-                            style = Stroke(width = lineWidth)
-                        )
+                // Additional Lines
+                val lineWidth = 5f
 
-                        drawRect(
-                            color = Color.White.copy(alpha = 0.3f),
-                            topLeft = Offset(
-                                (canvasWidth - penaltyAreaWidth) / 2,
-                                canvasHeight - penaltyAreaHeight
-                            ),
-                            size = Size(penaltyAreaWidth, penaltyAreaHeight),
-                            style = Stroke(width = lineWidth)
-                        )
+                // Midfield Line
+                drawLine(
+                    color = Color.White.copy(alpha = 0.4f),
+                    start = Offset(canvasWidth * 0.03f, canvasHeight / 2),
+                    end = Offset(canvasWidth * 0.97f, canvasHeight / 2),
+                    strokeWidth = lineWidth
+                )
 
-                        drawRect(
-                            color = Color.White.copy(alpha = 0.3f),
-                            topLeft = Offset(
-                                (canvasWidth - penaltyAreaWidthone) / 2,
-                                canvasHeight - penaltyAreaHeightone
-                            ),
-                            size = Size(penaltyAreaWidthone, penaltyAreaHeightone),
-                            style = Stroke(width = lineWidth)
-                        )
+                // Penalty Areas
+                val penaltyAreaWidth = canvasWidth * 0.6f
+                val penaltyAreaHeight = canvasHeight * 0.1f
 
-                        val playerTextSize = 13.sp.toPx()
+                val penaltyAreaWidthone = canvasWidth * 0.3f
+                val penaltyAreaHeightone = canvasHeight * 0.05f
 
-                        val goalkeeperPosition = Offset((canvasWidth / 2), penaltyAreaHeightone)
-                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                        goalkeeper?.let {
-                            drawPlayer(it, goalkeeperPosition)
-                            drawPlayerName(it.player.name, goalkeeperPosition, playerTextSize, context)
-                        }
+                //big top rectangle
+                drawRect(
+                    color = Color.White.copy(alpha = 0.4f),
+                    topLeft = Offset(
+                        (canvasWidth - penaltyAreaWidth) / 2,
+                        canvasHeight * 0.03f
+                    ),
+                    size = Size(penaltyAreaWidth, penaltyAreaHeight),
+                    style = Stroke(width = lineWidth)
+                )
+                //test
 
-                        // Defenders
-                        val defendersCount = 3
-                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
-                        val defenders = it.startXI.filter { it.player.pos == "D" }
-                        defenders.forEachIndexed { index, defender ->
-                            val x = goalPostWidth + defenderSpacing * (index + 1)
-                            val y = canvasHeight * 0.16f
-                            val defenderPosition = Offset(x, y)
-                            drawPlayer(defender, defenderPosition)
-                            drawPlayerName(
-                                defender.player.name,
-                                defenderPosition,
-                                playerTextSize,
-                                context
-                            )
+                val arcRadius = penaltyAreaHeight / 3f
 
-                        }
+                val path = Path().apply {
+                    val arcCenter = Offset(canvasWidth / 2, canvasHeight * 0.12f)
 
-                        // Midfielders
-                        val midfieldersCount = 4
-                        val midfielderSpacing =
-                            (canvasWidth - goalPostWidth * 2) / (midfieldersCount + 1)
-                        val midfielders = it.startXI.filter { it.player.pos == "M" }
-                        midfielders.forEachIndexed { index, midfielder ->
-                            val x = goalPostWidth + midfielderSpacing * (index + 1)
-                            val y = canvasHeight * 0.28f
-                            val midfielderPosition = Offset(x, y)
-                            drawPlayer(midfielder, midfielderPosition)
-                            drawPlayerName(
-                                midfielder.player.name,
-                                midfielderPosition,
-                                playerTextSize,
-                                context
-                            )
-                        }
+                    arcTo(
+                        Rect(
+                            left = arcCenter.x - arcRadius,
+                            top = arcCenter.y - arcRadius / 2,
+                            right = arcCenter.x + arcRadius,
+                            bottom = arcCenter.y + arcRadius
+                        ),
+                        startAngleDegrees = 0f,
+                        sweepAngleDegrees = 180f,
+                        forceMoveTo = false
+                    )
 
-                        // Forwards
-                        val forwardsCount = 3
+                }
+
+                val pathbottom = Path().apply {
+                    val arcCenter = Offset(canvasWidth / 2, canvasHeight * 0.861f)
+
+                    arcTo(
+                        Rect(
+                            left = arcCenter.x - arcRadius,
+                            top = arcCenter.y - arcRadius / 2,
+                            right = arcCenter.x + arcRadius,
+                            bottom = arcCenter.y + arcRadius
+                        ),
+                        startAngleDegrees = 0f,
+                        sweepAngleDegrees = -180f,
+                        forceMoveTo = false
+                    )
+
+                }
+
+                drawPath(
+                    path = path,
+                    color = Color.White.copy(alpha = 0.4f),
+                    style = Stroke(width = lineWidth)
+                )
+
+                drawPath(
+                    path = pathbottom,
+                    color = Color.White.copy(alpha = 0.4f),
+                    style = Stroke(width = lineWidth)
+                )
+
+                ///big bottom rectangle
+                drawRect(
+                    color = Color.White.copy(alpha = 0.4f),
+                    topLeft = Offset(
+                        (canvasWidth - penaltyAreaWidthone) / 2,
+                        canvasHeight * 0.03f
+                    ),
+                    size = Size(penaltyAreaWidthone, penaltyAreaHeightone),
+                    style = Stroke(width = lineWidth)
+                )
+
+                //small top rectangle
+                drawRect(
+                    color = Color.White.copy(alpha = 0.4f),
+                    topLeft = Offset(
+                        (canvasWidth - penaltyAreaWidth) / 2,
+                        ((canvasHeight - penaltyAreaHeight) * 0.967f)
+                    ),
+                    size = Size(penaltyAreaWidth, penaltyAreaHeight),
+                    style = Stroke(width = lineWidth)
+                )
+
+                //small bottom rectangle
+                drawRect(
+                    color = Color.White.copy(alpha = 0.4f),
+                    topLeft = Offset(
+                        (canvasWidth - penaltyAreaWidthone) / 2,
+                        ((canvasHeight - penaltyAreaHeightone) * 0.967f)
+                    ),
+                    size = Size(penaltyAreaWidthone, penaltyAreaHeightone),
+                    style = Stroke(width = lineWidth)
+                )
+
+                //home team
+                lineupState.lineup.take(1).forEach {
+
+                    val players = it.startXI
+
+                    val playerTextSize = 13.sp.toPx()
+
+                    if (players.size >= 2) {
+                        val secondLastPlayer = players[players.size - 2].player
+                        val forwardsCount = 1
                         val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
-                        val forwards = it.startXI.filter { it.player.pos == "F" }
-                        forwards.forEachIndexed { index, forward ->
-                            val x = goalPostWidth + forwardSpacing * (index + 1)
-                            val y = canvasHeight * 0.4f
-                            val forwardPosition = Offset(x, y)
-                            drawPlayer(forward, forwardPosition)
-                            drawPlayerName(
-                                forward.player.name,
-                                forwardPosition,
-                                playerTextSize,
-                                context
-                            )
-                        }
 
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.4f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            secondLastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+                    } else {
+                        // Handle the case when there are not enough players in the list
                     }
+
+
+
+
+//                    val goalkeeperPosition = Offset((canvasWidth / 2), penaltyAreaHeightone)
+//                    val goalkeeper = it.startXI.find { it.player.pos == "G" }
+//                    goalkeeper?.let {
+//                        drawPlayer(it, goalkeeperPosition)
+//                        drawPlayerName(
+//                            it.player.name,
+//                            goalkeeperPosition,
+//                            playerTextSize,
+//                            context
+//                        )
+//                    }
+
+//                        // Defenders
+//                        val defendersCount = 4
+//                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+//                        val defenders = it.startXI.filter { it.player.pos == "D" }
+//                        defenders.forEachIndexed { index, defender ->
+//                            val x = goalPostWidth + defenderSpacing * (index + 1)
+//                            val y = canvasHeight * 0.16f
+//                            val defenderPosition = Offset(x, y)
+//                            drawPlayer(defender, defenderPosition)
+//                            drawPlayerName(
+//                                defender.player.name,
+//                                defenderPosition,
+//                                playerTextSize,
+//                                context
+//                            )
+//
+//                        }
+//
+//                        // Midfielders
+//                        val midfieldersCount = 4
+//                        val midfielderSpacing =
+//                            (canvasWidth - goalPostWidth * 2) / (midfieldersCount + 1)
+//                        val midfielders = it.startXI.filter { it.player.pos == "M" }
+//                        midfielders.forEachIndexed { index, midfielder ->
+//                            val x = goalPostWidth + midfielderSpacing * (index + 1)
+//                            val y = canvasHeight * 0.28f
+//                            val midfielderPosition = Offset(x, y)
+//                            drawPlayer(midfielder, midfielderPosition)
+//                            drawPlayerName(
+//                                midfielder.player.name,
+//                                midfielderPosition,
+//                                playerTextSize,
+//                                context
+//                            )
+//                        }
+
+
+                }
 
             }
         }
 
 
-
     }
 }
 
-private fun DrawScope.drawPlayer(player: StartXI, position: Offset) {
-    val playerRadius = 26.dp.toPx()
+private fun DrawScope.drawPlayer( position: Offset) {
+    val playerRadius = 23.dp.toPx()
     drawCircle(
         color = Color.White,
         radius = playerRadius,
