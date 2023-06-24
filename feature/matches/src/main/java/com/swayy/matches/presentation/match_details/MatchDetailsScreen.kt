@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults
@@ -114,6 +115,7 @@ fun MatchDetailsScreen(
     }
 
     Box(modifier = Modifier.padding(top = 40.dp)) {
+
         Column {
             Row(modifier = Modifier.padding(start = 10.dp, end = 12.dp)) {
 
@@ -410,6 +412,7 @@ fun LineupScreen(
                     .fillMaxWidth()
                     .height(1000.dp)
             ) {
+
                 val canvasWidth = size.width
                 val canvasHeight = size.height
 
@@ -604,91 +607,2056 @@ fun LineupScreen(
                 //home team
                 lineupState.lineup.take(1).forEach {
 
-                    val players = it.startXI
+                    if (it.formation == "3-2-4-1"){
+                        val players = it.startXI
 
-                    val playerTextSize = 13.sp.toPx()
+                        val playerTextSize = 13.sp.toPx()
 
-                    if (players.size >= 2) {
-                        val secondLastPlayer = players[players.size - 2].player
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
                         val forwardsCount = 1
                         val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
-
                         val x = goalPostWidth + forwardSpacing
-                        val y = canvasHeight * 0.4f
+                        val y = canvasHeight * 0.45f
                         val forwardPosition = Offset(x, y)
                         drawPlayer(forwardPosition)
                         drawPlayerName(
-                            secondLastPlayer.name,
+                            lastPlayer.name,
                             forwardPosition,
                             playerTextSize,
                             context
                         )
-                    } else {
-                        // Handle the case when there are not enough players in the list
+
+                        //attacking midfielders
+                        val defendersCount = 4
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(4)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-2-3-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.45f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //attacking midfielders
+                        val defendersCount = 3
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(3)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(4)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+                    if (it.formation == "4-4-1-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.45f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //attacking midfielders
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-1-3-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 2
+                        val playersAfterLastt = players.takeLast(2)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.45f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //attacking midfielders
+                        val defendersCount = 3
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(3)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 1
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(1)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-3-1-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 2
+                        val playersAfterLastt = players.takeLast(2)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.45f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //attacking midfielders
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-1-4-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.45f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //attacking midfielders
+                        val defendersCount = 4
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(4)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 1
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(1)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "3-4-1-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 2
+                        val playersAfterLastt = players.takeLast(2)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.45f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //attacking midfielders
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "3-4-2-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.45f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //attacking midfielders
+                        val defendersCount = 2
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(2)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.37f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-3-3"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 3
+                        val playersAfterLastt = players.takeLast(3)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.38f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
                     }
 
 
+                    if (it.formation == "5-2-3"){
+                        val players = it.startXI
 
+                        val playerTextSize = 13.sp.toPx()
 
-//                    val goalkeeperPosition = Offset((canvasWidth / 2), penaltyAreaHeightone)
-//                    val goalkeeper = it.startXI.find { it.player.pos == "G" }
-//                    goalkeeper?.let {
-//                        drawPlayer(it, goalkeeperPosition)
-//                        drawPlayerName(
-//                            it.player.name,
-//                            goalkeeperPosition,
-//                            playerTextSize,
-//                            context
-//                        )
-//                    }
+                        //get the forward
+                        val defendersCountt = 3
+                        val playersAfterLastt = players.takeLast(3)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.38f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
 
-//                        // Defenders
-//                        val defendersCount = 4
-//                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
-//                        val defenders = it.startXI.filter { it.player.pos == "D" }
-//                        defenders.forEachIndexed { index, defender ->
-//                            val x = goalPostWidth + defenderSpacing * (index + 1)
-//                            val y = canvasHeight * 0.16f
-//                            val defenderPosition = Offset(x, y)
-//                            drawPlayer(defender, defenderPosition)
-//                            drawPlayerName(
-//                                defender.player.name,
-//                                defenderPosition,
-//                                playerTextSize,
-//                                context
-//                            )
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "5-3-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 2
+                        val playersAfterLastt = players.takeLast(2)
+                        val defenderSpacingt = (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.38f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "5-4-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.45f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(1)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //away team
+                lineupState.lineup.takeLast(1).forEach {
+                    if (it.formation == "3-2-4-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //attacking midfielders
+                        val defendersCount = 4
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(4)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
 //
-//                        }
-//
-//                        // Midfielders
-//                        val midfieldersCount = 4
-//                        val midfielderSpacing =
-//                            (canvasWidth - goalPostWidth * 2) / (midfieldersCount + 1)
-//                        val midfielders = it.startXI.filter { it.player.pos == "M" }
-//                        midfielders.forEachIndexed { index, midfielder ->
-//                            val x = goalPostWidth + midfielderSpacing * (index + 1)
-//                            val y = canvasHeight * 0.28f
-//                            val midfielderPosition = Offset(x, y)
-//                            drawPlayer(midfielder, midfielderPosition)
-//                            drawPlayerName(
-//                                midfielder.player.name,
-//                                midfielderPosition,
-//                                playerTextSize,
-//                                context
-//                            )
-//                        }
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
 
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+                    }
+
+                    if (it.formation == "4-2-3-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        val defendersCount = 3
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(3)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(4)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+                    if (it.formation == "4-4-1-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-1-3-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 2
+                        val playersAfterLasts = players.takeLast(2)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCount = 3
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(3)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 1
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(1)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-3-1-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 2
+                        val playersAfterLasts = players.takeLast(2)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-1-4-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        val defendersCount = 4
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(4)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 1
+                        val playersWithoutLastdef = players.dropLast(5)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(1)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+                    if (it.formation == "3-4-1-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 2
+                        val playersAfterLasts = players.takeLast(2)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCount = 1
+                        val playersWithoutLast = players.dropLast(2)
+                        val playersAfterLast = playersWithoutLast.takeLast(1)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "3-4-2-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        val defendersCount = 2
+                        val playersWithoutLast = players.dropLast(1)
+                        val playersAfterLast = playersWithoutLast.takeLast(2)
+                        val defenderSpacing = (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
+                        playersAfterLast.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacing * (index + 1)
+                            val yone = canvasHeight * 0.63f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.73f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 3
+                        val playersWithoutLastdefone = players.dropLast(7)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(3)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "4-3-3"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 3
+                        val playersAfterLasts = players.takeLast(3)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.62f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.72f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "5-2-3"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 3
+                        val playersAfterLasts = players.takeLast(3)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.62f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 2
+                        val playersWithoutLastdef = players.dropLast(3)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(2)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.72f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "5-3-2"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 2
+                        val playersAfterLasts = players.takeLast(2)
+                        val defenderSpacings = (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.62f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 3
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(3)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.72f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
+                    if (it.formation == "5-4-1"){
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val lastPlayer = players[players.size - 1].player
+                        val forwardsCount = 1
+                        val forwardSpacing = (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
+                        val x = goalPostWidth + forwardSpacing
+                        val y = canvasHeight * 0.55f
+                        val forwardPosition = Offset(x, y)
+                        drawPlayer(forwardPosition)
+                        drawPlayerName(
+                            lastPlayer.name,
+                            forwardPosition,
+                            playerTextSize,
+                            context
+                        )
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(1)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef = (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.72f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 5
+                        val playersWithoutLastdefone = players.dropLast(5)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(5)
+                        val defenderSpacingdefone = (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
 
                 }
 
             }
         }
 
-
     }
 }
 
-private fun DrawScope.drawPlayer( position: Offset) {
+private fun DrawScope.drawPlayer(position: Offset) {
+
+    val image = "https://media-2.api-sports.io/football/teams/794.png"
+
     val playerRadius = 23.dp.toPx()
     drawCircle(
         color = Color.White,
@@ -717,7 +2685,12 @@ private fun DrawScope.drawPlayerName(
         }
         val textOffsetY = text * 3.7f
 
-        drawText(name, position.x, position.y + textOffsetY, paint)
+        fun getFirstName(fullName: String): String {
+            return fullName.split(" ").firstOrNull() ?: fullName
+        }
+        val cleanedName = getFirstName(name)
+
+        drawText(cleanedName, position.x, position.y + textOffsetY, paint)
     }
 }
 

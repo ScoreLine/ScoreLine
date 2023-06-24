@@ -7,7 +7,7 @@ class Interceptor: Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
             .newBuilder()
-            .addHeader("x-apisports-key", "280f84e4007818a22a2db7140843ae4f")
+            .addHeader("x-apisports-key", "f53f4f26c069cc392990458476fbbb15")
             .addHeader("x-apisports-host", "v3.football.api-sports.io")
             .build()
         return chain.proceed(request)
