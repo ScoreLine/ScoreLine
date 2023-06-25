@@ -1,4 +1,4 @@
-package com.kaajjo.libresudoku.ui.settings
+package com.swayy.more.settings
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

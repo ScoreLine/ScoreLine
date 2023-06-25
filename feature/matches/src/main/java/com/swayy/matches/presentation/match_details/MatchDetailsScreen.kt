@@ -7,15 +7,9 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.text.Layout
-import android.text.StaticLayout
 import android.util.Log
-import android.view.View
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,17 +18,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
@@ -42,47 +29,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment.Companion.Rectangle
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.withSave
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,28 +55,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTitle
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTopAppBar
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.rememberTopAppBarScrollBehavior
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
-import com.swayy.core.R
 import com.swayy.core_network.model.lineup.Player
-import com.swayy.core_network.model.lineup.StartXI
 import com.swayy.matches.presentation.MatchViewmodel
 import com.swayy.matches.presentation.TabRowItem
-import com.swayy.matches.presentation.TabScreen
-import com.swayy.matches.presentation.getFormattedDayBeforeYesterday
 import com.swayy.matches.presentation.state.LineupState
-import com.swayy.matches.presentation.state.MatchState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -484,6 +439,7 @@ fun LineupScreen(
                     strokeWidth = 5f
                 )
 
+
                 //bottom line
                 drawLine(
                     color = Color.White.copy(alpha = 0.4f),
@@ -548,6 +504,32 @@ fun LineupScreen(
                     style = Stroke(width = lineWidth)
                 )
                 //test
+
+                val arcRadiuss = penaltyAreaHeight / 6.6f
+                val arcWidth = arcRadiuss * 2
+                val arcHeight = arcWidth / 2
+
+                val pathh = Path().apply {
+                    val arcCenter = Offset(canvasWidth * 0.027f, canvasHeight * 0.035f)
+
+                    arcTo(
+                        Rect(
+                            left = arcCenter.x * 1f,
+                            top = arcCenter.y * 1f - arcHeight / 2,
+                            right = arcCenter.x + arcRadiuss,
+                            bottom = arcCenter.y + arcHeight / 2
+                        ),
+                        startAngleDegrees = 152f,
+                        sweepAngleDegrees = -191f,
+                        forceMoveTo = false
+                    )
+                }
+                drawPath(
+                    path = pathh,
+                    color = Color.White.copy(alpha = 0.4f),
+                    style = Stroke(width = lineWidth)
+                )
+
 
                 val arcRadius = penaltyAreaHeight / 3f
 
@@ -632,6 +614,34 @@ fun LineupScreen(
 
                 //home team
                 lineupState.lineup.take(1).forEach {
+                    drawContext.canvas.nativeCanvas.apply {
+                        val font: Typeface? =
+                            ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+
+                        val paint = android.graphics.Paint().apply {
+                            color = Color.White.toArgb()
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = font
+                            isAntiAlias = true
+                            textSize = 16.sp.toPx()
+                        }
+
+                        drawText(it.team.name, canvasWidth * 0.1f, canvasHeight * 0.02f, paint)
+                    }
+                    drawContext.canvas.nativeCanvas.apply {
+                        val font: Typeface? =
+                            ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+
+                        val paint = android.graphics.Paint().apply {
+                            color = Color.White.toArgb()
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = font
+                            isAntiAlias = true
+                            textSize = 16.sp.toPx()
+                        }
+
+                        drawText(it.formation, canvasWidth * 0.92f, canvasHeight * 0.02f, paint)
+                    }
 
                     if (it.formation == "3-2-4-1") {
                         val players = it.startXI
@@ -1692,11 +1702,115 @@ fun LineupScreen(
                         }
 
                     }
+                    if (it.formation == "4-4-2") {
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCountt = 2
+                        val playersAfterLastt = players.takeLast(2)
+                        val defenderSpacingt =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
+                        playersAfterLastt.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingt * (index + 1)
+                            val yone = canvasHeight * 0.38f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.27f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.18f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(it.player, goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
 
                 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //away team
                 lineupState.lineup.takeLast(1).forEach {
+                    drawContext.canvas.nativeCanvas.apply {
+                        val font: Typeface? =
+                            ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+
+                        val paint = android.graphics.Paint().apply {
+                            color = Color.White.toArgb()
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = font
+                            isAntiAlias = true
+                            textSize = 16.sp.toPx()
+                        }
+
+                        drawText(it.team.name, canvasWidth * 0.11f, canvasHeight * 0.99f, paint)
+                    }
+                    drawContext.canvas.nativeCanvas.apply {
+                        val font: Typeface? =
+                            ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+
+                        val paint = android.graphics.Paint().apply {
+                            color = Color.White.toArgb()
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = font
+                            isAntiAlias = true
+                            textSize = 16.sp.toPx()
+                        }
+
+                        drawText(it.formation, canvasWidth * 0.919f, canvasHeight * 0.99f, paint)
+                    }
                     if (it.formation == "3-2-4-1") {
                         val players = it.startXI
 
@@ -2747,6 +2861,83 @@ fun LineupScreen(
 
                     }
 
+                    if (it.formation == "4-4-2") {
+                        val players = it.startXI
+
+                        val playerTextSize = 13.sp.toPx()
+
+                        //get the forward
+                        val defendersCounts = 2
+                        val playersAfterLasts = players.takeLast(2)
+                        val defenderSpacings =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
+                        playersAfterLasts.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacings * (index + 1)
+                            val yone = canvasHeight * 0.62f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        //defensive midfielders
+                        val defendersCountdefense = 4
+                        val playersWithoutLastdef = players.dropLast(2)
+                        val playersAfterLastdef = playersWithoutLastdef.takeLast(4)
+                        val defenderSpacingdef =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
+                        playersAfterLastdef.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdef * (index + 1)
+                            val yone = canvasHeight * 0.72f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val defendersCountdefenseone = 4
+                        val playersWithoutLastdefone = players.dropLast(6)
+                        val playersAfterLastdefone = playersWithoutLastdefone.takeLast(4)
+                        val defenderSpacingdefone =
+                            (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
+                        playersAfterLastdefone.forEachIndexed { index, playerData ->
+                            val player = playerData.player
+                            val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
+                            val yone = canvasHeight * 0.81f
+                            val playerOffset = Offset(xone, yone)
+                            drawPlayer(playerData.player, playerOffset)
+                            drawPlayerName(
+                                player.name,
+                                playerOffset,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                        val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
+                        val goalkeeper = it.startXI.find { it.player.pos == "G" }
+                        goalkeeper?.let {
+                            drawPlayer(it.player, goalkeeperPosition)
+                            drawPlayerName(
+                                it.player.name,
+                                goalkeeperPosition,
+                                playerTextSize,
+                                context
+                            )
+                        }
+
+                    }
+
                 }
 
             }
@@ -2760,7 +2951,7 @@ fun LineupScreen(
 private suspend fun loadImage(url: String): ImageBitmap = withContext(Dispatchers.IO) {
     val bitmap = Picasso.get()
         .load(url)
-        .resize(100,100)
+        .resize(100, 100)
         .centerCrop()
         .transform(RoundedTransformation(radius = 100f)) // Adjust the radius as desired
         .get()
@@ -2789,7 +2980,8 @@ class RoundedTransformation(private val radius: Float) : Transformation {
 
     override fun key(): String = "rounded(radius=$radius)"
 }
-private fun DrawScope.drawPlayer(player: Player,position: Offset) {
+
+private fun DrawScope.drawPlayer(player: Player, position: Offset) {
 
     val imageUrl = "https://media.api-sports.io/football/players/${player.id}.png"
 

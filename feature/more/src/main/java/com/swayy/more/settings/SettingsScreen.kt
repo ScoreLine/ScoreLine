@@ -1,9 +1,6 @@
 package com.swayy.more.settings
 
-import android.content.Context
 import android.os.Build
-import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,13 +15,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTitle
 import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTopAppBar
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.rememberTopAppBarScrollBehavior
-import com.kaajjo.libresudoku.ui.settings.SettingsViewModel
-import com.kaajjo.libresudoku.ui.settings.components.AppThemePreviewItem
+import com.swayy.core.util.collapsing_topappbar.rememberTopAppBarScrollBehavior
+import com.swayy.more.settings.components.AppThemePreviewItem
 import com.swayy.core.core.PreferencesConstants
 import com.swayy.more.settings.components.ScrollbarLazyColumn
 import com.swayy.compose_ui.theme.AppColorScheme
@@ -33,8 +28,6 @@ import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.more.R
 import com.swayy.more.settings.components.PreferenceRow
 import com.swayy.more.settings.components.PreferenceRowSwitch
-import org.xmlpull.v1.XmlPullParser
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

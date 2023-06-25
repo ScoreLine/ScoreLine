@@ -1,4 +1,4 @@
-package com.kaajjo.libresudoku.ui.settings.components
+package com.swayy.more.settings.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi

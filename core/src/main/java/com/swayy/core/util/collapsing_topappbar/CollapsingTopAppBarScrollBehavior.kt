@@ -1,4 +1,4 @@
-package com.kaajjo.libresudoku.ui.components.collapsing_topappbar
+package com.swayy.core.util.collapsing_topappbar
 
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.DecayAnimationSpec
