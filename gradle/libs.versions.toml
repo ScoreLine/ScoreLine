@@ -28,6 +28,7 @@ glide = "4.12.0"
 glide-compiler = "4.10.0"
 coil = "2.1.0"
 room = "2.5.0"
+picasso = "2.8"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -72,6 +73,7 @@ coil = {group = "io.coil-kt",name = "coil-compose",version.ref = "coil"}
 room = {group = "androidx.room",name = "room-ktx",version.ref = "room"}
 room-compiler = {group = "androidx.room",name = "room-compiler",version.ref = "room"}
 room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "room"}
+picasso = {group = "com.squareup.picasso",name = "picasso",version.ref = "picasso"}
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
