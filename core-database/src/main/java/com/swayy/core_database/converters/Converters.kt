@@ -48,63 +48,63 @@ class Converters(private val gson : Gson) {
     }
 
     @TypeConverter
-    fun fromScore(str: Score): String {
-        return Gson().toJson(str)
+    fun fromScore(df: Score): String {
+        return Gson().toJson(df)
     }
 
     @TypeConverter
-    fun toScore(str: String): Score {
-        return Gson().fromJson(str, object : TypeToken<Score>() {}.type)
+    fun toScore(vo: String): Score {
+        return Gson().fromJson(vo, object : TypeToken<Score>() {}.type)
     }
 
     @TypeConverter
-    fun fromTeams(str: Teams): String {
-        return Gson().toJson(str)
+    fun fromTeams(ke: Teams): String {
+        return Gson().toJson(ke)
     }
 
     @TypeConverter
-    fun toTeams(str: String): Teams {
-        return Gson().fromJson(str, object : TypeToken<Teams>() {}.type)
+    fun toTeams(you: String): Teams {
+        return Gson().fromJson(you, object : TypeToken<Teams>() {}.type)
     }
 
     @TypeConverter
-    fun fromTeam(str: Team): String {
-        return Gson().toJson(str)
+    fun fromTeam(me: Team?): String? {
+        return Gson().toJson(me)
     }
 
     @TypeConverter
-    fun toTeam(str: String): Team {
-        return Gson().fromJson(str, object : TypeToken<Team>() {}.type)
+    fun toTeam(no: String?): Team? {
+        return Gson().fromJson(no, object : TypeToken<Team?>() {}.type)
     }
 
     @TypeConverter
-    fun fromCoach(str: Coach): String {
-        return Gson().toJson(str)
+    fun fromCoach(aa: Coach?): String? {
+        return Gson().toJson(aa)
     }
 
     @TypeConverter
-    fun toCoach(str: String): Coach {
-        return Gson().fromJson(str, object : TypeToken<Coach>() {}.type)
+    fun toCoach(gg: String?): Coach? {
+        return Gson().fromJson(gg, object : TypeToken<Coach?>() {}.type)
     }
 
     @TypeConverter
-    fun fromLine(str: List<StartXI>): String {
-        return Gson().toJson(str)
+    fun fromLine(sa: List<StartXI?>): String? {
+        return Gson().toJson(sa)
     }
 
     @TypeConverter
-    fun toLine(str: String): List<StartXI> {
-        return Gson().fromJson(str, object : TypeToken<List<StartXI>>() {}.type)
+    fun toLine(da: String?): List<StartXI?> {
+        return Gson().fromJson(da, object : TypeToken<List<StartXI?>>() {}.type)
     }
 
     @TypeConverter
-    fun fromSubstitute(str: List<Substitute>): String {
-        return Gson().toJson(str)
+    fun fromSubstitute(subone: List<Substitute?>): String? {
+        return Gson().toJson(subone)
     }
 
     @TypeConverter
-    fun toSubstitute(str: String): List<Substitute> {
-        return Gson().fromJson(str, object : TypeToken<List<Substitute>>() {}.type)
+    fun toSubstitute(sub: String?): List<Substitute?> {
+        return Gson().fromJson(sub, object : TypeToken<List<Substitute?>>() {}.type)
     }
 
 }

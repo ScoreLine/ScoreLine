@@ -32,5 +32,5 @@ internal fun com.swayy.core_network.model.lineup.Response.toLineupEntity(): Line
 }
 
 internal fun LineupEntity.toLineupDomain(): Lineup {
-    return Lineup(coach, formation, startXI, substitutes, team)
+    return Lineup(coach!!, formation!!, startXI!!, substitutes!!, team!!)
 }

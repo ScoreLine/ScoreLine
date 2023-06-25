@@ -11,9 +11,9 @@ import com.swayy.core_network.model.lineup.Team
 data class LineupEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Int,
-    val coach: Coach,
-    val formation: String,
-    val startXI: List<StartXI>,
-    val substitutes: List<Substitute>,
-    val team: Team
+    val coach: Coach?,
+    val formation: String?,
+    val startXI: List<StartXI>?,
+    val substitutes: List<Substitute>?,
+    val team: Team?
 )

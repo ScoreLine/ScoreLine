@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
@@ -45,6 +47,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.consumePositionChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,6 +70,9 @@ import com.squareup.picasso.Transformation
 import com.swayy.core_network.model.lineup.Player
 import com.swayy.matches.presentation.MatchViewmodel
 import com.swayy.matches.presentation.TabRowItem
+import com.swayy.matches.presentation.match_details.screens.FactsScreen
+import com.swayy.matches.presentation.match_details.screens.HeadScreen
+import com.swayy.matches.presentation.match_details.screens.StatsScreen
 import com.swayy.matches.presentation.state.LineupState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -95,7 +102,13 @@ fun MatchDetailsScreen(
         lineupViewmodel.getLineup(fixture = id)
     }
 
-    Box(modifier = Modifier.padding(top = 40.dp)) {
+    Box(modifier = Modifier.padding(top = 40.dp).fillMaxSize()) {
+        if (matchState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
         Column {
             Row(modifier = Modifier.padding(start = 10.dp, end = 12.dp)) {
@@ -246,68 +259,115 @@ fun MatchDetailsScreen(
                     val coroutineScope = rememberCoroutineScope()
                     val context = LocalContext.current
 
-                    val tabRowItems = listOf(
+                    val tabRowItems = mutableListOf<TabRowItem>()
+
+                    val lineupTabRowItem = TabRowItem(
+                        title = "Lineup",
+                        screen = {
+                            LineupScreen(
+                                lineupState,
+                                MaterialTheme.colorScheme.primary,
+                                context,
+                                match.teams.away.name,
+                                match.teams.home.name
+                            )
+                        }
+                    )
+
+                    val statsTabRowItem = TabRowItem(
+                        title = "Stats",
+                        screen = {
+                            StatsScreen()
+                        }
+                    )
+                    tabRowItems.add(statsTabRowItem)
+
+
+                    if (lineupState.lineup.any { it.formation != null }) {
+                        tabRowItems.add(lineupTabRowItem)
+                    }
+
+                    val remainingTabRowItems = listOf(
                         TabRowItem(
                             title = "Facts",
                             screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Lineup",
-                            screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Table",
-                            screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Stats",
-                            screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
+                                FactsScreen()
                             }
                         ),
                         TabRowItem(
                             title = "H2H",
                             screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
+                                HeadScreen()
                             }
-                        ),
+                        )
                     )
+
+                    tabRowItems.addAll(remainingTabRowItems)
+
+//                    val tabRowItems = listOf(
+//                        TabRowItem(
+//                            title = "Facts",
+//                            screen = {
+//                                LineupScreen(
+//                                    lineupState,
+//                                    MaterialTheme.colorScheme.primary,
+//                                    context,
+//                                    match.teams.away.name,
+//                                    match.teams.home.name
+//                                )
+//                            }
+//                        ),
+//
+//                        TabRowItem(
+//                            title = "Lineup",
+//                            screen = {
+//                                LineupScreen(
+//                                    lineupState,
+//                                    MaterialTheme.colorScheme.primary,
+//                                    context,
+//                                    match.teams.away.name,
+//                                    match.teams.home.name
+//                                )
+//                            }
+//                        ),
+//
+//                        TabRowItem(
+//                            title = "Table",
+//                            screen = {
+//                                LineupScreen(
+//                                    lineupState,
+//                                    MaterialTheme.colorScheme.primary,
+//                                    context,
+//                                    match.teams.away.name,
+//                                    match.teams.home.name
+//                                )
+//                            }
+//                        ),
+//                        TabRowItem(
+//                            title = "Stats",
+//                            screen = {
+//                                LineupScreen(
+//                                    lineupState,
+//                                    MaterialTheme.colorScheme.primary,
+//                                    context,
+//                                    match.teams.away.name,
+//                                    match.teams.home.name
+//                                )
+//                            }
+//                        ),
+//                        TabRowItem(
+//                            title = "H2H",
+//                            screen = {
+//                                LineupScreen(
+//                                    lineupState,
+//                                    MaterialTheme.colorScheme.primary,
+//                                    context,
+//                                    match.teams.away.name,
+//                                    match.teams.home.name
+//                                )
+//                            }
+//                        ),
+//                    )
                     Spacer(modifier = Modifier.height(2.dp))
                     Column(
                         modifier = Modifier
@@ -356,7 +416,20 @@ fun MatchDetailsScreen(
                         HorizontalPager(
                             count = tabRowItems.size,
                             state = pagerState,
-                            userScrollEnabled = false
+                            userScrollEnabled = true,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .pointerInput(Unit) {
+                                    detectHorizontalDragGestures { change, dragAmount ->
+                                        val currentPage = pagerState.currentPage
+                                        val isLineupScreen = currentPage == tabRowItems.indexOf(lineupTabRowItem)
+                                        val isScrollEnabled = isLineupScreen || dragAmount < 0
+
+                                        if (isScrollEnabled) {
+                                            change.consumePositionChange()
+                                        }
+                                    }
+                                }
                         ) {
                             tabRowItems[pagerState.currentPage].screen()
                         }
@@ -505,32 +578,6 @@ fun LineupScreen(
                 )
                 //test
 
-                val arcRadiuss = penaltyAreaHeight / 6.6f
-                val arcWidth = arcRadiuss * 2
-                val arcHeight = arcWidth / 2
-
-                val pathh = Path().apply {
-                    val arcCenter = Offset(canvasWidth * 0.027f, canvasHeight * 0.035f)
-
-                    arcTo(
-                        Rect(
-                            left = arcCenter.x * 1f,
-                            top = arcCenter.y * 1f - arcHeight / 2,
-                            right = arcCenter.x + arcRadiuss,
-                            bottom = arcCenter.y + arcHeight / 2
-                        ),
-                        startAngleDegrees = 152f,
-                        sweepAngleDegrees = -191f,
-                        forceMoveTo = false
-                    )
-                }
-                drawPath(
-                    path = pathh,
-                    color = Color.White.copy(alpha = 0.4f),
-                    style = Stroke(width = lineWidth)
-                )
-
-
                 val arcRadius = penaltyAreaHeight / 3f
 
                 val path = Path().apply {
@@ -626,7 +673,7 @@ fun LineupScreen(
                             textSize = 16.sp.toPx()
                         }
 
-                        drawText(it.team.name, canvasWidth * 0.1f, canvasHeight * 0.02f, paint)
+                        drawText(it.team.name, canvasWidth * 0.2f, canvasHeight * 0.02f, paint)
                     }
                     drawContext.canvas.nativeCanvas.apply {
                         val font: Typeface? =
@@ -640,7 +687,7 @@ fun LineupScreen(
                             textSize = 16.sp.toPx()
                         }
 
-                        drawText(it.formation, canvasWidth * 0.92f, canvasHeight * 0.02f, paint)
+                        drawText(it.formation, canvasWidth * 0.89f, canvasHeight * 0.02f, paint)
                     }
 
                     if (it.formation == "3-2-4-1") {
@@ -1795,7 +1842,7 @@ fun LineupScreen(
                             textSize = 16.sp.toPx()
                         }
 
-                        drawText(it.team.name, canvasWidth * 0.11f, canvasHeight * 0.99f, paint)
+                        drawText(it.team.name, canvasWidth * 0.2f, canvasHeight * 0.99f, paint)
                     }
                     drawContext.canvas.nativeCanvas.apply {
                         val font: Typeface? =
@@ -1809,7 +1856,7 @@ fun LineupScreen(
                             textSize = 16.sp.toPx()
                         }
 
-                        drawText(it.formation, canvasWidth * 0.919f, canvasHeight * 0.99f, paint)
+                        drawText(it.formation, canvasWidth * 0.89f, canvasHeight * 0.99f, paint)
                     }
                     if (it.formation == "3-2-4-1") {
                         val players = it.startXI
