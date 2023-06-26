@@ -11,6 +11,7 @@ import com.swayy.matches.presentation.state.MatchState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,29 +21,41 @@ class LineupViewmodel @Inject constructor(
     private val _lineup = mutableStateOf(LineupState())
     val lineup: State<LineupState> = _lineup
 
-    fun getLineup(
-       fixture: Int
-    ) {
-        getLineupUseCase(
-            fixture = fixture
-        ).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    _lineup.value = LineupState(lineup = result.data ?: emptyList())
+    private var isLineupDataLoaded = false
+    private var isLineupFlowCollected = false
 
-                }
+    fun getLineup(fixture: Int) {
+        if (!isLineupFlowCollected) {
+            viewModelScope.launch {
+                try {
+                    _lineup.value = LineupState(isLoading = true)
 
-                is Resource.Error -> {
+                    getLineupUseCase(fixture = fixture).collect { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                _lineup.value = LineupState(lineup = result.data ?: emptyList())
+                                isLineupDataLoaded = true
+                            }
+                            is Resource.Error -> {
+                                _lineup.value = LineupState(
+                                    error = result.message ?: "An unexpected error occurred"
+                                )
+                            }
+                            is Resource.Loading -> {
+                                // No need to update _lineup for Loading state, as it's already set above
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
                     _lineup.value = LineupState(
-                        error = result.message ?: "An unexpected error occured"
+                        error = "An unexpected error occurred: ${e.message}"
                     )
                 }
-
-                is Resource.Loading -> {
-                    _lineup.value = LineupState(isLoading = true)
-                }
             }
-        }.launchIn(viewModelScope)
+            isLineupFlowCollected = true
+        } else if (isLineupDataLoaded) {
+            // Data has already been loaded, no need to fetch again
+        }
     }
 
 }

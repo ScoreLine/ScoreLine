@@ -103,7 +103,7 @@ fun MatchDetailsScreen(
     }
 
     Box(modifier = Modifier.padding(top = 40.dp).fillMaxSize()) {
-        if (matchState.isLoading) {
+        if (lineupState.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
                 color = MaterialTheme.colorScheme.primary
@@ -274,15 +274,6 @@ fun MatchDetailsScreen(
                         }
                     )
 
-                    val statsTabRowItem = TabRowItem(
-                        title = "Stats",
-                        screen = {
-                            StatsScreen()
-                        }
-                    )
-                    tabRowItems.add(statsTabRowItem)
-
-
                     if (lineupState.lineup.any { it.formation != null }) {
                         tabRowItems.add(lineupTabRowItem)
                     }
@@ -295,6 +286,12 @@ fun MatchDetailsScreen(
                             }
                         ),
                         TabRowItem(
+                            title = "Stats",
+                            screen = {
+                                StatsScreen()
+                            }
+                        ),
+                        TabRowItem(
                             title = "H2H",
                             screen = {
                                 HeadScreen()
@@ -304,70 +301,6 @@ fun MatchDetailsScreen(
 
                     tabRowItems.addAll(remainingTabRowItems)
 
-//                    val tabRowItems = listOf(
-//                        TabRowItem(
-//                            title = "Facts",
-//                            screen = {
-//                                LineupScreen(
-//                                    lineupState,
-//                                    MaterialTheme.colorScheme.primary,
-//                                    context,
-//                                    match.teams.away.name,
-//                                    match.teams.home.name
-//                                )
-//                            }
-//                        ),
-//
-//                        TabRowItem(
-//                            title = "Lineup",
-//                            screen = {
-//                                LineupScreen(
-//                                    lineupState,
-//                                    MaterialTheme.colorScheme.primary,
-//                                    context,
-//                                    match.teams.away.name,
-//                                    match.teams.home.name
-//                                )
-//                            }
-//                        ),
-//
-//                        TabRowItem(
-//                            title = "Table",
-//                            screen = {
-//                                LineupScreen(
-//                                    lineupState,
-//                                    MaterialTheme.colorScheme.primary,
-//                                    context,
-//                                    match.teams.away.name,
-//                                    match.teams.home.name
-//                                )
-//                            }
-//                        ),
-//                        TabRowItem(
-//                            title = "Stats",
-//                            screen = {
-//                                LineupScreen(
-//                                    lineupState,
-//                                    MaterialTheme.colorScheme.primary,
-//                                    context,
-//                                    match.teams.away.name,
-//                                    match.teams.home.name
-//                                )
-//                            }
-//                        ),
-//                        TabRowItem(
-//                            title = "H2H",
-//                            screen = {
-//                                LineupScreen(
-//                                    lineupState,
-//                                    MaterialTheme.colorScheme.primary,
-//                                    context,
-//                                    match.teams.away.name,
-//                                    match.teams.home.name
-//                                )
-//                            }
-//                        ),
-//                    )
                     Spacer(modifier = Modifier.height(2.dp))
                     Column(
                         modifier = Modifier
