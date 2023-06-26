@@ -1,5 +1,6 @@
 package com.swayy.matches.presentation.match_details
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -21,40 +22,28 @@ class LineupViewmodel @Inject constructor(
     private val _lineup = mutableStateOf(LineupState())
     val lineup: State<LineupState> = _lineup
 
-    private var isLineupDataLoaded = false
-    private var isLineupFlowCollected = false
-
     fun getLineup(fixture: Int) {
-        if (!isLineupFlowCollected) {
-            viewModelScope.launch {
-                try {
-                    _lineup.value = LineupState(isLoading = true)
+        viewModelScope.launch {
+            getLineupUseCase.invoke(fixture = fixture).collect { result ->
+                when (result) {
 
-                    getLineupUseCase(fixture = fixture).collect { result ->
-                        when (result) {
-                            is Resource.Success -> {
-                                _lineup.value = LineupState(lineup = result.data ?: emptyList())
-                                isLineupDataLoaded = true
-                            }
-                            is Resource.Error -> {
-                                _lineup.value = LineupState(
-                                    error = result.message ?: "An unexpected error occurred"
-                                )
-                            }
-                            is Resource.Loading -> {
-                                // No need to update _lineup for Loading state, as it's already set above
-                            }
-                        }
+                    is Resource.Success -> {
+                        _lineup.value =
+                            LineupState(lineup = result.data ?: emptyList())
                     }
-                } catch (e: Exception) {
-                    _lineup.value = LineupState(
-                        error = "An unexpected error occurred: ${e.message}"
-                    )
+
+                    is Resource.Error -> {
+                        _lineup.value = LineupState(
+                            error = result.message ?: "An unexpected error occurred"
+                        )
+                        Log.d("DETAILS:: ", result.message.toString())
+                    }
+                    is Resource.Loading -> {
+                        _lineup.value = LineupState(isLoading = true)
+                        Log.d("DETAILS:: ", "Loading.....")
+                    }
                 }
             }
-            isLineupFlowCollected = true
-        } else if (isLineupDataLoaded) {
-            // Data has already been loaded, no need to fetch again
         }
     }
 

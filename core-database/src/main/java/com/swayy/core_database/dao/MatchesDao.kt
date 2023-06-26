@@ -20,7 +20,7 @@ interface MatchesDao {
     suspend fun deleteMatches()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLineup(lineupEntity: List<LineupEntity>)
+    suspend fun insertLineup(lineupEntity: List<LineupEntity?>)
 
     @Query("SELECT * FROM lineup_table")
     fun getLineup(): List<LineupEntity>

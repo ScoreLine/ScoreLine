@@ -24,13 +24,23 @@ internal fun Response.toEntity(): MatchesEntity {
     )
 }
 
-internal fun com.swayy.core_network.model.lineup.Response.toLineupEntity(): LineupEntity {
-    return LineupEntity(
-        id = 0,
-        coach, formation, startXI, substitutes, team
-    )
+internal fun com.swayy.core_network.model.lineup.Response.toLineupEntity(): LineupEntity? {
+    return coach?.let {
+        formation?.let { it1 ->
+            startXI?.let { it2 ->
+                substitutes?.let { it3 ->
+                    team?.let { it4 ->
+                        LineupEntity(
+                            id = 0,
+                            it, it1, it2, it3, it4
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 internal fun LineupEntity.toLineupDomain(): Lineup {
-    return Lineup(coach!!, formation!!, startXI!!, substitutes!!, team!!)
+    return Lineup(coach, formation, startXI, substitutes, team)
 }

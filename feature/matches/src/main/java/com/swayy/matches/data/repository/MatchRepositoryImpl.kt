@@ -55,7 +55,7 @@ class MatchRepositoryImpl(
         try {
             val apiResponse = liveScoreApi.getLineup(fixture = fixture)
             matchesDao.deleteLineup()
-            matchesDao.insertLineup(apiResponse.response.map { it.toLineupEntity() })
+            apiResponse.response.map { it.toLineupEntity() }.let { matchesDao.insertLineup(it) }
         } catch (exception: IOException) {
             emit(
                 Resource.Error(
