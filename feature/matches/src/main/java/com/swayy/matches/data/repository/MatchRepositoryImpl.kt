@@ -19,7 +19,7 @@ class MatchRepositoryImpl(
     private val liveScoreApi: LiveScoreApi,
     private val matchesDao: MatchesDao
 ) : MatchRepository {
-    override fun getMatch(date: String): Flow<Resource<List<Match>>> = flow {
+    override suspend fun getMatch(date: String): Flow<Resource<List<Match>>> = flow {
 
         val getMatchesFromDb = matchesDao.getMatches().map { it.toDomain() }
         emit(Resource.Loading(data = getMatchesFromDb))
@@ -48,7 +48,7 @@ class MatchRepositoryImpl(
 
     }
 
-    override fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>> = flow {
+    override suspend fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>> = flow {
         val getMatchesFromDb = matchesDao.getLineup().map { it.toLineupDomain() }
         emit(Resource.Loading(data = getMatchesFromDb))
 

@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetMatchUseCase @Inject constructor(
     private val repository: MatchRepository
 ) {
-    operator fun invoke(date: String): Flow<Resource<List<Match>>>{
+    suspend operator fun invoke(date: String): Flow<Resource<List<Match>>>{
         return repository.getMatch(date = date)
     }
 

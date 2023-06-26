@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetLineupUseCase @Inject constructor(
     private val repository: MatchRepository
 ) {
-    operator fun invoke(fixture: Int):Flow<Resource<List<Lineup>>>{
+    suspend operator fun invoke(fixture: Int):Flow<Resource<List<Lineup>>>{
         return repository.getLineup(fixture = fixture)
     }
 }

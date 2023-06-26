@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface MatchRepository {
 
-    fun getMatch(date: String): Flow<Resource<List<Match>>>
-    fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>>
+   suspend fun getMatch(date: String): Flow<Resource<List<Match>>>
+   suspend fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>>
 }
