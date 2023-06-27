@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
 
@@ -27,5 +28,14 @@ interface MatchesDao {
 
     @Query("DELETE FROM lineup_table")
     suspend fun deleteLineup()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvents(eventsEntity: List<EventsEntity>)
+
+    @Query("SELECT * FROM events_table")
+    fun getEvents(): List<EventsEntity>
+
+    @Query("DELETE FROM events_table")
+    suspend fun deleteEvents()
 
 }

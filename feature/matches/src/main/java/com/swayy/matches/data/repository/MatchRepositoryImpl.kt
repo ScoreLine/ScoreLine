@@ -5,8 +5,11 @@ import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_network.LiveScoreApi
 import com.swayy.matches.data.mapper.toDomain
 import com.swayy.matches.data.mapper.toEntity
+import com.swayy.matches.data.mapper.toEventsDomain
+import com.swayy.matches.data.mapper.toEventsEntity
 import com.swayy.matches.data.mapper.toLineupDomain
 import com.swayy.matches.data.mapper.toLineupEntity
+import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.repository.MatchRepository
@@ -72,6 +75,33 @@ class MatchRepositoryImpl(
             )
         }
         val allMatches = matchesDao.getLineup().map { it.toLineupDomain() }
+        emit(Resource.Success(allMatches))
+    }
+
+    override suspend fun getEvents(fixture: Int): Flow<Resource<List<Events>>> = flow {
+        val getMatchesFromDb = matchesDao.getEvents().map { it.toEventsDomain() }
+        emit(Resource.Loading(data = getMatchesFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getEvents(fixture = fixture)
+            matchesDao.deleteEvents()
+            apiResponse.response.map { it.toEventsEntity() }.let { matchesDao.insertEvents(it) }
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getMatchesFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getMatchesFromDb
+                )
+            )
+        }
+        val allMatches = matchesDao.getEvents().map { it.toEventsDomain() }
         emit(Resource.Success(allMatches))
     }
 

@@ -70,6 +70,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.swayy.matches.R
+import com.swayy.matches.presentation.match_details.LineupViewmodel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -82,7 +83,7 @@ import java.util.Locale
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MatchesScreen(
-    navigateMatchDetails: (Int,String) -> Unit,
+    navigateMatchDetails: (Int, String) -> Unit,
     viewModel: MatchViewmodel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -148,7 +149,7 @@ fun MatchesScreen(
                     }
                 ),
                 TabRowItem(
-                    
+
                     title = getFormattedDayAfterTomorrow(2),
                     screen = {
                         TabScreen(
@@ -230,7 +231,7 @@ data class TabRowItem(
 fun TabScreen(
     viewModel: MatchViewmodel,
     date: String,
-    navigateMatchDetails: (Int,String) -> Unit
+    navigateMatchDetails: (Int, String) -> Unit,
 ) {
 
     val matchState = viewModel.matches.value
@@ -315,6 +316,7 @@ fun TabScreen(
 
                                     Divider(thickness = 0.5.dp)
                                     fixtures.forEach { fixture ->
+
                                         AnimatedVisibility(
                                             visible = isArrowUp,
                                             enter = fadeIn() + expandVertically(),
@@ -726,7 +728,8 @@ fun TabScreen(
                             }
                         }
                     }
-                }}
+                }
+            }
         }
 
 

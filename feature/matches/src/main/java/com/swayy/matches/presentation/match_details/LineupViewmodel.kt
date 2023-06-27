@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.swayy.core.util.Resource
 import com.swayy.matches.domain.use_case.GetLineupUseCase
+import com.swayy.matches.presentation.events.state.EventsState
 import com.swayy.matches.presentation.state.LineupState
 import com.swayy.matches.presentation.state.MatchState
 import dagger.hilt.android.lifecycle.HiltViewModel

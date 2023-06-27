@@ -1,9 +1,11 @@
 package com.swayy.matches.data.mapper
 
 import android.service.autofill.FieldClassification
+import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_network.model.Fixtures.Response
+import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
 
@@ -43,4 +45,20 @@ internal fun com.swayy.core_network.model.lineup.Response.toLineupEntity(): Line
 
 internal fun LineupEntity.toLineupDomain(): Lineup {
     return Lineup(coach, formation, startXI, substitutes, team)
+}
+
+internal fun com.swayy.core_network.model.events.Response.toEventsEntity(): EventsEntity {
+    return EventsEntity(
+        id = 0,
+        assist = assist,
+        comments = comments,
+        detail, player, team, time, type
+
+    )
+}
+
+internal fun EventsEntity.toEventsDomain(): Events {
+    return Events(
+        id, assist, comments, detail, player, team, time, type
+    )
 }

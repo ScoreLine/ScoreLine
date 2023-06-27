@@ -25,4 +25,5 @@ object Constants {
     // Endpoints
     const val GET_FIXTURES = "fixtures"
     const val GET_LINEUP = "fixtures/lineups"
+    const val GET_EVENTS = "fixtures/events"
 }
