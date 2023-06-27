@@ -103,4 +103,7 @@ dependencies {
     implementation(libs.jsoup)
 
     implementation(libs.picasso)
+
+    implementation(libs.coil)
+
 }

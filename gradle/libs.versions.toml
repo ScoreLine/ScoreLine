@@ -26,10 +26,11 @@ okhttp3 = "4.9.1"
 gson = "2.9.0"
 glide = "4.12.0"
 glide-compiler = "4.10.0"
-coil = "2.1.0"
+coil = "2.2.2"
 room = "2.5.0"
 picasso = "2.8"
 jsoup = "1.14.3"
+
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -76,6 +77,7 @@ room-compiler = {group = "androidx.room",name = "room-compiler",version.ref = "r
 room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "room"}
 picasso = {group = "com.squareup.picasso",name = "picasso",version.ref = "picasso"}
 jsoup = { group = "org.jsoup",name = "jsoup",version.ref = "jsoup"}
+
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
