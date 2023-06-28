@@ -1,10 +1,13 @@
 package com.swayy.matches.data.mapper
 
 import android.service.autofill.FieldClassification
+import com.example.standings.domain.model.StandingsDomainModel
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
+import com.swayy.core_database.model.StandingsEntity
 import com.swayy.core_network.model.Fixtures.Response
+import com.swayy.core_network.model.standings.League
 import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
@@ -61,4 +64,14 @@ internal fun EventsEntity.toEventsDomain(): Events {
     return Events(
         id, assist, comments, detail, player, team, time, type
     )
+}
+
+internal fun League.toStandingsEntity(): StandingsEntity {
+    return StandingsEntity(
+        country, flag, id, logo, name, season, standings
+    )
+}
+
+internal fun StandingsEntity.toStandingsDomain() : StandingsDomainModel{
+    return StandingsDomainModel(country, flag, id, logo, name, season, standings)
 }

@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import com.swayy.core_database.converters.Converters
 import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_database.dao.NewsDao
+import com.swayy.core_database.dao.StandingsDao
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
@@ -16,4 +17,5 @@ import com.swayy.core_database.model.NewsEntity
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao
     abstract val newsDao: NewsDao
+    abstract val standingsDao: StandingsDao
 }

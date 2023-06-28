@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/feature/matches" />
             <option value="$PROJECT_DIR$/feature/more" />
             <option value="$PROJECT_DIR$/feature/news" />
+            <option value="$PROJECT_DIR$/feature/standings" />
             <option value="$PROJECT_DIR$/feature/transfers" />
           </set>
         </option>

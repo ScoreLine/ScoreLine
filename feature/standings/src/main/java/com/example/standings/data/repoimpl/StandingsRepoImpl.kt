@@ -45,10 +45,5 @@ class StandingsRepoImpl (
         val allStandings = standingsDao.getStandings().map { it.toStandingsDomain() }
         emit(Resource.Success(allStandings))
 
-
-
-
-
-
     }
 }
