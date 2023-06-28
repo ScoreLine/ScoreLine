@@ -70,6 +70,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.swayy.matches.R
+import com.swayy.matches.presentation.core.MatchStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -82,7 +83,7 @@ import java.util.Locale
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MatchesScreen(
-    navigateMatchDetails: (Int,String) -> Unit,
+    navigateMatchDetails: (Int, String) -> Unit,
     viewModel: MatchViewmodel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -148,6 +149,7 @@ fun MatchesScreen(
                     }
                 ),
                 TabRowItem(
+
                     title = getFormattedDayAfterTomorrow(2),
                     screen = {
                         TabScreen(
@@ -229,7 +231,7 @@ data class TabRowItem(
 fun TabScreen(
     viewModel: MatchViewmodel,
     date: String,
-    navigateMatchDetails: (Int,String) -> Unit
+    navigateMatchDetails: (Int, String) -> Unit,
 ) {
 
     val matchState = viewModel.matches.value
@@ -314,6 +316,7 @@ fun TabScreen(
 
                                     Divider(thickness = 0.5.dp)
                                     fixtures.forEach { fixture ->
+
                                         AnimatedVisibility(
                                             visible = isArrowUp,
                                             enter = fadeIn() + expandVertically(),
@@ -339,197 +342,31 @@ fun TabScreen(
                                                     horizontalArrangement = Arrangement.SpaceEvenly
                                                 ) {
                                                     if (fixture.fixture.status.long == "First Half") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = fixture.fixture.status.elapsed.toString(),
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = fixture.fixture.status.elapsed.toString())
                                                     }
                                                     if (fixture.fixture.status.long == "Second Half") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = fixture.fixture.status.elapsed.toString(),
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = fixture.fixture.status.elapsed.toString())
                                                     }
                                                     if (fixture.fixture.status.short == "NS") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "")
                                                     }
-
                                                     if (fixture.fixture.status.short == "PST") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "")
                                                     }
                                                     if (fixture.fixture.status.short == "SUSP") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "")
                                                     }
                                                     if (fixture.fixture.status.short == "TBD") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "")
                                                     }
                                                     if (fixture.fixture.status.short == "CANC") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "")
                                                     }
                                                     if (fixture.fixture.status.short == "FT") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(
-                                                                    androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(
-                                                                        alpha = .4f
-                                                                    )
-                                                                )
-                                                        ) {
-
-                                                            Text(
-                                                                text = "FT",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "FT")
                                                     }
                                                     if (fixture.fixture.status.short == "HT") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .padding()
-                                                                .align(
-                                                                    Alignment.CenterVertically
-                                                                )
-                                                                .clip(RoundedCornerShape(100.dp))
-                                                                .size(28.dp)
-                                                                .background(androidx.compose.material3.MaterialTheme.colorScheme.primary)
-                                                        ) {
-
-                                                            Text(
-                                                                text = "HT",
-                                                                fontSize = 14.sp,
-                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                                modifier = Modifier.align(Alignment.Center),
-                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                                                            )
-                                                        }
+                                                        MatchStatus(text = "HT")
                                                     }
 
                                                     Text(
@@ -725,7 +562,8 @@ fun TabScreen(
                             }
                         }
                     }
-                }}
+                }
+            }
         }
 
 
@@ -740,6 +578,7 @@ fun TabScreen(
             Text(
                 text = matchState.error,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,11 +1,11 @@
 package com.swayy.core_network
 
+import com.swayy.core.util.Constants.GET_EVENTS
 import com.swayy.core.util.Constants.GET_FIXTURES
 import com.swayy.core.util.Constants.GET_LINEUP
-import com.swayy.core.util.Constants.GET_STANDINGS
 import com.swayy.core_network.model.Fixtures.FixturesResponseDto
+import com.swayy.core_network.model.events.EventsResponseDto
 import com.swayy.core_network.model.lineup.LIneupResponseDto
-import com.swayy.core_network.model.standings.StandingsDto
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
@@ -25,9 +25,9 @@ interface LiveScoreApi {
         fixture: Int
     ): LIneupResponseDto
 
-    @GET(GET_STANDINGS)
-    suspend fun getStandings(
-        @Query("league") league: Int,
-        @Query("season") season: Int
-    ): StandingsDto
+    @GET(GET_EVENTS)
+    suspend fun getEvents(
+        @Query("fixture")
+        fixture: Int
+    ): EventsResponseDto
 }

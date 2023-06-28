@@ -9,6 +9,9 @@ import com.swayy.core_network.model.Fixtures.Goals
 import com.swayy.core_network.model.Fixtures.League
 import com.swayy.core_network.model.Fixtures.Score
 import com.swayy.core_network.model.Fixtures.Teams
+import com.swayy.core_network.model.events.Assist
+import com.swayy.core_network.model.events.Player
+import com.swayy.core_network.model.events.Time
 import com.swayy.core_network.model.lineup.Coach
 import com.swayy.core_network.model.lineup.StartXI
 import com.swayy.core_network.model.lineup.Substitute
@@ -107,4 +110,43 @@ class Converters(private val gson : Gson) {
         return Gson().fromJson(sub, object : TypeToken<List<Substitute?>>() {}.type)
     }
 
+    @TypeConverter
+    fun fromAssist(str: Assist): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toAssist(str: String): Assist {
+        return Gson().fromJson(str, object : TypeToken<Assist>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromPlaye(str: Player): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toPlaye(str: String): Player {
+        return Gson().fromJson(str, object : TypeToken<Player>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromT(str: com.swayy.core_network.model.events.Team): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toT(str: String): com.swayy.core_network.model.events.Team {
+        return Gson().fromJson(str, object : TypeToken<com.swayy.core_network.model.events.Team>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromTime(str: Time): String {
+        return Gson().toJson(str)
+    }
+
+    @TypeConverter
+    fun toTime(str: String): Time {
+        return Gson().fromJson(str, object : TypeToken<Time>() {}.type)
+    }
 }

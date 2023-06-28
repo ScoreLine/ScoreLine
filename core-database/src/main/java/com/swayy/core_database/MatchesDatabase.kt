@@ -5,14 +5,15 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.swayy.core_database.converters.Converters
 import com.swayy.core_database.dao.MatchesDao
-import com.swayy.core_database.dao.StandingsDao
+import com.swayy.core_database.dao.NewsDao
+import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
-import com.swayy.core_database.model.StandingsEntity
+import com.swayy.core_database.model.NewsEntity
 
-@Database(entities = [MatchesEntity::class, LineupEntity::class, StandingsEntity::class], version = 6, exportSchema = true)
+@Database(entities = [MatchesEntity::class, LineupEntity::class,EventsEntity::class,NewsEntity::class], version = 10, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao
-    abstract val standingsDao: StandingsDao
+    abstract val newsDao: NewsDao
 }

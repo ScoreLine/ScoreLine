@@ -53,6 +53,7 @@ import com.swayy.leagues.LeaguesScreen
 import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
+import com.swayy.news.presentation.NewsViewModel
 import com.swayy.transfers.TransfersScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -261,6 +262,7 @@ class MainActivityViewModel
 @Inject constructor(
     themeSettingsManager: ThemeSettingsManager
 ) : ViewModel() {
+
     val dc = themeSettingsManager.dynamicColors
     val darkTheme = themeSettingsManager.darkTheme
     val amoledBlack = themeSettingsManager.amoledBlack

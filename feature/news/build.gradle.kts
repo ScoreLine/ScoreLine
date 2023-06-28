@@ -48,6 +48,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":core-network"))
+    implementation(project(":core-database"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -96,4 +99,13 @@ dependencies {
 
     //support library
     implementation(libs.appcompat)
+
+    implementation(libs.jsoup)
+
+    implementation(libs.picasso)
+
+    implementation(libs.coil)
+
+    implementation(libs.retrofit)
+
 }
