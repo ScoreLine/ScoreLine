@@ -44,7 +44,7 @@ fun NewsItemCard(imageUrl: String, title: String) {
         Text(
             text = title,
             modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
-            color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
