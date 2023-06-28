@@ -15,7 +15,7 @@
  */
 package com.swayy.matches.di
 
-import android.content.Context
+
 import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_network.LiveScoreApi
 import com.swayy.matches.data.repository.MatchRepositoryImpl
@@ -23,7 +23,6 @@ import com.swayy.matches.domain.repository.MatchRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -33,7 +32,7 @@ object HomeModule {
 
     @Provides
     @Singleton
-    fun provideCharactersRepository(
+    fun provideMatchesRepository(
         liveScoreApi: LiveScoreApi,
         matchesDao: MatchesDao
 
