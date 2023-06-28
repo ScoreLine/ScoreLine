@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
+import com.swayy.core_database.model.NewsEntity
 
 @Dao
 interface MatchesDao {
