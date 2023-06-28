@@ -52,7 +52,6 @@ class NewsRepositoryImpl(
         emit(Resource.Success(allNews!!))
     }
 
-
     private fun fetchNewsFromWebsite(): List<NewsItemResponse> {
         val url = "https://www.goal.com/en-ke"
         val document: Document = Jsoup.connect(url).get()

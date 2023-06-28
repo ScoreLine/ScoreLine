@@ -1,6 +1,7 @@
 package com.swayy.news.presentation.components
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,12 +23,17 @@ import coil.compose.rememberImagePainter
 
 @Composable
 fun NewsItemCard(imageUrl: String, title: String, navigateNewsDetails: (String) -> Unit,data:String) {
+    fun convertToEncodedString(input: String): String {
+        val encodedString = input.replace("/", "_SLASH_")
+        return encodedString
+    }
+    Log.e("hii",data)
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp)
             .clickable(onClick = {
-                navigateNewsDetails(data)
+                navigateNewsDetails(convertToEncodedString(data))
             })
     ) {
 

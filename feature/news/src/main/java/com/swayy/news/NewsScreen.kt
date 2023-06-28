@@ -104,7 +104,7 @@ fun NewsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp, start = 20.dp)
+                    .padding(top = 12.dp, start = 20.dp)
                     .statusBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -126,7 +126,7 @@ fun NewsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             val tabRowItems = listOf(
                 TabRowItem(

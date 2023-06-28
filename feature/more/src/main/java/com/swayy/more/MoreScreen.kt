@@ -47,11 +47,11 @@ fun MoreScreen(
             )
         }
 
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-        )
+//        Divider(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 12.dp)
+//        )
 
         PreferenceRow(
             title = "Settings",
