@@ -3,7 +3,9 @@ package com.swayy.matches.data.mapper
 import android.service.autofill.FieldClassification
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
+import com.swayy.core_database.model.StandingsEntity
 import com.swayy.core_network.model.Fixtures.Response
+import com.swayy.core_network.model.standings.League
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
 
@@ -34,3 +36,6 @@ internal fun com.swayy.core_network.model.lineup.Response.toLineupEntity(): Line
 internal fun LineupEntity.toLineupDomain(): Lineup {
     return Lineup(coach!!, formation!!, startXI!!, substitutes!!, team!!)
 }
+
+
+

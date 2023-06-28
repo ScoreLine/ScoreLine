@@ -45,4 +45,8 @@ object DatabaseModule {
     @Singleton
     fun provideMatchesDao(database: MatchesDatabase) = database.matchesDao
 
+    @Provides
+    @Singleton
+    fun provideStandingsDao(database: MatchesDatabase) = database.standingsDao
+
 }
