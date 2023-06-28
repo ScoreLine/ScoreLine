@@ -54,6 +54,8 @@ import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
 import com.swayy.news.presentation.NewsViewModel
+import com.swayy.news.presentation.TrendingNewsScreen
+import com.swayy.news.presentation.components.NewsDetail
 import com.swayy.transfers.TransfersScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,8 +124,15 @@ class MainActivity : AppCompatActivity() {
                             modifier = Modifier.padding(paddingValues)
                         ) {
                             animatedComposable(Route.HOME) {
-                                NewsScreen()
+                                NewsScreen(
+                                    navigateNewsDetails = { news ->
+                                        navController.navigate(
+                                            "news/${news}"
+                                        )
+                                    }
+                                )
                             }
+
                             animatedComposable(Route.TRANSFERS) {
                                 TransfersScreen()
                             }
@@ -158,6 +167,21 @@ class MainActivity : AppCompatActivity() {
                                     navigateBoardSettings = { navController.navigate("settings_board_theme") }
                                 )
                             }
+
+                            animatedComposable(
+                                route = Route.NEWS_DETAIL,
+                                arguments = listOf(
+                                    navArgument("news") { type = NavType.StringType }
+                                )
+                            ){
+                                val arguments = requireNotNull(it.arguments)
+                                val news = arguments.getString("news")
+                                 NewsDetail(
+                                     navigateBack = { navController.popBackStack() },
+                                     news = news!!,
+                                 )
+                            }
+
                             animatedComposable(
                                 route = Route.MATCH_DETAILS,
                                 arguments = listOf(

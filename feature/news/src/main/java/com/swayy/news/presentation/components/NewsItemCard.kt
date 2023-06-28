@@ -2,6 +2,7 @@ package com.swayy.news.presentation.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,14 +21,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 
 @Composable
-fun NewsItemCard(imageUrl: String, title: String) {
-    Column (modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)){
+fun NewsItemCard(imageUrl: String, title: String, navigateNewsDetails: (String) -> Unit,data:String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp)
+            .clickable(onClick = {
+                navigateNewsDetails(data)
+            })
+    ) {
 
         val image: Painter = rememberImagePainter(
             data = imageUrl,
-//            builder = {
-//                bitmapConfig(Bitmap.Config.RGB_565) //  RGB_565 for lower quality//faster loading
-//            }
         )
 
         Image(
@@ -37,6 +42,7 @@ fun NewsItemCard(imageUrl: String, title: String) {
             modifier = Modifier
                 .height(180.dp)
                 .fillMaxWidth()
+                .padding(start = 4.dp, end = 4.dp)
                 .clip(RoundedCornerShape(14.dp))
 
         )

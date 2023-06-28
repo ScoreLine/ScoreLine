@@ -89,7 +89,8 @@ import java.time.LocalDate
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun NewsScreen(
-    newsViewModel: NewsViewModel = hiltViewModel()
+    newsViewModel: NewsViewModel = hiltViewModel(),
+    navigateNewsDetails: (String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -131,25 +132,25 @@ fun NewsScreen(
                 TabRowItem(
                     title = "For you",
                     screen = {
-                        TrendingNewsScreen()
+                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
                     }
                 ),
                 TabRowItem(
                     title = "Latest",
                     screen = {
-                        TrendingNewsScreen()
+                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
                     }
                 ),
                 TabRowItem(
                     title = "Transfers",
                     screen = {
-                        TrendingNewsScreen()
+                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
                     }
                 ),
                 TabRowItem(
                     title = "Leagues",
                     screen = {
-                        TrendingNewsScreen()
+                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
                     }
                 )
             )

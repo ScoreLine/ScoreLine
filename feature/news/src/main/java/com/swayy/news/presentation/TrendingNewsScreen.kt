@@ -28,7 +28,8 @@ import com.swayy.news.presentation.components.SubNewsItemCard
 
 @Composable
 fun TrendingNewsScreen(
-    newsViewModel: NewsViewModel = hiltViewModel()
+    newsViewModel: NewsViewModel = hiltViewModel(),
+    navigateNewsDetails: (String) -> Unit,
 ) {
     val state = newsViewModel.news.value
 
@@ -45,7 +46,7 @@ fun TrendingNewsScreen(
             Column() {
                 LazyColumn() {
                     items(state.news.take(1)) { news ->
-                        NewsItemCard(imageUrl = news.imageUrl, title = news.title)
+                        NewsItemCard(imageUrl = news.imageUrl, title = news.title,navigateNewsDetails,news.url)
                     }
                     val subnews = state.news.drop(1)
 
