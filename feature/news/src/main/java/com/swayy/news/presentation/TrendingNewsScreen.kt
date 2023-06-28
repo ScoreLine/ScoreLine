@@ -39,7 +39,7 @@ fun TrendingNewsScreen(
                 style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(start = 10.dp, top = 16.dp, bottom = 16.dp),
                 color = androidx.compose.material3.MaterialTheme.colorScheme.primary
             )
             Column() {

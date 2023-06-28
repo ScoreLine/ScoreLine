@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -42,10 +43,11 @@ fun NewsItemCard(imageUrl: String, title: String) {
 
         Text(
             text = title,
-            modifier = Modifier.padding(12.dp),
-            style = MaterialTheme.typography.bodyLarge,
-            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-            fontSize = 16.sp
+            modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
 
         )
     }
