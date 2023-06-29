@@ -48,10 +48,10 @@ fun TrendingNewsScreen(
                     items(state.news.take(1)) { news ->
                         NewsItemCard(imageUrl = news.imageUrl, title = news.title,navigateNewsDetails,news.url)
                     }
-                    val subnews = state.news.drop(1)
+                    val subnews = state.news.drop(1).dropLast(1)
 
                     items(subnews) { news ->
-                        SubNewsItemCard(imageUrl = news.imageUrl, title = news.title)
+                        SubNewsItemCard(imageUrl = news.imageUrl, title = news.title,navigateNewsDetails,news.url)
                     }
                 }
 
