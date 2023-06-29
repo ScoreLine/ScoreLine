@@ -15,3 +15,13 @@ data class StandingsEntity (
     val season: Int,
     val standings: List<List<Standing>>
 )
+
+@Entity(tableName = "leagues_table")
+data class LeaguesEntity (
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
+    val logo: String,
+    val name: String
+)
+
+

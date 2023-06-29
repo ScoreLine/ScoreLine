@@ -1,7 +1,10 @@
 package com.example.standings.data.repoimpl
 
+import com.example.standings.data.mapper.toLeaguesDomainModel
+import com.example.standings.data.mapper.toLeaguesEntity
 import com.example.standings.data.mapper.toStandingsDomain
 import com.example.standings.data.mapper.toStandingsEntity
+import com.example.standings.domain.model.LeaguesDomainModel
 import com.example.standings.domain.model.StandingsDomainModel
 import com.example.standings.domain.repo.StandingsRepo
 import com.swayy.core.util.Resource
@@ -46,4 +49,34 @@ class StandingsRepoImpl (
         emit(Resource.Success(allStandings))
 
     }
+
+    override suspend fun getLeagues(): Flow<Resource<List<LeaguesDomainModel>>> = flow {
+        val getLeaguesFromDb = standingsDao.getLeagues().map { it.toLeaguesDomainModel() }
+        emit(Resource.Loading(data = getLeaguesFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getLeagues()
+            standingsDao.deleteLeagues()
+            standingsDao.insertLeagues(apiResponse.response.map { it.league.toLeaguesEntity()})
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getLeaguesFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getLeaguesFromDb
+                )
+            )
+        }
+        val allLeagues = standingsDao.getLeagues().map { it.toLeaguesDomainModel() }
+        emit(Resource.Success(allLeagues))
+    }
+
+
+
 }
