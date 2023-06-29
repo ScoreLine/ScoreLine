@@ -1,6 +1,6 @@
 package com.swayy.matches.data.mapper
 
-import android.service.autofill.FieldClassification
+
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
@@ -62,3 +62,4 @@ internal fun EventsEntity.toEventsDomain(): Events {
         id, assist, comments, detail, player, team, time, type
     )
 }
+

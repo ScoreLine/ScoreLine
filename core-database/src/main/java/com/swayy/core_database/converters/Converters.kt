@@ -16,6 +16,7 @@ import com.swayy.core_network.model.lineup.Coach
 import com.swayy.core_network.model.lineup.StartXI
 import com.swayy.core_network.model.lineup.Substitute
 import com.swayy.core_network.model.lineup.Team
+import com.swayy.core_network.model.standings.Standing
 
 @ProvidedTypeConverter
 class Converters(private val gson : Gson) {
@@ -148,5 +149,16 @@ class Converters(private val gson : Gson) {
     @TypeConverter
     fun toTime(str: String): Time {
         return Gson().fromJson(str, object : TypeToken<Time>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromStandingsJson(json: String): List<List<Standing>> {
+        val listType = object : TypeToken<List<List<Standing>>>() {}.type
+        return gson.fromJson(json, listType)
+    }
+
+    @TypeConverter
+    fun toStandingsJson(standings: List<List<Standing>>): String {
+        return gson.toJson(standings)
     }
 }
