@@ -16,7 +16,7 @@ class LeaguesViewModel @Inject constructor(
     private val standingsUseCase: StandingsUseCase
 ): ViewModel() {
     private val _leagues = mutableStateOf(LeaguesState())
-    val Leagues: State<LeaguesState> = _leagues
+    val leagues: State<LeaguesState> = _leagues
 
     private var isDataLoaded = false
 
