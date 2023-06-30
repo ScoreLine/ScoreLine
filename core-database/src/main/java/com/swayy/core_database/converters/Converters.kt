@@ -12,6 +12,7 @@ import com.swayy.core_network.model.Fixtures.Teams
 import com.swayy.core_network.model.events.Assist
 import com.swayy.core_network.model.events.Player
 import com.swayy.core_network.model.events.Time
+import com.swayy.core_network.model.leagues.Country
 import com.swayy.core_network.model.lineup.Coach
 import com.swayy.core_network.model.lineup.StartXI
 import com.swayy.core_network.model.lineup.Substitute
@@ -160,5 +161,26 @@ class Converters(private val gson : Gson) {
     @TypeConverter
     fun toStandingsJson(standings: List<List<Standing>>): String {
         return gson.toJson(standings)
+    }
+
+
+    @TypeConverter
+    fun fromCountry(country: Country): String {
+        return gson.toJson(country)
+    }
+
+    @TypeConverter
+    fun toCountry(countryString: String): Country {
+        return gson.fromJson(countryString, Country::class.java)
+    }
+
+    @TypeConverter
+    fun fromLeagueJson(leagues: com.swayy.core_network.model.leagues.League): String {
+        return gson.toJson(leagues)
+    }
+
+    @TypeConverter
+    fun toLeagueJson(leagueString: String): com.swayy.core_network.model.leagues.League {
+        return gson.fromJson(leagueString, com.swayy.core_network.model.leagues.League::class.java)
     }
 }

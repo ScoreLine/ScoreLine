@@ -57,7 +57,7 @@ class StandingsRepoImpl (
         try {
             val apiResponse = liveScoreApi.getLeagues()
             standingsDao.deleteLeagues()
-            standingsDao.insertLeagues(apiResponse.response.map { it.league.toLeaguesEntity()})
+            standingsDao.insertLeagues(apiResponse.response.map { it.toLeaguesEntity()})
         } catch (exception: IOException) {
             emit(
                 Resource.Error(

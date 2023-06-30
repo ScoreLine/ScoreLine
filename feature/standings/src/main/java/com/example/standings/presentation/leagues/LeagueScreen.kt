@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,16 +21,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.standings.domain.model.LeaguesDomainModel
 import com.example.standings.presentation.viewmodel.LeaguesViewModel
+import com.swayy.core_network.model.leagues.Country
+import com.swayy.core_network.model.leagues.League
 
 @Composable
 fun LeagueScreen(
-    navController: NavController,
     viewModel: LeaguesViewModel = hiltViewModel()
 ) {
     val state = viewModel.leagues.value
@@ -45,6 +51,7 @@ fun LeagueScreen(
             }
         }
         if(state.error.isNotBlank()) {
+            Text(text = "Error while loading data")
 
         }
         if(state.isLoading) {
@@ -70,9 +77,25 @@ fun LeagueItem(league: LeaguesDomainModel, onItemClick: () -> Unit) {
 
         Spacer(modifier = Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.Center) {
-            Text(text = "First Text")
-            Text(text = "Second Text")
+            Text(
+                text = league.country.name,
+                modifier = Modifier.padding(6.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = league.league.name,
+                modifier = Modifier.padding(6.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamily.SansSerif,
+                maxLines = 1
+            )
         }
     }
 
 }
+
