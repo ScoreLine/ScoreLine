@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.standings.presentation.LeagueScreen
+import com.example.standings.presentation.StandingsScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.swayy.more.MoreScreen
@@ -57,7 +57,6 @@ import com.swayy.news.NewsScreen
 import com.swayy.news.presentation.NewsViewModel
 import com.swayy.news.presentation.TrendingNewsScreen
 import com.swayy.news.presentation.components.NewsDetail
-import com.swayy.transfers.TransfersScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(navBackStackEntry) {
                     bottomBarState = when (navBackStackEntry?.destination?.route) {
-                        Route.STATISTICS, Route.TRANSFERS, Route.HOME, Route.LEAGUE, Route.MORE -> true
+                        Route.STATISTICS, Route.HOME, Route.STANDINGS, Route.FAVOURITES, Route.MORE -> true
                         else -> false
                     }
                 }
@@ -134,13 +133,18 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
 
-                            animatedComposable(Route.TRANSFERS) {
-                                TransfersScreen()
-                            }
                             animatedComposable(Route.MORE) {
                                 MoreScreen(
                                     navigateSettings = { navController.navigate("settings/?fromGame=false") }
                                 )
+                            }
+
+                            animatedComposable(Route.STANDINGS) {
+                                StandingsScreen()
+                            }
+
+                            animatedComposable(Route.FAVOURITES) {
+                                StandingsScreen()
                             }
 
                             animatedComposable(Route.STATISTICS) {
@@ -152,9 +156,7 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 )
                             }
-                            animatedComposable(Route.LEAGUE) {
-                                LeagueScreen()
-                            }
+
                             animatedComposable(
                                 route = Route.SETTINGS,
                                 arguments = listOf(navArgument("fromGame") {
@@ -220,16 +222,16 @@ fun NavigationBar(
     var selectedScreen by remember { mutableStateOf(Route.STATISTICS) }
     val navBarScreens = listOf(
         Pair(Route.STATISTICS, R.string.Statistics),
-        Pair(Route.TRANSFERS, R.string.TRansfers),
         Pair(Route.HOME, R.string.Home),
-        Pair(Route.LEAGUE, R.string.Leagues),
+        Pair(Route.STANDINGS, R.string.Standings),
+        Pair(Route.FAVOURITES, R.string.Favourites),
         Pair(Route.MORE, R.string.More),
     )
     val navBarIcons = listOf(
         painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
-        painterResource(com.swayy.core.R.drawable.baseline_sync_alt_24),
         painterResource(com.swayy.core.R.drawable.baseline_newspaper_24),
         painterResource(com.swayy.core.R.drawable.baseline_leaderboard_24),
+        painterResource(com.swayy.core.R.drawable.baseline_star_border_24),
         painterResource(com.swayy.core.R.drawable.ic_round_more_horiz_24)
     )
     AnimatedContent(
