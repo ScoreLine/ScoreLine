@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.standings.presentation.LeagueScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.swayy.more.MoreScreen
@@ -50,7 +51,6 @@ import com.swayy.footballpro.ui.components.animatedComposable
 import com.swayy.compose_ui.theme.AppTheme
 import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.core.util.Route
-import com.swayy.leagues.LeaguesScreen
 import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                             animatedComposable(Route.LEAGUE) {
-                                LeaguesScreen()
+                                LeagueScreen()
                             }
                             animatedComposable(
                                 route = Route.SETTINGS,

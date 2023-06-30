@@ -27,4 +27,5 @@ object Constants {
     const val GET_LINEUP = "fixtures/lineups"
     const val GET_EVENTS = "fixtures/events"
     const val GET_STANDINGS = "standings"
+    const val GET_LEAGUES = "leagues"
 }

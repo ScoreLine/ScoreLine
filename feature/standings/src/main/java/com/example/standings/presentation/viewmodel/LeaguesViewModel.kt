@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.standings.domain.model.StandingsDomainModel
+import com.example.standings.domain.model.LeaguesDomainModel
 import com.example.standings.domain.repo.StandingsUseCase
 import com.swayy.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,37 +12,37 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StandingsViewModel @Inject constructor(
+class LeaguesViewModel @Inject constructor(
     private val standingsUseCase: StandingsUseCase
 ): ViewModel() {
-    private val _standings = mutableStateOf(StandingsState())
-    val standings: State<StandingsState> = _standings
+    private val _leagues = mutableStateOf(LeaguesState())
+    val leagues: State<LeaguesState> = _leagues
 
     private var isDataLoaded = false
 
-    fun getStandings(league: Int, season:Int) {
+    fun getLeagues() {
         viewModelScope.launch {
             try {
-                _standings.value = StandingsState(isLoading = true)
+                _leagues.value = LeaguesState(isLoading = true)
 
-                standingsUseCase(league = league, season = season).collect { result ->
+                standingsUseCase().collect { result ->
                     when (result) {
                         is Resource.Success -> {
-                            _standings.value = StandingsState(standings = result.data ?: emptyList())
+                            _leagues.value = LeaguesState(leagues = result.data ?: emptyList())
                             isDataLoaded = true
                         }
                         is Resource.Error -> {
-                            _standings.value = StandingsState(
+                            _leagues.value = LeaguesState(
                                 error = result.message ?: "An unexpected error occurred"
                             )
                         }
                         is Resource.Loading -> {
-                            // No need to update _standings for Loading state, as it's already set above
+                            // No need to update _leagues for Loading state, as it's already set above
                         }
                     }
                 }
             } catch (e: Exception) {
-                _standings.value = StandingsState(
+                _leagues.value = LeaguesState(
                     error = "An unexpected error occurred: ${e.message}"
                 )
             }
@@ -50,10 +50,9 @@ class StandingsViewModel @Inject constructor(
     }
 }
 
-data class StandingsState(
+data class LeaguesState (
     val isLoading: Boolean = false,
     val error: String = "",
-    val standings: List<StandingsDomainModel> = emptyList()
+    val leagues: List<LeaguesDomainModel> = emptyList()
 )
-
 

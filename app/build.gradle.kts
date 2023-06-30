@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":feature:news"))
     implementation(project(":feature:leagues"))
     implementation(project(":feature:more"))
+    implementation(project(":feature:standings"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

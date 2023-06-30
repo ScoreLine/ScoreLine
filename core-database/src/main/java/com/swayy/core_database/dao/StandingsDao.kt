@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.swayy.core_database.model.LeaguesEntity
 import com.swayy.core_database.model.StandingsEntity
 
 @Dao
@@ -16,4 +17,13 @@ interface StandingsDao {
 
     @Query("DELETE FROM standings_table")
     suspend fun deleteStandings()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLeagues(leaguesEntity: List<LeaguesEntity>)
+
+    @Query("SELECT * FROM leagues_table")
+    fun getLeagues(): List<LeaguesEntity>
+
+    @Query("DELETE FROM leagues_table")
+    suspend fun deleteLeagues()
 }

@@ -2,10 +2,12 @@ package com.swayy.core_network
 
 import com.swayy.core.util.Constants.GET_EVENTS
 import com.swayy.core.util.Constants.GET_FIXTURES
+import com.swayy.core.util.Constants.GET_LEAGUES
 import com.swayy.core.util.Constants.GET_LINEUP
 import com.swayy.core.util.Constants.GET_STANDINGS
 import com.swayy.core_network.model.Fixtures.FixturesResponseDto
 import com.swayy.core_network.model.events.EventsResponseDto
+import com.swayy.core_network.model.leagues.LeaguesDto
 import com.swayy.core_network.model.lineup.LIneupResponseDto
 import com.swayy.core_network.model.standings.StandingsDto
 import retrofit2.http.GET
@@ -38,4 +40,7 @@ interface LiveScoreApi {
         @Query("league") league: Int,
         @Query("season") season: Int
     ): StandingsDto
+
+    @GET(GET_LEAGUES)
+    suspend fun getLeagues(): LeaguesDto
 }
