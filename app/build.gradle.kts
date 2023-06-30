@@ -59,9 +59,7 @@ dependencies {
     implementation(project(":core-network"))
     implementation(project(":compose-ui"))
     implementation(project(":feature:matches"))
-    implementation(project(":feature:transfers"))
     implementation(project(":feature:news"))
-    implementation(project(":feature:leagues"))
     implementation(project(":feature:more"))
 
     implementation(libs.core.ktx)
