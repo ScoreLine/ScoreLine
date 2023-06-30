@@ -277,7 +277,7 @@ fun TabScreen(
                                                 ImageRequest.Builder(LocalContext.current)
                                                     .data(data = image)
                                                     .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true)
+                                                        crossfade(true).placeholder(R.drawable.placeholder)
                                                     }).build()
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
@@ -286,7 +286,8 @@ fun TabScreen(
                                                 contentDescription = "",
                                                 modifier = Modifier
                                                     .size(20.dp)
-                                                    .align(Alignment.CenterVertically),
+                                                    .align(Alignment.CenterVertically)
+                                                    ,
                                                 contentScale = ContentScale.Crop
                                             )
                                             Text(
@@ -342,31 +343,58 @@ fun TabScreen(
                                                     horizontalArrangement = Arrangement.SpaceEvenly
                                                 ) {
                                                     if (fixture.fixture.status.long == "First Half") {
-                                                        MatchStatus(text = fixture.fixture.status.elapsed.toString())
+                                                        MatchStatus(
+                                                            text = fixture.fixture.status.elapsed.toString(),
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.long == "Second Half") {
-                                                        MatchStatus(text = fixture.fixture.status.elapsed.toString())
+                                                        MatchStatus(
+                                                            text = fixture.fixture.status.elapsed.toString(),
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "NS") {
-                                                        MatchStatus(text = "")
+                                                        MatchStatus(
+                                                            text = "NS",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.tertiary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "PST") {
-                                                        MatchStatus(text = "")
+                                                        MatchStatus(
+                                                            text = "PS",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "SUSP") {
-                                                        MatchStatus(text = "")
+                                                        MatchStatus(
+                                                            text = "SP",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "TBD") {
-                                                        MatchStatus(text = "")
+                                                        MatchStatus(
+                                                            text = "TBD",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "CANC") {
-                                                        MatchStatus(text = "")
+                                                        MatchStatus(
+                                                            text = "CANC",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "FT") {
-                                                        MatchStatus(text = "FT")
+                                                        MatchStatus(
+                                                            text = "FT",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                                        )
                                                     }
                                                     if (fixture.fixture.status.short == "HT") {
-                                                        MatchStatus(text = "HT")
+                                                        MatchStatus(
+                                                            text = "HT",
+                                                            androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                                        )
                                                     }
 
                                                     Text(
@@ -388,7 +416,7 @@ fun TabScreen(
                                                         ImageRequest.Builder(LocalContext.current)
                                                             .data(data = image)
                                                             .apply(block = fun ImageRequest.Builder.() {
-                                                                crossfade(true)
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
                                                             }).build()
                                                     )
                                                     Image(
@@ -529,7 +557,7 @@ fun TabScreen(
                                                         ImageRequest.Builder(LocalContext.current)
                                                             .data(data = imageone)
                                                             .apply(block = fun ImageRequest.Builder.() {
-                                                                crossfade(true)
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
                                                             }).build()
                                                     )
                                                     Image(

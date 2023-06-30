@@ -172,7 +172,7 @@ fun MatchDetailsScreen(
                                 ImageRequest.Builder(LocalContext.current)
                                     .data(data = image)
                                     .apply(block = fun ImageRequest.Builder.() {
-                                        crossfade(true)
+                                        crossfade(true).placeholder(R.drawable.placeholder)
                                     }).build()
                             )
                             Image(
@@ -240,7 +240,7 @@ fun MatchDetailsScreen(
                                 ImageRequest.Builder(LocalContext.current)
                                     .data(data = image)
                                     .apply(block = fun ImageRequest.Builder.() {
-                                        crossfade(true)
+                                        crossfade(true).placeholder(R.drawable.placeholder)
                                     }).build()
                             )
                             Image(
@@ -291,6 +291,17 @@ fun MatchDetailsScreen(
 //                    }
 
                     val tabRowItems = listOf(
+
+                        TabRowItem(
+                            title = "Facts",
+                            screen = {
+                                FactsScreen(
+                                    id = id,
+                                    home = match.teams.home.id,
+                                    away = match.teams.away.id
+                                )
+                            }
+                        ),
                         TabRowItem(
                             title = "Lineup",
                             screen = {
@@ -300,16 +311,6 @@ fun MatchDetailsScreen(
                                     context,
                                     match.teams.away.name,
                                     match.teams.home.name
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Facts",
-                            screen = {
-                                FactsScreen(
-                                    id = id,
-                                    home = match.teams.home.id,
-                                    away = match.teams.away.id
                                 )
                             }
                         ),

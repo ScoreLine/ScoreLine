@@ -20,9 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import com.swayy.core.R
 
 @Composable
 fun SubNewsItemCard(imageUrl: String, title: String,navigateNewsDetails: (String) -> Unit,data:String){
@@ -37,12 +41,16 @@ fun SubNewsItemCard(imageUrl: String, title: String,navigateNewsDetails: (String
             navigateNewsDetails(convertToEncodedString(data))
         })){
 
-        val image: Painter = rememberImagePainter(
-            data = imageUrl,
+        val painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current)
+                .data(data = imageUrl)
+                .apply(block = fun ImageRequest.Builder.() {
+                    crossfade(true).placeholder(R.drawable.tes)
+                }).build()
         )
 
         Image(
-            painter = image,
+            painter = painter,
             contentDescription = "no image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
