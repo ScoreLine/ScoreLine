@@ -5,6 +5,7 @@ import com.example.standings.domain.model.StandingsDomainModel
 import com.swayy.core_database.model.LeaguesEntity
 import com.swayy.core_database.model.StandingsEntity
 import com.swayy.core_network.model.leagues.LeaguesDto
+import com.swayy.core_network.model.leagues.Response
 import com.swayy.core_network.model.standings.League
 
 internal fun League.toStandingsEntity(): StandingsEntity {
@@ -18,12 +19,12 @@ internal fun StandingsEntity.toStandingsDomain() : StandingsDomainModel{
 }
 
 
-internal fun com.swayy.core_network.model.leagues.League.toLeaguesEntity(): LeaguesEntity {
+internal fun Response.toLeaguesEntity(): LeaguesEntity {
     return LeaguesEntity(
-        id, logo, name
+        id = 0,country, league
     )
 }
 
 internal fun LeaguesEntity.toLeaguesDomainModel() : LeaguesDomainModel {
-    return LeaguesDomainModel(id, logo, name)
+    return LeaguesDomainModel(country, league)
 }

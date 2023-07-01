@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import retrofit2.HttpException
+import android.util.Log
+
 
 class StandingsRepoImpl (
     private val liveScoreApi: LiveScoreApi,
@@ -55,27 +57,33 @@ class StandingsRepoImpl (
         emit(Resource.Loading(data = getLeaguesFromDb))
 
         try {
+            // Log loading from the database
+            Log.d("Repository", "Loading leagues from the database: $getLeaguesFromDb")
+
             val apiResponse = liveScoreApi.getLeagues()
+
+            // Log the API response
+            Log.d("Repository", "API response: $apiResponse")
+
             standingsDao.deleteLeagues()
-            standingsDao.insertLeagues(apiResponse.response.map { it.league.toLeaguesEntity()})
+            standingsDao.insertLeagues(apiResponse.response.map { it.toLeaguesEntity() })
         } catch (exception: IOException) {
-            emit(
-                Resource.Error(
-                    message = "Connection Lost",
-                    data = getLeaguesFromDb
-                )
-            )
+            // Log the connection lost error
+            Log.e("Repository", "Connection lost: ${exception.message}")
+            emit(Resource.Error(message = "Connection Lost", data = getLeaguesFromDb))
         } catch (exception: HttpException) {
-            emit(
-                Resource.Error(
-                    message = exception.message(),
-                    data = getLeaguesFromDb
-                )
-            )
+            // Log the HTTP exception error
+            Log.e("Repository", "HTTP Exception: ${exception.message()}")
+            emit(Resource.Error(message = exception.message(), data = getLeaguesFromDb))
         }
+
         val allLeagues = standingsDao.getLeagues().map { it.toLeaguesDomainModel() }
+
+        // Log the success with all leagues
+        Log.d("Repository", "All leagues: $allLeagues")
         emit(Resource.Success(allLeagues))
     }
+
 
 
 

@@ -2,6 +2,8 @@ package com.swayy.core_database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.swayy.core_network.model.leagues.Country
+import com.swayy.core_network.model.leagues.League
 import com.swayy.core_network.model.standings.Standing
 
 @Entity(tableName = "standings_table")
@@ -20,8 +22,8 @@ data class StandingsEntity (
 data class LeaguesEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val logo: String,
-    val name: String
+    val country: Country,
+    val league: League,
 )
 
 

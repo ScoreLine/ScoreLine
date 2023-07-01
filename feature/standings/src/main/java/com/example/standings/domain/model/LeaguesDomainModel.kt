@@ -1,7 +1,9 @@
 package com.example.standings.domain.model
 
+import com.swayy.core_network.model.leagues.Country
+import com.swayy.core_network.model.leagues.League
+
 data class LeaguesDomainModel (
-    val id: Int,
-    val logo: String,
-    val name: String
+    val country: Country,
+    val league: League,
 )
