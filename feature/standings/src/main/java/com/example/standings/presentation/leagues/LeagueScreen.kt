@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +39,11 @@ import com.swayy.core_network.model.leagues.League
 fun LeagueScreen(
     viewModel: LeaguesViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(key1 = true){
+        viewModel.getLeagues()
+    }
+
     val state = viewModel.leagues.value
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -83,7 +89,9 @@ fun LeagueItem(league: LeaguesDomainModel, onItemClick: () -> Unit) {
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
-                maxLines = 1
+                maxLines = 1,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
@@ -92,7 +100,9 @@ fun LeagueItem(league: LeaguesDomainModel, onItemClick: () -> Unit) {
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 fontFamily = FontFamily.SansSerif,
-                maxLines = 1
+                maxLines = 1,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
             )
         }
     }

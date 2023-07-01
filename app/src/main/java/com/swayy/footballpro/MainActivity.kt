@@ -52,6 +52,7 @@ import com.swayy.footballpro.ui.components.animatedComposable
 import com.swayy.compose_ui.theme.AppTheme
 import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.core.util.Route
+import com.swayy.favourites.presentation.FavouritesScreen
 import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
@@ -145,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             animatedComposable(Route.FAVOURITES) {
-                                StandingsScreen()
+                                FavouritesScreen()
                             }
 
                             animatedComposable(Route.STATISTICS) {

@@ -14,7 +14,7 @@ import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.NewsEntity
 import com.swayy.core_database.model.StandingsEntity
 
-@Database(entities = [MatchesEntity::class, LineupEntity::class,EventsEntity::class,NewsEntity::class,StandingsEntity::class,LeaguesEntity::class], version = 12, exportSchema = true)
+@Database(entities = [MatchesEntity::class, LineupEntity::class,EventsEntity::class,NewsEntity::class,StandingsEntity::class,LeaguesEntity::class], version = 13, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao

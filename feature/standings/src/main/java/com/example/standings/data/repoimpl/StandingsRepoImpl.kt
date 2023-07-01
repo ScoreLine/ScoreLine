@@ -17,10 +17,10 @@ import retrofit2.HttpException
 import android.util.Log
 
 
-class StandingsRepoImpl (
+class StandingsRepoImpl(
     private val liveScoreApi: LiveScoreApi,
     private val standingsDao: StandingsDao
-) :StandingsRepo {
+) : StandingsRepo {
     override suspend fun getStandings(
         season: Int,
         league: Int
@@ -29,9 +29,9 @@ class StandingsRepoImpl (
         emit(Resource.Loading(data = getStandingsFromDb))
 
         try {
-            val apiResponse = liveScoreApi.getStandings(league = league,season = season)
+            val apiResponse = liveScoreApi.getStandings(league = league, season = season)
             standingsDao.deleteStandings()
-            standingsDao.insertStandings(apiResponse.response.map { it.league.toStandingsEntity()})
+            standingsDao.insertStandings(apiResponse.response.map { it.league.toStandingsEntity() })
         } catch (exception: IOException) {
             emit(
                 Resource.Error(
@@ -83,8 +83,6 @@ class StandingsRepoImpl (
         Log.d("Repository", "All leagues: $allLeagues")
         emit(Resource.Success(allLeagues))
     }
-
-
 
 
 }
