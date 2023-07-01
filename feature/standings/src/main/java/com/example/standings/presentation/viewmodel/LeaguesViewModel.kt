@@ -1,5 +1,6 @@
 package com.example.standings.presentation.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -28,13 +29,19 @@ class LeaguesViewModel @Inject constructor(
                 standingsUseCase().collect { result ->
                     when (result) {
                         is Resource.Success -> {
-                            _leagues.value = LeaguesState(leagues = result.data ?: emptyList())
+                            val data = result.data ?: emptyList()
+                            _leagues.value = LeaguesState(leagues = data)
                             isDataLoaded = true
+
+                            // Log the data
+                            Log.d("LeaguesViewModel", "API data: $data")
                         }
                         is Resource.Error -> {
-                            _leagues.value = LeaguesState(
-                                error = result.message ?: "An unexpected error occurred"
-                            )
+                            val errorMessage = result.message ?: "An unexpected error occurred"
+                            _leagues.value = LeaguesState(error = errorMessage)
+
+                            // Log the error
+                            Log.e("LeaguesViewModel", "API error: $errorMessage")
                         }
                         is Resource.Loading -> {
                             // No need to update _leagues for Loading state, as it's already set above
