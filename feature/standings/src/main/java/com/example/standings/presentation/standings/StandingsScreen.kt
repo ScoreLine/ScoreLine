@@ -1,4 +1,4 @@
-package com.example.standings.presentation
+package com.example.standings.presentation.standings
 
 import androidx.compose.runtime.Composable
 

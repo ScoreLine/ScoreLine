@@ -5,11 +5,15 @@ import com.swayy.core.util.Constants.GET_FIXTURES
 import com.swayy.core.util.Constants.GET_LEAGUES
 import com.swayy.core.util.Constants.GET_LINEUP
 import com.swayy.core.util.Constants.GET_STANDINGS
+import com.swayy.core.util.Constants.GET_TOPASSISTS
+import com.swayy.core.util.Constants.GET_TOPSCORERS
 import com.swayy.core_network.model.Fixtures.FixturesResponseDto
 import com.swayy.core_network.model.events.EventsResponseDto
 import com.swayy.core_network.model.leagues.LeaguesDto
 import com.swayy.core_network.model.lineup.LIneupResponseDto
 import com.swayy.core_network.model.standings.StandingsDto
+import com.swayy.core_network.model.assists.AssistsDto
+import com.swayy.core_network.model.topscorers.TopScorersDto
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
@@ -43,4 +47,16 @@ interface LiveScoreApi {
 
     @GET(GET_LEAGUES)
     suspend fun getLeagues(): LeaguesDto
+
+    @GET(GET_TOPSCORERS)
+    suspend fun getTopscorers(
+        @Query("league") league: Int,
+        @Query("season") season: Int
+    ): com.swayy.core_network.model.topscorers.TopScorersDto
+
+    @GET(GET_TOPASSISTS)
+    suspend fun getTopAssists(
+        @Query("league") league: Int,
+        @Query("season") season: Int
+    ): com.swayy.core_network.model.assists.AssistsDto
 }

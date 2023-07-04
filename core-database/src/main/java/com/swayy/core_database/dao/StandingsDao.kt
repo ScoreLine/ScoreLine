@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.swayy.core_database.model.LeaguesEntity
 import com.swayy.core_database.model.StandingsEntity
+import com.swayy.core_database.model.TopAssistsEntity
+import com.swayy.core_database.model.TopScorersEntity
 
 @Dao
 interface StandingsDao {
@@ -26,4 +28,22 @@ interface StandingsDao {
 
     @Query("DELETE FROM leagues_table")
     suspend fun deleteLeagues()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTopScorers(topScorersEntity: List<TopScorersEntity>)
+
+    @Query("SELECT * FROM topscorers_table")
+    fun getTopScorers(): List<TopScorersEntity>
+
+    @Query("DELETE FROM topscorers_table")
+    suspend fun deleteTopScorers()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTopAssists(topAssistsEntity: List<TopAssistsEntity>)
+
+    @Query("SELECT * FROM topassists_table")
+    fun getTopAssists(): List<TopAssistsEntity>
+
+    @Query("DELETE FROM topassists_table")
+    suspend fun deleteTopAssists()
 }
