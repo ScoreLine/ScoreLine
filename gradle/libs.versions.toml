@@ -73,6 +73,7 @@ gson = {group = "com.squareup.retrofit2", name = "converter-gson",version.ref = 
 glide = {group = "com.github.bumptech.glide",name = "glide:glide",version.ref = "glide"}
 glide-compiler = {group = "com.github.bumptech.glide",name = "compiler",version.ref = "glide-compiler"}
 coil = {group = "io.coil-kt",name = "coil-compose",version.ref = "coil"}
+coilsvg = {group = "io.coil-kt",name = "coil-svg",version.ref = "coil"}
 room = {group = "androidx.room",name = "room-ktx",version.ref = "room"}
 room-compiler = {group = "androidx.room",name = "room-compiler",version.ref = "room"}
 room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "room"}

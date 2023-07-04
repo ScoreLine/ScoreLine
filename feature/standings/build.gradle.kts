@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":core-database"))
 
     implementation(libs.coil)
+    implementation(libs.coilsvg)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
