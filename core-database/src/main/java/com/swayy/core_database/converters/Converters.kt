@@ -18,6 +18,7 @@ import com.swayy.core_network.model.lineup.StartXI
 import com.swayy.core_network.model.lineup.Substitute
 import com.swayy.core_network.model.lineup.Team
 import com.swayy.core_network.model.standings.Standing
+import com.swayy.core_network.model.topscorers.Statistic
 
 @ProvidedTypeConverter
 class Converters(private val gson : Gson) {
@@ -182,5 +183,47 @@ class Converters(private val gson : Gson) {
     @TypeConverter
     fun toLeagueJson(leagueString: String): com.swayy.core_network.model.leagues.League {
         return gson.fromJson(leagueString, com.swayy.core_network.model.leagues.League::class.java)
+    }
+
+    @TypeConverter
+    fun fromPlayerTopScorer(scorerPlayer: com.swayy.core_network.model.topscorers.Player): String {
+        return gson.toJson(scorerPlayer)
+    }
+
+    @TypeConverter
+    fun toPlayerTopScorer(playerJson: String): com.swayy.core_network.model.topscorers.Player {
+        return gson.fromJson(playerJson, com.swayy.core_network.model.topscorers.Player::class.java)
+    }
+
+    @TypeConverter
+    fun fromPlayerAssist(assistPlayer: com.swayy.core_network.model.assists.Player): String {
+        return gson.toJson(assistPlayer)
+    }
+
+    @TypeConverter
+    fun toPlayerAssist(playerJsonAssit: String): com.swayy.core_network.model.assists.Player {
+        return gson.fromJson(playerJsonAssit, com.swayy.core_network.model.assists.Player::class.java)
+    }
+
+    @TypeConverter
+    fun fromStatisticsScorer(statisticsScorer: List<Statistic>): String {
+        return gson.toJson(statisticsScorer)
+    }
+
+    @TypeConverter
+    fun toStatisticsScorer(statisticsJsonScorer: String): List<Statistic> {
+        val statisticType = object : TypeToken<List<Statistic>>() {}.type
+        return gson.fromJson(statisticsJsonScorer, statisticType)
+    }
+
+    @TypeConverter
+    fun fromStatisticsAssist(statisticsAssist: List<com.swayy.core_network.model.assists.Statistic>): String {
+        return gson.toJson(statisticsAssist)
+    }
+
+    @TypeConverter
+    fun toStatisticsAssist(statisticsJsonAssist: String): List<com.swayy.core_network.model.assists.Statistic> {
+        val statisticType = object : TypeToken<List<com.swayy.core_network.model.assists.Statistic>>() {}.type
+        return gson.fromJson(statisticsJsonAssist, statisticType)
     }
 }

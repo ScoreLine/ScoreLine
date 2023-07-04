@@ -24,16 +24,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.standings.domain.model.LeaguesDomainModel
-import com.example.standings.presentation.viewmodel.LeaguesViewModel
-import com.swayy.core_network.model.leagues.Country
-import com.swayy.core_network.model.leagues.League
 
 @Composable
 fun LeagueScreen(
@@ -51,7 +46,7 @@ fun LeagueScreen(
                 LeagueItem(
                     league = data,
                     onItemClick = {
-                       // navController.navigate(Screen.CoinDetailScreen.route + "/${coin.id}")
+                        // navController.navigate(Screen.CoinDetailScreen.route + "/${coin.id}")
                     }
                 )
             }

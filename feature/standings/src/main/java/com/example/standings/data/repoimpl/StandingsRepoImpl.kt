@@ -15,6 +15,12 @@ import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import retrofit2.HttpException
 import android.util.Log
+import com.example.standings.data.mapper.toTopAssistsDomain
+import com.example.standings.data.mapper.toTopAssistsEntity
+import com.example.standings.data.mapper.toTopScorersDomain
+import com.example.standings.data.mapper.toTopScorersEntity
+import com.example.standings.domain.model.TopAssistsDomainModel
+import com.example.standings.domain.model.TopScorersDomainModel
 
 
 class StandingsRepoImpl(
@@ -82,6 +88,71 @@ class StandingsRepoImpl(
         // Log the success with all leagues
         Log.d("Repository", "All leagues: $allLeagues")
         emit(Resource.Success(allLeagues))
+    }
+
+    override suspend fun getTopScorers(
+        season: Int,
+        league: Int
+    ): Flow<Resource<List<TopScorersDomainModel>>> = flow {
+        val getTopScorersFromDb = standingsDao.getTopScorers().map { it.toTopScorersDomain() }
+        emit(Resource.Loading(data = getTopScorersFromDb))
+
+        try {
+            // Log loading from the database
+            Log.d("Repository", "Loading scorers from the database: $getTopScorersFromDb")
+
+            val apiResponse = liveScoreApi.getTopscorers(league = league, season = season)
+
+            // Log the API response
+            Log.d("Repository", "API response: $apiResponse")
+
+            standingsDao.deleteTopScorers()
+            standingsDao.insertTopScorers(apiResponse.response.map { it.toTopScorersEntity() })
+        } catch (exception: IOException) {
+            // Log the connection lost error
+            Log.e("Repository", "Connection lost: ${exception.message}")
+            emit(Resource.Error(message = "Connection Lost", data = getTopScorersFromDb))
+        } catch (exception: HttpException) {
+            // Log the HTTP exception error
+            Log.e("Repository", "HTTP Exception: ${exception.message()}")
+            emit(Resource.Error(message = exception.message(), data = getTopScorersFromDb))
+        }
+
+        val allTopScorers = standingsDao.getTopScorers().map { it.toTopScorersDomain() }
+
+        // Log the success with all leagues
+        Log.d("Repository", "All leagues: $allTopScorers")
+        emit(Resource.Success(allTopScorers))
+    }
+
+    override suspend fun getTopAssist(
+        season: Int,
+        league: Int
+    ): Flow<Resource<List<TopAssistsDomainModel>>> = flow {
+        val getTopAssistsFromDb = standingsDao.getTopAssists().map { it.toTopAssistsDomain() }
+        emit(Resource.Loading(data = getTopAssistsFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getTopAssists(league = league, season = season)
+            standingsDao.deleteTopAssists()
+            standingsDao.insertTopAssists(apiResponse.response.map { it.toTopAssistsEntity() })
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getTopAssistsFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getTopAssistsFromDb
+                )
+            )
+        }
+        val allTopAssits = standingsDao.getTopAssists().map { it.toTopAssistsDomain() }
+        emit(Resource.Success(allTopAssits))
     }
 
 
