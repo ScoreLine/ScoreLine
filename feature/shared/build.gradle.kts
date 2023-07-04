@@ -4,10 +4,11 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("kotlin-parcelize")
 }
 
 android {
-    namespace = "com.swayy.favourites"
+    namespace = "com.swayy.shared"
     compileSdk = 33
 
     defaultConfig {
@@ -52,7 +53,6 @@ dependencies {
     implementation(project(":core-network"))
     implementation(project(":core-database"))
 
-    implementation(libs.coil)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -85,8 +85,6 @@ dependencies {
     // System UI Controller - Accompanist
     implementation(libs.accompanist.systemuicontroller)
 
-
-    implementation(libs.retrofit)
     // Dagger - Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
@@ -94,14 +92,26 @@ dependencies {
     // when using Kotlin
     kapt(libs.hilt.compiler)
 
+    //datastore
+    implementation(libs.datastore)
+
     //material icons
     implementation(libs.material.icons)
 
     //support library
     implementation(libs.appcompat)
 
-    implementation(libs.jsoup)
+    //coroutines
+    implementation(libs.coroutines)
+    implementation(libs.coroutines.android)
+
+    implementation(libs.retrofit)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp)
 
     implementation(libs.coil)
 
+    implementation(libs.picasso)
+
+    implementation(libs.jsoup)
 }

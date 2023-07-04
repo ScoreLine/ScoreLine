@@ -1,0 +1,16 @@
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"GradleMigrationSettings\" migrationVersion=\"1\" />\n  <component name=\"GradleSettings\">\n    <option name=\"linkedExternalProjectsSettings\">\n      <GradleProjectSettings>\n        <option name=\"testRunner\" value=\"GRADLE\" />\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\n        <option name=\"gradleJvm\" value=\"jbr-17\" />\n        <option name=\"modules\">\n          <set>\n            <option value=\"$PROJECT_DIR$\" />\n            <option value=\"$PROJECT_DIR$/app\" />\n            <option value=\"$PROJECT_DIR$/compose-ui\" />\n            <option value=\"$PROJECT_DIR$/core\" />\n            <option value=\"$PROJECT_DIR$/core-database\" />\n            <option value=\"$PROJECT_DIR$/core-network\" />\n            <option value=\"$PROJECT_DIR$/feature\" />\n            <option value=\"$PROJECT_DIR$/feature/favourites\" />\n            <option value=\"$PROJECT_DIR$/feature/matches\" />\n            <option value=\"$PROJECT_DIR$/feature/more\" />\n            <option value=\"$PROJECT_DIR$/feature/news\" />\n            <option value=\"$PROJECT_DIR$/feature/standings\" />\n          </set>\n        </option>\n      </GradleProjectSettings>\n    </option>\n  </component>\n</project>
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	
++++ b/.idea/gradle.xml	
+@@ -21,6 +21,7 @@
+             <option value="$PROJECT_DIR$/feature/matches" />
+             <option value="$PROJECT_DIR$/feature/more" />
+             <option value="$PROJECT_DIR$/feature/news" />
++            <option value="$PROJECT_DIR$/feature/shared" />
+             <option value="$PROJECT_DIR$/feature/standings" />
+           </set>
+         </option>
