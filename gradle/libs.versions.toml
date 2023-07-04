@@ -31,6 +31,7 @@ room = "2.5.0"
 picasso = "2.8"
 jsoup = "1.14.3"
 web = "1.2.2"
+svg = "2.2.2"
 
 
 [libraries]
@@ -79,6 +80,7 @@ room-compiler = {group = "androidx.room",name = "room-compiler",version.ref = "r
 room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "room"}
 picasso = {group = "com.squareup.picasso",name = "picasso",version.ref = "picasso"}
 jsoup = { group = "org.jsoup",name = "jsoup",version.ref = "jsoup"}
+svg = {group = "io.coil-kt",name = "coil-svg",version.ref = "svg"}
 
 
 

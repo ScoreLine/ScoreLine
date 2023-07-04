@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":feature:more"))
     implementation(project(":feature:standings"))
     implementation(project(":feature:favourites"))
+    implementation(project(":feature:shared"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

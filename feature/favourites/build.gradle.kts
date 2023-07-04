@@ -51,6 +51,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":core-network"))
     implementation(project(":core-database"))
+    implementation(project(":feature:shared"))
 
     implementation(libs.coil)
     implementation(libs.core.ktx)
@@ -103,5 +104,7 @@ dependencies {
     implementation(libs.jsoup)
 
     implementation(libs.coil)
+
+    implementation(libs.svg)
 
 }
