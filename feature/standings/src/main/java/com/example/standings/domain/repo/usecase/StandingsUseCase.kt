@@ -1,7 +1,8 @@
-package com.example.standings.domain.repo
+package com.example.standings.domain.repo.usecase
 
 import com.example.standings.domain.model.LeaguesDomainModel
 import com.example.standings.domain.model.StandingsDomainModel
+import com.example.standings.domain.repo.StandingsRepo
 import com.swayy.core.util.Resource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,5 +17,6 @@ class StandingsUseCase @Inject constructor(
     suspend operator fun invoke():Flow<Resource<List<LeaguesDomainModel>>>{
         return standingsRepo.getLeagues()
     }
+
 }
 

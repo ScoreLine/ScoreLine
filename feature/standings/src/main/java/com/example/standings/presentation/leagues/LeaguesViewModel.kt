@@ -1,4 +1,4 @@
-package com.example.standings.presentation.viewmodel
+package com.example.standings.presentation.leagues
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.standings.domain.model.LeaguesDomainModel
-import com.example.standings.domain.repo.StandingsUseCase
+import com.example.standings.domain.repo.usecase.StandingsUseCase
 import com.swayy.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
