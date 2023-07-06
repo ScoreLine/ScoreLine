@@ -249,7 +249,7 @@ fun TabScreen(
             runBlocking {
                 launch(Dispatchers.Default) {
                     val leaguesWithFixtures = matchState.matches
-                        .filter { it.league.id in 1..141 }
+                        .filter { it.league.id in 1..100 }
                         .sortedBy { it.league.id }
                         .groupBy { it.league.name }
 
@@ -259,7 +259,7 @@ fun TabScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(12.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                 colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary)
                             ) {
                                 Column {

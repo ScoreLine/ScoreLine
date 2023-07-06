@@ -1,9 +1,12 @@
 package com.swayy.shared.di
 
 import com.swayy.core_database.dao.ClubsDao
+import com.swayy.core_database.dao.FavoritesDao
 import com.swayy.core_database.dao.NewsDao
 import com.swayy.shared.data.repository.ClubsRepositoryImpl
+import com.swayy.shared.data.repository.FavoriteRepositoryImpl
 import com.swayy.shared.domain.repository.ClubRepository
+import com.swayy.shared.domain.repository.FavoriteRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,10 +21,19 @@ object SharedModule {
     @Singleton
     fun provideNewsRepository(
         clubsDao: ClubsDao
-
     ): ClubRepository {
         return ClubsRepositoryImpl(
             clubsDao = clubsDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteRepository(
+        favoritesDao: FavoritesDao
+    ): FavoriteRepository {
+        return FavoriteRepositoryImpl(
+            favoritesDao = favoritesDao
         )
     }
 }

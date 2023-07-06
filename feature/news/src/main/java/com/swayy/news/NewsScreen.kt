@@ -121,12 +121,12 @@ fun NewsScreen(
                     contentDescription = "",
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(end = 12.dp)
+                        .padding(end = 17.dp)
 
                 )
             }
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             val tabRowItems = listOf(
                 TabRowItem(
