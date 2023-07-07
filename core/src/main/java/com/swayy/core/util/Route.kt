@@ -4,6 +4,7 @@ class Route {
     companion object {
         const val HOME = "news"
         const val MORE = "more"
+        const val ONBOARDING = "onboarding"
         const val STANDINGS = "standings"
         const val FAVOURITES = "favourites"
         const val STATISTICS = "statistics"

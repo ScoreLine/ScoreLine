@@ -49,8 +49,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "license/README.dom.txt"
+            excludes += "license/LICENSE.dom-documentation.txt"
+            excludes += "license/NOTICE"
+            excludes += "license/*"
         }
     }
+
 }
 
 dependencies {
@@ -112,4 +117,7 @@ dependencies {
 
     //support library
     implementation(libs.appcompat)
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 }

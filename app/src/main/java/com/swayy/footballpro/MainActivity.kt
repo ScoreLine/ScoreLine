@@ -1,5 +1,6 @@
 package com.swayy.footballpro
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -58,9 +60,11 @@ import com.swayy.news.NewsScreen
 import com.swayy.news.presentation.NewsViewModel
 import com.swayy.news.presentation.TrendingNewsScreen
 import com.swayy.news.presentation.components.NewsDetail
+import com.swayy.shared.presentation.OnboardingScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -69,9 +73,13 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen()
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
+
             val mainViewModel: MainActivityViewModel = hiltViewModel()
 
             val dynamicColors by mainViewModel.dc.collectAsStateWithLifecycle(isSystemInDarkTheme())
@@ -170,6 +178,7 @@ class MainActivity : AppCompatActivity() {
                                     hiltViewModel(),
                                     navigateBoardSettings = { navController.navigate("settings_board_theme") }
                                 )
+
                             }
 
                             animatedComposable(

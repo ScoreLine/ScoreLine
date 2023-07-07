@@ -109,12 +109,13 @@ fun FavouritesScreen(
                     contentDescription = "",
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(end = 17.dp)
+                        .padding(end = 17.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
 
                 )
 
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(0.dp))
 
             val tabRowItems = listOf(
                 TabRowItem(
