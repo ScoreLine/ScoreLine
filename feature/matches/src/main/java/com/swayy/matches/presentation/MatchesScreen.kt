@@ -1,5 +1,6 @@
 package com.swayy.matches.presentation
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.runBlocking
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -69,6 +71,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.swayy.matches.R
 import com.swayy.matches.presentation.core.MatchStatus
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +88,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
@@ -245,15 +257,20 @@ fun TabScreen(
             .background(androidx.compose.material3.MaterialTheme.colorScheme.inverseOnSurface)
     ) {
 
+
         LazyColumn() {
             runBlocking {
                 launch(Dispatchers.Default) {
                     val leaguesWithFixtures = matchState.matches
-                        .filter { it.league.id in 1..100 }
+                        .filter { it.league.id in 1..120 }
                         .sortedBy { it.league.id }
                         .groupBy { it.league.name }
 
                     leaguesWithFixtures.forEach { (leagueName, fixtures) ->
+                        item {
+                            BannerAdView()
+                        }
+
                         item (key = leagueName){
                             Card(
                                 modifier = Modifier
@@ -680,4 +697,20 @@ fun convertTimestampToTime(timestamp: Long): String {
     val sdf = SimpleDateFormat("h:mm a", Locale.US)
     val date = Date(timestamp * 1000) // Convert seconds to milliseconds
     return sdf.format(date)
+}
+
+@Composable
+fun BannerAdView() {
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth(),
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.BANNER)
+                // Add your adUnitID, this is for testing.
+                adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    )
 }

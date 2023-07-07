@@ -113,4 +113,6 @@ dependencies {
     implementation(libs.coil)
 
     implementation(libs.picasso)
+
+    implementation ("com.google.android.gms:play-services-ads:22.2.0")
 }

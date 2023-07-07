@@ -120,4 +120,6 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    implementation ("com.google.android.gms:play-services-ads:22.2.0")
+
 }

@@ -45,6 +45,8 @@ import androidx.navigation.navArgument
 import com.example.standings.presentation.leagues.LeagueScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.swayy.more.MoreScreen
 import com.swayy.core.core.PreferencesConstants
 import com.swayy.core.data.datastore.ThemeSettingsManager
@@ -63,6 +65,7 @@ import com.swayy.news.presentation.components.NewsDetail
 import com.swayy.shared.presentation.OnboardingScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Collections
 import javax.inject.Inject
 
 
@@ -73,6 +76,13 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        MobileAds.initialize(this)
+
+        val configuration = RequestConfiguration.Builder()
+            .setTestDeviceIds(Collections.singletonList("DEVICE ID"))
+            .build()
+        MobileAds.setRequestConfiguration(configuration)
 
         installSplashScreen()
 
