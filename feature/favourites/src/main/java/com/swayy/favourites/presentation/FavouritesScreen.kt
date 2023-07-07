@@ -122,13 +122,7 @@ fun FavouritesScreen(
                     screen = {
                         TeamsScreen(state)
                     }
-                ),
-                TabRowItem(
-                    title = "Players",
-                    screen = {
-                        TeamsScreen(state)
-                    }
-                ),
+                )
 
             )
             val pagerState = rememberPagerState(initialPage = 0)

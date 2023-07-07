@@ -45,11 +45,19 @@ class FavoriteRepositoryImpl(
         }
     }
 
+    override fun isOnlineFavorite(name: String): LiveData<Boolean> {
+        return favoritesDao.onlineInFavorites(name = name)
+    }
+
     override suspend fun deleteOneFavorite(favorite: Favorite) {
         return favoritesDao.deleteAFavorite(favorite.toFavoriteEntity())
     }
 
     override suspend fun deleteAllFavorites() {
         favoritesDao.deleteAllFavorites()
+    }
+
+    override suspend fun deleteAnOnlineFavorite(name: String) {
+        favoritesDao.deleteAnOnlineFavorite(name = name)
     }
 }

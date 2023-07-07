@@ -1,4 +1,4 @@
-package com.kaajjo.libresudoku.ui.components.collapsing_topappbar
+package com.swayy.core.util.collapsing_topappbar
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.swayy.core.util.collapsing_topappbar.CollapsingTopAppBarScrollBehavior
 import java.lang.Float.max
 import kotlin.math.roundToInt
 

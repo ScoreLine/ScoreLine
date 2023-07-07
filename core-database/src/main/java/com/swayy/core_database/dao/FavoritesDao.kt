@@ -19,9 +19,15 @@ interface FavoritesDao {
     @Query("SELECT * FROM favorites_table WHERE id  == :id")
     fun getAFavoriteById(id: Int): LiveData<FavoriteEntity?>
 
+    @Query("SELECT isFavorite FROM favorites_table WHERE name = :name")
+    fun onlineInFavorites(name: String): LiveData<Boolean>
+
     @Delete
     suspend fun deleteAFavorite(favoriteEntity: FavoriteEntity)
 
     @Query("DELETE FROM favorites_table")
     suspend fun deleteAllFavorites()
+
+    @Query("DELETE FROM favorites_table WHERE name = :name")
+    suspend fun deleteAnOnlineFavorite(name: String)
 }

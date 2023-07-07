@@ -20,12 +20,12 @@ fun ClubsEntity.toDomain(): ClubItem {
 
 internal fun FavoriteEntity.toFavoriteDomain(): Favorite {
     return Favorite(
-       name, imageUrl, websiteUrl, isFavorite
+        id, name, imageUrl, websiteUrl, isFavorite
     )
 }
 
-internal fun Favorite.toFavoriteEntity():FavoriteEntity{
+internal fun Favorite.toFavoriteEntity(): FavoriteEntity {
     return FavoriteEntity(
-        0,name, imageUrl, websiteUrl, isFavorite
+        id, name, imageUrl, websiteUrl, isFavorite
     )
 }

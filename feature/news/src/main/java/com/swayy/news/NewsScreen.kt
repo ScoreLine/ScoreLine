@@ -130,25 +130,7 @@ fun NewsScreen(
 
             val tabRowItems = listOf(
                 TabRowItem(
-                    title = "For you",
-                    screen = {
-                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
-                    }
-                ),
-                TabRowItem(
-                    title = "Latest",
-                    screen = {
-                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
-                    }
-                ),
-                TabRowItem(
-                    title = "Transfers",
-                    screen = {
-                        TrendingNewsScreen(newsViewModel,navigateNewsDetails)
-                    }
-                ),
-                TabRowItem(
-                    title = "Leagues",
+                    title = "For You",
                     screen = {
                         TrendingNewsScreen(newsViewModel,navigateNewsDetails)
                     }

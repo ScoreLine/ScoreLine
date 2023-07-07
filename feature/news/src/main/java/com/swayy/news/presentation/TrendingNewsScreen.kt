@@ -45,12 +45,12 @@ fun TrendingNewsScreen(
             )
             Column() {
                 LazyColumn() {
-                    items(state.news.take(1)) { news ->
+                    items(state.news.take(1), key = {test -> test.title}) { news ->
                         NewsItemCard(imageUrl = news.imageUrl, title = news.title,navigateNewsDetails,news.url)
                     }
                     val subnews = state.news.drop(1).dropLast(1)
 
-                    items(subnews) { news ->
+                    items(subnews, key = {data -> data.title}) { news ->
                         SubNewsItemCard(imageUrl = news.imageUrl, title = news.title,navigateNewsDetails,news.url)
                     }
                 }

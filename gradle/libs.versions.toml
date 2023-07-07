@@ -24,14 +24,20 @@ coroutines = "1.6.4"
 retrofit2 = "2.9.0"
 okhttp3 = "4.9.1"
 gson = "2.9.0"
-glide = "4.12.0"
-glide-compiler = "4.10.0"
+glide = "4.15.1"
+glide-compiler = "4.15.1"
 coil = "2.2.2"
 room = "2.5.0"
 picasso = "2.8"
 jsoup = "1.14.3"
 web = "1.2.2"
 svg = "2.2.2"
+livedata = "1.3.2"
+palette = "28.0.0"
+caverock = "1.4"
+batik = "1.14"
+test = "2.1.0"
+colorthief = "2.4.0"
 
 
 [libraries]
@@ -71,7 +77,7 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 gson = {group = "com.squareup.retrofit2", name = "converter-gson",version.ref = "gson"}
-glide = {group = "com.github.bumptech.glide",name = "glide:glide",version.ref = "glide"}
+glide = {group = "com.github.bumptech.glide",name = "glide",version.ref = "glide"}
 glide-compiler = {group = "com.github.bumptech.glide",name = "compiler",version.ref = "glide-compiler"}
 coil = {group = "io.coil-kt",name = "coil-compose",version.ref = "coil"}
 coilsvg = {group = "io.coil-kt",name = "coil-svg",version.ref = "coil"}
@@ -81,6 +87,12 @@ room-runtime = {group = "androidx.room",name = "room-runtime",version.ref = "roo
 picasso = {group = "com.squareup.picasso",name = "picasso",version.ref = "picasso"}
 jsoup = { group = "org.jsoup",name = "jsoup",version.ref = "jsoup"}
 svg = {group = "io.coil-kt",name = "coil-svg",version.ref = "svg"}
+livedata = {group = "androidx.compose.runtime",name = "runtime-livedata",version.ref = "livedata"}
+palette = {group = "com.android.support",name = "palette-v7",version.ref = "palette"}
+caverock = {group = "com.caverock",name = "androidsvg",version.ref = "caverock"}
+batik = {group = "org.apache.xmlgraphics",name = "batik-transcoder",version.ref = "batik"}
+colorthief = {group = "com.github.SvenWoltmann",name = "color-thief-java",version.ref = "colorthief"}
+test = {group = "com.larvalabs.svgandroid",name = "svgandroid",version.ref = "test"}
 
 
 

@@ -254,7 +254,7 @@ fun TabScreen(
                         .groupBy { it.league.name }
 
                     leaguesWithFixtures.forEach { (leagueName, fixtures) ->
-                        item {
+                        item (key = leagueName){
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()

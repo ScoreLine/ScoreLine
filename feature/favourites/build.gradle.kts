@@ -107,4 +107,16 @@ dependencies {
 
     implementation(libs.svg)
 
+    implementation(libs.livedata)
+
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
+
+    implementation(libs.palette)
+
+    implementation(libs.batik)
+
+
+
+
 }

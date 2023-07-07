@@ -16,8 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTitle
-import com.kaajjo.libresudoku.ui.components.collapsing_topappbar.CollapsingTopAppBar
+import com.swayy.core.util.collapsing_topappbar.CollapsingTitle
+import com.swayy.core.util.collapsing_topappbar.CollapsingTopAppBar
 import com.swayy.core.util.collapsing_topappbar.rememberTopAppBarScrollBehavior
 import com.swayy.more.settings.components.AppThemePreviewItem
 import com.swayy.core.core.PreferencesConstants

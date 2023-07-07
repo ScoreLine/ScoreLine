@@ -12,7 +12,11 @@ interface FavoriteRepository {
 
     fun getASingleFavorite(id: Int): LiveData<Favorite?>
 
+    fun isOnlineFavorite(name: String): LiveData<Boolean>
+
     suspend fun deleteOneFavorite(favorite: Favorite)
 
     suspend fun deleteAllFavorites()
+
+    suspend fun deleteAnOnlineFavorite(name: String)
 }
