@@ -21,6 +21,9 @@ class NewsViewModel @Inject constructor(
 
     private var isDataLoaded = false
 
+    init {
+        getNews()
+    }
 
     fun getNews() {
         viewModelScope.launch {

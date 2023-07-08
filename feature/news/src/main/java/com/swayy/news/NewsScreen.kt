@@ -94,10 +94,6 @@ fun NewsScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = Unit) {
-        newsViewModel.getNews()
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(modifier = Modifier.fillMaxSize()) {
