@@ -226,4 +226,25 @@ class Converters(private val gson : Gson) {
         val statisticType = object : TypeToken<List<com.swayy.core_network.model.assists.Statistic>>() {}.type
         return gson.fromJson(statisticsJsonAssist, statisticType)
     }
+
+    @TypeConverter
+    fun fromStatisticsInStats(statisticsMatchJson: List<com.swayy.core_network.model.stats.Statistic>): String {
+        return gson.toJson(statisticsMatchJson)
+    }
+
+    @TypeConverter
+    fun toStatisticsInStats(statisticsJsonFromStats: String): List<com.swayy.core_network.model.stats.Statistic> {
+        val statisticType = object : TypeToken<List<com.swayy.core_network.model.stats.Statistic>>() {}.type
+        return gson.fromJson(statisticsJsonFromStats, statisticType)
+    }
+
+    @TypeConverter
+    fun fromStatsTeam(statsTeam: com.swayy.core_network.model.stats.Team): String {
+        return gson.toJson(statsTeam)
+    }
+
+    @TypeConverter
+    fun toStatsTeam(statsTeamString: String): com.swayy.core_network.model.stats.Team {
+        return gson.fromJson(statsTeamString, com.swayy.core_network.model.stats.Team::class.java)
+    }
 }

@@ -4,10 +4,12 @@ package com.swayy.matches.data.mapper
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
+import com.swayy.core_database.model.StatsEntity
 import com.swayy.core_network.model.Fixtures.Response
 import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
+import com.swayy.matches.domain.model.StatsDomainModel
 
 internal fun MatchesEntity.toDomain(): Match {
     return Match(
@@ -63,3 +65,15 @@ internal fun EventsEntity.toEventsDomain(): Events {
     )
 }
 
+
+internal fun com.swayy.core_network.model.stats.Response.toStatsEntity(): StatsEntity {
+    return StatsEntity(
+        id = 0,statistics, team
+    )
+}
+
+internal fun StatsEntity.toStatsDomain(): StatsDomainModel {
+    return StatsDomainModel(
+        statistics, team
+    )
+}
