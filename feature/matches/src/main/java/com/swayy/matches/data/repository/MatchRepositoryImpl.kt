@@ -9,9 +9,12 @@ import com.swayy.matches.data.mapper.toEventsDomain
 import com.swayy.matches.data.mapper.toEventsEntity
 import com.swayy.matches.data.mapper.toLineupDomain
 import com.swayy.matches.data.mapper.toLineupEntity
+import com.swayy.matches.data.mapper.toStatsDomain
+import com.swayy.matches.data.mapper.toStatsEntity
 import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
+import com.swayy.matches.domain.model.StatsDomainModel
 import com.swayy.matches.domain.repository.MatchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -103,6 +106,33 @@ class MatchRepositoryImpl(
         }
         val allMatches = matchesDao.getEvents().map { it.toEventsDomain() }
         emit(Resource.Success(allMatches))
+    }
+
+    override suspend fun getStats(fixture: String): Flow<Resource<List<StatsDomainModel>>> = flow {
+        val getStatsFromDb = matchesDao.getStats().map { it.toStatsDomain() }
+        emit(Resource.Loading(data = getStatsFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getStats(fixture = fixture)
+            matchesDao.deleteStats()
+            apiResponse.response.map { it.toStatsEntity() }.let { matchesDao.insertStats(it) }
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getStatsFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getStatsFromDb
+                )
+            )
+        }
+        val allStats = matchesDao.getStats().map { it.toStatsDomain() }
+        emit(Resource.Success(allStats))
     }
 
 }
