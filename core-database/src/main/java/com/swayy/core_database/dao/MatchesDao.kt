@@ -8,6 +8,7 @@ import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.NewsEntity
+import com.swayy.core_database.model.StatsEntity
 
 @Dao
 interface MatchesDao {
@@ -38,5 +39,14 @@ interface MatchesDao {
 
     @Query("DELETE FROM events_table")
     suspend fun deleteEvents()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStats(statsEntity: List<StatsEntity>)
+
+    @Query("SELECT * FROM stats_table")
+    fun getStats(): List<StatsEntity>
+
+    @Query("DELETE FROM stats_table")
+    suspend fun deleteStats()
 
 }
