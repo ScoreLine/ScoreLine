@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.swayy.core_database.model.EventsEntity
+import com.swayy.core_database.model.HeadToHeadEntity
 import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.NewsEntity
@@ -48,5 +49,14 @@ interface MatchesDao {
 
     @Query("DELETE FROM stats_table")
     suspend fun deleteStats()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertH2H(h2hEntity: List<HeadToHeadEntity>)
+
+    @Query("SELECT * FROM h2h_table")
+    fun getH2H(): List<HeadToHeadEntity>
+
+    @Query("DELETE FROM h2h_table")
+    suspend fun deleteH2H()
 
 }
