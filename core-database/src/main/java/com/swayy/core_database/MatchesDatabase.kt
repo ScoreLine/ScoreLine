@@ -27,7 +27,7 @@ import com.swayy.core_database.model.TopScorersEntity
     StandingsEntity::class,LeaguesEntity::class,
     TopScorersEntity::class,TopAssistsEntity::class,
     ClubsEntity::class,FavoriteEntity::class,
-    StatsEntity::class                 ], version = 17, exportSchema = true)
+    StatsEntity::class                 ], version = 18, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao
