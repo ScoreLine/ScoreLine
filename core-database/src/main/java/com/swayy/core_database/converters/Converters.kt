@@ -247,4 +247,33 @@ class Converters(private val gson : Gson) {
     fun toStatsTeam(statsTeamString: String): com.swayy.core_network.model.stats.Team {
         return gson.fromJson(statsTeamString, com.swayy.core_network.model.stats.Team::class.java)
     }
+    @TypeConverter
+    fun fromGoalsH2H(goals: com.swayy.core_network.model.headtohead.Goals): String {
+        return gson.toJson(goals)
+    }
+
+    @TypeConverter
+    fun toGoalsH2H(goalsString: String): com.swayy.core_network.model.headtohead.Goals {
+        return gson.fromJson(goalsString, com.swayy.core_network.model.headtohead.Goals::class.java)
+    }
+
+    @TypeConverter
+    fun fromTeamsH2H(teamsH2H: com.swayy.core_network.model.headtohead.Teams): String {
+        return gson.toJson(teamsH2H)
+    }
+
+    @TypeConverter
+    fun toTeamsH2H(teamsString: String): com.swayy.core_network.model.headtohead.Teams {
+        return gson.fromJson(teamsString, com.swayy.core_network.model.headtohead.Teams::class.java)
+    }
+
+    @TypeConverter
+    fun fromLeagueH2H(leagueH2H: com.swayy.core_network.model.headtohead.League): String {
+        return gson.toJson(leagueH2H)
+    }
+
+    @TypeConverter
+    fun toLeagueH2H(leagueString: String): com.swayy.core_network.model.headtohead.League {
+        return gson.fromJson(leagueString, com.swayy.core_network.model.headtohead.League::class.java)
+    }
 }

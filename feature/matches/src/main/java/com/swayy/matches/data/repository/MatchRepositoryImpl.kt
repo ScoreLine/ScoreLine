@@ -7,11 +7,14 @@ import com.swayy.matches.data.mapper.toDomain
 import com.swayy.matches.data.mapper.toEntity
 import com.swayy.matches.data.mapper.toEventsDomain
 import com.swayy.matches.data.mapper.toEventsEntity
+import com.swayy.matches.data.mapper.toHead2HeadDomain
+import com.swayy.matches.data.mapper.toHeadToHeadEntity
 import com.swayy.matches.data.mapper.toLineupDomain
 import com.swayy.matches.data.mapper.toLineupEntity
 import com.swayy.matches.data.mapper.toStatsDomain
 import com.swayy.matches.data.mapper.toStatsEntity
 import com.swayy.matches.domain.model.Events
+import com.swayy.matches.domain.model.HeadToHeadDomainModel
 import com.swayy.matches.domain.model.Lineup
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.model.StatsDomainModel
@@ -133,6 +136,33 @@ class MatchRepositoryImpl(
         }
         val allStats = matchesDao.getStats().map { it.toStatsDomain() }
         emit(Resource.Success(allStats))
+    }
+
+    override suspend fun getHeadToHead(h2h: String): Flow<Resource<List<HeadToHeadDomainModel>>> = flow {
+        val getH2HFromDb = matchesDao.getH2H().map { it.toHead2HeadDomain() }
+        emit(Resource.Loading(data = getH2HFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getH2H(h2h = h2h)
+            matchesDao.deleteH2H()
+            apiResponse.response.map { it.toHeadToHeadEntity() }.let { matchesDao.insertH2H(it) }
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getH2HFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getH2HFromDb
+                )
+            )
+        }
+        val allH2H = matchesDao.getH2H().map { it.toHead2HeadDomain() }
+        emit(Resource.Success(allH2H))
     }
 
 }
