@@ -4,12 +4,14 @@ package com.swayy.matches.data.mapper
 import com.swayy.core_database.model.EventsEntity
 import com.swayy.core_database.model.HeadToHeadEntity
 import com.swayy.core_database.model.LineupEntity
+import com.swayy.core_database.model.LiveMatchesEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.StatsEntity
 import com.swayy.core_network.model.Fixtures.Response
 import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.HeadToHeadDomainModel
 import com.swayy.matches.domain.model.Lineup
+import com.swayy.matches.domain.model.LiveMatchesDomain
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.model.StatsDomainModel
 
@@ -89,5 +91,17 @@ internal fun com.swayy.core_network.model.headtohead.Response.toHeadToHeadEntity
 internal fun HeadToHeadEntity.toHead2HeadDomain(): HeadToHeadDomainModel {
     return HeadToHeadDomainModel(
         goals, teams, league
+    )
+}
+
+internal fun com.swayy.core_network.model.live.Response.toLiveMatchesEntity(): LiveMatchesEntity {
+    return LiveMatchesEntity(
+        id = 0,fixture, league, teams, goals
+    )
+}
+
+internal fun LiveMatchesEntity.toLiveMatchesDomain(): LiveMatchesDomain{
+    return com.swayy.matches.domain.model.LiveMatchesDomain(
+        fixture, league, teams, goals
     )
 }
