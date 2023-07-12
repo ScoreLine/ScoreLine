@@ -11,11 +11,14 @@ import com.swayy.matches.data.mapper.toHead2HeadDomain
 import com.swayy.matches.data.mapper.toHeadToHeadEntity
 import com.swayy.matches.data.mapper.toLineupDomain
 import com.swayy.matches.data.mapper.toLineupEntity
+import com.swayy.matches.data.mapper.toLiveMatchesDomain
+import com.swayy.matches.data.mapper.toLiveMatchesEntity
 import com.swayy.matches.data.mapper.toStatsDomain
 import com.swayy.matches.data.mapper.toStatsEntity
 import com.swayy.matches.domain.model.Events
 import com.swayy.matches.domain.model.HeadToHeadDomainModel
 import com.swayy.matches.domain.model.Lineup
+import com.swayy.matches.domain.model.LiveMatchesDomain
 import com.swayy.matches.domain.model.Match
 import com.swayy.matches.domain.model.StatsDomainModel
 import com.swayy.matches.domain.repository.MatchRepository
@@ -163,6 +166,33 @@ class MatchRepositoryImpl(
         }
         val allH2H = matchesDao.getH2H().map { it.toHead2HeadDomain() }
         emit(Resource.Success(allH2H))
+    }
+
+    override suspend fun getLiveMatches(live: String): Flow<Resource<List<LiveMatchesDomain>>> = flow {
+        val getLiveMatchesFromDb = matchesDao.getLiveMatches().map { it.toLiveMatchesDomain() }
+        emit(Resource.Loading(data = getLiveMatchesFromDb))
+
+        try {
+            val apiResponse = liveScoreApi.getLiveMatches(live = live)
+            matchesDao.deleteLiveMatches()
+            apiResponse.response.map { it.toLiveMatchesEntity() }.let { matchesDao.insertLiveMatches(it) }
+        } catch (exception: IOException) {
+            emit(
+                Resource.Error(
+                    message = "Connection Lost",
+                    data = getLiveMatchesFromDb
+                )
+            )
+        } catch (exception: HttpException) {
+            emit(
+                Resource.Error(
+                    message = exception.message(),
+                    data = getLiveMatchesFromDb
+                )
+            )
+        }
+        val allLiveMatches = matchesDao.getLiveMatches().map { it.toLiveMatchesDomain() }
+        emit(Resource.Success(allLiveMatches))
     }
 
 }

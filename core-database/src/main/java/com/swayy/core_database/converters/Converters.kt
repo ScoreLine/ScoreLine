@@ -276,4 +276,44 @@ class Converters(private val gson : Gson) {
     fun toLeagueH2H(leagueString: String): com.swayy.core_network.model.headtohead.League {
         return gson.fromJson(leagueString, com.swayy.core_network.model.headtohead.League::class.java)
     }
+
+    @TypeConverter
+    fun fromLeagueLive(leagueLive: com.swayy.core_network.model.live.League): String {
+        return gson.toJson(leagueLive)
+    }
+
+    @TypeConverter
+    fun toLeagueLive(leagueStringLive: String): com.swayy.core_network.model.live.League {
+        return gson.fromJson(leagueStringLive, com.swayy.core_network.model.live.League::class.java)
+    }
+
+    @TypeConverter
+    fun fromFixtureLive(featureLive: com.swayy.core_network.model.live.Fixture): String {
+        return gson.toJson(featureLive)
+    }
+
+    @TypeConverter
+    fun toFixtureLive(fixtureStringLive: String): com.swayy.core_network.model.live.Fixture {
+        return gson.fromJson(fixtureStringLive, com.swayy.core_network.model.live.Fixture::class.java)
+    }
+
+    @TypeConverter
+    fun fromTeamsLive(teamsLive: com.swayy.core_network.model.live.Teams): String {
+        return gson.toJson(teamsLive)
+    }
+
+    @TypeConverter
+    fun toTeamsLive(teamsStringLive: String): com.swayy.core_network.model.live.Teams {
+        return gson.fromJson(teamsStringLive, com.swayy.core_network.model.live.Teams::class.java)
+    }
+
+    @TypeConverter
+    fun fromGoalsLive(goalssLive: com.swayy.core_network.model.live.Goals): String {
+        return gson.toJson(goalssLive)
+    }
+
+    @TypeConverter
+    fun toGoalsLive(goalsStringLive: String): com.swayy.core_network.model.live.Goals {
+        return gson.fromJson(goalsStringLive, com.swayy.core_network.model.live.Goals::class.java)
+    }
 }

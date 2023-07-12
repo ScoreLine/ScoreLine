@@ -9,6 +9,7 @@ import com.swayy.core.util.Constants.GET_STANDINGS
 import com.swayy.core.util.Constants.GET_STATS
 import com.swayy.core.util.Constants.GET_TOPASSISTS
 import com.swayy.core.util.Constants.GET_TOPSCORERS
+import com.swayy.core.util.Constants.LIVE_MATCH
 import com.swayy.core_network.model.Fixtures.FixturesResponseDto
 import com.swayy.core_network.model.events.EventsResponseDto
 import com.swayy.core_network.model.leagues.LeaguesDto
@@ -16,6 +17,7 @@ import com.swayy.core_network.model.lineup.LIneupResponseDto
 import com.swayy.core_network.model.standings.StandingsDto
 import com.swayy.core_network.model.assists.AssistsDto
 import com.swayy.core_network.model.headtohead.HeadToHeadDto
+import com.swayy.core_network.model.live.LiveMatchesDto
 import com.swayy.core_network.model.stats.StatsDto
 import com.swayy.core_network.model.topscorers.TopScorersDto
 import retrofit2.http.GET
@@ -73,4 +75,9 @@ interface LiveScoreApi {
     suspend fun getH2H(
         @Query("h2h") h2h: String
     ): HeadToHeadDto
+
+    @GET(LIVE_MATCH)
+    suspend fun getLiveMatches(
+        @Query("live") live: String
+    ): LiveMatchesDto
 }
