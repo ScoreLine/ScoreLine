@@ -15,6 +15,7 @@ import com.swayy.core_database.model.FavoriteEntity
 import com.swayy.core_database.model.HeadToHeadEntity
 import com.swayy.core_database.model.LeaguesEntity
 import com.swayy.core_database.model.LineupEntity
+import com.swayy.core_database.model.LiveMatchesEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.NewsEntity
 import com.swayy.core_database.model.StandingsEntity
@@ -28,7 +29,8 @@ import com.swayy.core_database.model.TopScorersEntity
     StandingsEntity::class,LeaguesEntity::class,
     TopScorersEntity::class,TopAssistsEntity::class,
     ClubsEntity::class,FavoriteEntity::class,
-    StatsEntity::class,HeadToHeadEntity::class], version = 19, exportSchema = true)
+    StatsEntity::class,HeadToHeadEntity::class,
+    LiveMatchesEntity::class                 ], version = 20, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao
