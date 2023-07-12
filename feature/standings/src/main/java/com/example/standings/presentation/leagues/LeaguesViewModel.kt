@@ -21,6 +21,10 @@ class LeaguesViewModel @Inject constructor(
 
     private var isDataLoaded = false
 
+    init {
+        getLeagues()
+    }
+
     fun getLeagues() {
         viewModelScope.launch {
             try {

@@ -317,7 +317,7 @@ fun TeamItem(modifier: Modifier, favorite: Favorite) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = modifier.padding(12.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
 
                 )
             }

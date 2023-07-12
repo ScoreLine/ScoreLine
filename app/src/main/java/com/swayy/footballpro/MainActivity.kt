@@ -42,6 +42,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.standings.presentation.components.LeagueItem
+import com.example.standings.presentation.leagues.LeagueDetails
 import com.example.standings.presentation.leagues.LeagueScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -93,9 +95,15 @@ class MainActivity : AppCompatActivity() {
             val mainViewModel: MainActivityViewModel = hiltViewModel()
 
             val dynamicColors by mainViewModel.dc.collectAsStateWithLifecycle(isSystemInDarkTheme())
-            val darkTheme by mainViewModel.darkTheme.collectAsStateWithLifecycle(PreferencesConstants.DEFAULT_DARK_THEME)
-            val amoledBlack by mainViewModel.amoledBlack.collectAsStateWithLifecycle(PreferencesConstants.DEFAULT_AMOLED_BLACK)
-            val currentTheme by mainViewModel.currentTheme.collectAsStateWithLifecycle(PreferencesConstants.DEFAULT_SELECTED_THEME)
+            val darkTheme by mainViewModel.darkTheme.collectAsStateWithLifecycle(
+                PreferencesConstants.DEFAULT_DARK_THEME
+            )
+            val amoledBlack by mainViewModel.amoledBlack.collectAsStateWithLifecycle(
+                PreferencesConstants.DEFAULT_AMOLED_BLACK
+            )
+            val currentTheme by mainViewModel.currentTheme.collectAsStateWithLifecycle(
+                PreferencesConstants.DEFAULT_SELECTED_THEME
+            )
 
             FootballProTheme(
                 darkTheme = when (darkTheme) {
@@ -158,8 +166,28 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
 
-                            animatedComposable(Route.STANDINGS) {
-                                LeagueScreen()
+                            animatedComposable(Route.STANDINGS,) {
+
+                                LeagueScreen(
+                                    navigateLeagueDetails = { league ->
+                                        navController.navigate(
+                                            "league/${league}"
+                                        )
+                                    }
+                                )
+                            }
+
+                            animatedComposable(Route.LEAGUE_DETAIL,
+                                arguments = listOf(
+                                    navArgument("league") { type = NavType.StringType }
+                                )
+                            ) {
+                                val arguments = requireNotNull(it.arguments)
+                                val league = arguments.getString("league")
+                                LeagueDetails(
+                                    navigateBack = { navController.popBackStack() },
+                                    league = league!!,
+                                )
                             }
 
                             animatedComposable(Route.FAVOURITES) {
@@ -196,13 +224,13 @@ class MainActivity : AppCompatActivity() {
                                 arguments = listOf(
                                     navArgument("news") { type = NavType.StringType }
                                 )
-                            ){
+                            ) {
                                 val arguments = requireNotNull(it.arguments)
                                 val news = arguments.getString("news")
-                                 NewsDetail(
-                                     navigateBack = { navController.popBackStack() },
-                                     news = news!!,
-                                 )
+                                NewsDetail(
+                                    navigateBack = { navController.popBackStack() },
+                                    news = news!!,
+                                )
                             }
 
                             animatedComposable(

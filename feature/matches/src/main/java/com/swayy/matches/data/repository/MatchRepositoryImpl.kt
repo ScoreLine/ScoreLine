@@ -40,7 +40,7 @@ class MatchRepositoryImpl(
         } catch (exception: IOException) {
             emit(
                 Resource.Error(
-                    message = "Connection Lost",
+                    message = "",
                     data = getMatchesFromDb
                 )
             )
