@@ -32,4 +32,5 @@ object Constants {
     const val GET_TOPASSISTS = "leagues"
     const val GET_STATS = "fixtures/statistics"
     const val GET_H2H = "fixtures/headtohead"
+    const val LIVE_MATCH = "fixtures"
 }
