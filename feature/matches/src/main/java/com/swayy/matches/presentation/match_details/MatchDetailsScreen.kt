@@ -7,7 +7,9 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -75,18 +77,20 @@ import com.swayy.matches.presentation.TabRowItem
 import com.swayy.matches.presentation.events.EventsViewModel
 import com.swayy.matches.presentation.match_details.screens.FactsScreen
 import com.swayy.matches.presentation.match_details.screens.HeadScreen
-import com.swayy.matches.presentation.match_details.screens.StatsScreen
 import com.swayy.matches.presentation.state.LineupState
+import com.swayy.matches.presentation.stats.FixtureStatsScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun MatchDetailsScreen(
     id: Int,
+    fixture: String,
     navigateBack: () -> Unit,
     viewModel: MatchViewmodel = hiltViewModel(),
     lineupViewmodel: LineupViewmodel = hiltViewModel(),
@@ -317,7 +321,11 @@ fun MatchDetailsScreen(
                         TabRowItem(
                             title = "Stats",
                             screen = {
-                                StatsScreen()
+                                FixtureStatsScreen(
+                                   fixture = fixture,
+                                    home = match.teams.home.id,
+                                    away = match.teams.away.id
+                                )
                             }
                         ),
                         TabRowItem(
