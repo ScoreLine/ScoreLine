@@ -231,14 +231,12 @@ class MainActivity : AppCompatActivity() {
                                 route = Route.MATCH_DETAILS,
                                 arguments = listOf(
                                     navArgument("id") { type = NavType.IntType },
-                                    navArgument("date") { type = NavType.StringType },
-                                    navArgument("fixture") { type = NavType.StringType }
+                                    navArgument("date") { type = NavType.StringType }
                                 )
                             ) {
                                 val arguments = requireNotNull(it.arguments)
                                 val id = arguments.getInt("id")
                                 val date = arguments.getString("date")
-                                val fixture = arguments.getString("fixture")
                                 if (date != null) {
                                     MatchDetailsScreen(
                                         navigateBack = { navController.popBackStack() },

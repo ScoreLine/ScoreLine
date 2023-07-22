@@ -20,8 +20,8 @@ fun FixtureStatsScreen(
     fixture:Int,
     home: Int,
     away: Int,
+    viewModel: StatsViewModel = hiltViewModel()
 ) {
-    val viewModel: StatsViewModel = hiltViewModel()
 
     LaunchedEffect(key1 = true){
         viewModel.getStats(fixture = fixture)
@@ -35,6 +35,7 @@ fun FixtureStatsScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         Column(modifier = Modifier.align(Alignment.Start)) {
                             DisplayStats(statistics = match.statistics)
+                            Text(text = "ststs")
                         }
                     }
                 }
