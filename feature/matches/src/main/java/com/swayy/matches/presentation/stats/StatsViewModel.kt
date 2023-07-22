@@ -20,12 +20,12 @@ class StatsViewModel @Inject constructor(
 
     private var isDataLoaded = false
 
-    fun getStats(fixture: String) {
+    fun getStats(fixture: Int) {
         viewModelScope.launch {
             try {
                 _stats.value = StatsState(isLoading = true)
 
-                getStatsUseCase(fixture = fixture).collect { result ->
+                getStatsUseCase(fixture =  fixture).collect { result ->
                     when (result) {
                         is Resource.Success -> {
                             _stats.value = StatsState(stats = result.data ?: emptyList())

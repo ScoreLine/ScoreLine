@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetStatsUseCase @Inject constructor(
     private val repository: MatchRepository) {
 
-    suspend operator fun invoke(fixture: String): Flow<Resource<List<StatsDomainModel>>> {
+    suspend operator fun invoke(fixture: Int): Flow<Resource<List<StatsDomainModel>>> {
         return repository.getStats(fixture = fixture)
     }
 }

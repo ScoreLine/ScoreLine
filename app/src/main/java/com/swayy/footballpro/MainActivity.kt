@@ -1,6 +1,5 @@
 package com.swayy.footballpro
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +40,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.standings.presentation.components.LeagueItem
 import com.example.standings.presentation.leagues.LeagueDetails
 import com.example.standings.presentation.leagues.LeagueScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -61,10 +58,7 @@ import com.swayy.favourites.presentation.FavouritesScreen
 import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
 import com.swayy.news.NewsScreen
-import com.swayy.news.presentation.NewsViewModel
-import com.swayy.news.presentation.TrendingNewsScreen
 import com.swayy.news.presentation.components.NewsDetail
-import com.swayy.shared.presentation.OnboardingScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Collections
@@ -238,16 +232,18 @@ class MainActivity : AppCompatActivity() {
                                 arguments = listOf(
                                     navArgument("id") { type = NavType.IntType },
                                     navArgument("date") { type = NavType.StringType },
+                                    navArgument("fixture") { type = NavType.StringType }
                                 )
                             ) {
                                 val arguments = requireNotNull(it.arguments)
                                 val id = arguments.getInt("id")
                                 val date = arguments.getString("date")
+                                val fixture = arguments.getString("fixture")
                                 if (date != null) {
                                     MatchDetailsScreen(
                                         navigateBack = { navController.popBackStack() },
                                         id = id,
-                                        date = date
+                                        date = date,
                                     )
                                 }
 

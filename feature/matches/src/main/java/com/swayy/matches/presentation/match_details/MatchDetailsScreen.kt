@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -50,8 +48,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.consumePositionChange
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -90,7 +86,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun MatchDetailsScreen(
     id: Int,
-    fixture: String,
     navigateBack: () -> Unit,
     viewModel: MatchViewmodel = hiltViewModel(),
     lineupViewmodel: LineupViewmodel = hiltViewModel(),
@@ -322,7 +317,7 @@ fun MatchDetailsScreen(
                             title = "Stats",
                             screen = {
                                 FixtureStatsScreen(
-                                   fixture = fixture,
+                                    fixture = id,
                                     home = match.teams.home.id,
                                     away = match.teams.away.id
                                 )

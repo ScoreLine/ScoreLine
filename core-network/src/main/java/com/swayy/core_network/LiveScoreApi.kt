@@ -68,7 +68,7 @@ interface LiveScoreApi {
 
     @GET(GET_STATS)
     suspend fun getStats(
-        @Query("fixture") fixture: String
+        @Query("fixture") fixture: Int
     ): StatsDto
 
     @GET(GET_H2H)

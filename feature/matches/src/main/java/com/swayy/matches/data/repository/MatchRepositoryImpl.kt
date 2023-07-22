@@ -114,7 +114,7 @@ class MatchRepositoryImpl(
         emit(Resource.Success(allMatches))
     }
 
-    override suspend fun getStats(fixture: String): Flow<Resource<List<StatsDomainModel>>> = flow {
+    override suspend fun getStats(fixture: Int): Flow<Resource<List<StatsDomainModel>>> = flow {
         val getStatsFromDb = matchesDao.getStats().map { it.toStatsDomain() }
         emit(Resource.Loading(data = getStatsFromDb))
 

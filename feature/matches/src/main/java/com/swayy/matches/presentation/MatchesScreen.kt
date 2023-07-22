@@ -333,7 +333,7 @@ fun TabScreen(
                                                                 .clickable(onClick = {
                                                                     navigateMatchDetails(
                                                                         fixture.fixture.id,
-                                                                        date
+                                                                        date,
                                                                     )
                                                                 }),
                                                             horizontalArrangement = Arrangement.SpaceEvenly
