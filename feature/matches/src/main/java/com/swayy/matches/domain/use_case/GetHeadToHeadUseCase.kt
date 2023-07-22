@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetHeadToHeadUseCase @Inject constructor(
     private val repository: MatchRepository
 ) {
-    suspend operator fun invoke(h2h: String): Flow<Resource<List<HeadToHeadDomainModel>>> {
+    suspend operator fun invoke(h2h: Int): Flow<Resource<List<HeadToHeadDomainModel>>> {
         return repository.getHeadToHead(h2h = h2h)
     }
 }

@@ -141,7 +141,7 @@ class MatchRepositoryImpl(
         emit(Resource.Success(allStats))
     }
 
-    override suspend fun getHeadToHead(h2h: String): Flow<Resource<List<HeadToHeadDomainModel>>> = flow {
+    override suspend fun getHeadToHead(h2h: Int): Flow<Resource<List<HeadToHeadDomainModel>>> = flow {
         val getH2HFromDb = matchesDao.getH2H().map { it.toHead2HeadDomain() }
         emit(Resource.Loading(data = getH2HFromDb))
 

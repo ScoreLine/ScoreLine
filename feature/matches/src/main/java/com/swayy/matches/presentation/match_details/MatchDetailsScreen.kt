@@ -7,7 +7,9 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -73,6 +75,7 @@ import com.swayy.matches.R
 import com.swayy.matches.presentation.MatchViewmodel
 import com.swayy.matches.presentation.TabRowItem
 import com.swayy.matches.presentation.events.EventsViewModel
+import com.swayy.matches.presentation.h2h.HeadToHeadViewModel
 import com.swayy.matches.presentation.match_details.screens.FactsScreen
 import com.swayy.matches.presentation.match_details.screens.HeadScreen
 import com.swayy.matches.presentation.match_details.screens.StatsScreen
@@ -83,6 +86,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun MatchDetailsScreen(
@@ -91,6 +95,7 @@ fun MatchDetailsScreen(
     viewModel: MatchViewmodel = hiltViewModel(),
     lineupViewmodel: LineupViewmodel = hiltViewModel(),
     eventsViewmodel:EventsViewModel = hiltViewModel(),
+    h2hViewmodel:HeadToHeadViewModel = hiltViewModel(),
     date: String
 ) {
     Log.e("Tag", "THIS IS THE ID ${id}")
@@ -104,6 +109,10 @@ fun MatchDetailsScreen(
 
     LaunchedEffect(key1 = true) {
         lineupViewmodel.getLineup(fixture = id)
+    }
+
+    LaunchedEffect(key1 = true) {
+        h2hViewmodel.getH2H(h2h = id)
     }
 
     LaunchedEffect(key1 = true) {
