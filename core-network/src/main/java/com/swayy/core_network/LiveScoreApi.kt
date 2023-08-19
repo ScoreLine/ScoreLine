@@ -73,7 +73,7 @@ interface LiveScoreApi {
 
     @GET(GET_H2H)
     suspend fun getH2H(
-        @Query("h2h") h2h: String
+        @Query("h2h") h2h: Int
     ): HeadToHeadDto
 
     @GET(LIVE_MATCH)

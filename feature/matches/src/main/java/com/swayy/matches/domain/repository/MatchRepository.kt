@@ -15,6 +15,6 @@ interface MatchRepository {
    suspend fun getLineup(fixture: Int): Flow<Resource<List<Lineup>>>
    suspend fun getEvents(fixture: Int): Flow<Resource<List<Events>>>
    suspend fun getStats(fixture: String): Flow<Resource<List<StatsDomainModel>>>
-   suspend fun getHeadToHead(h2h: String): Flow<Resource<List<HeadToHeadDomainModel>>>
+   suspend fun getHeadToHead(h2h: Int): Flow<Resource<List<HeadToHeadDomainModel>>>
    suspend fun getLiveMatches(live: String): Flow<Resource<List<LiveMatchesDomain>>>
 }

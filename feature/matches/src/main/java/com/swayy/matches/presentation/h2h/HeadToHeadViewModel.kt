@@ -20,7 +20,7 @@ class HeadToHeadViewModel @Inject constructor(
 
     private var isDataLoaded = false
 
-    fun getH2H(h2h: String) {
+    fun getH2H(h2h: Int) {
         viewModelScope.launch {
             try {
                 _h2h.value = H2HState(isLoading = true)
