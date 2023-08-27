@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(navBackStackEntry) {
                     bottomBarState = when (navBackStackEntry?.destination?.route) {
-                        Route.STATISTICS, Route.HOME, Route.STANDINGS, Route.FAVOURITES, Route.MORE -> true
+                         Route.HOME,  Route.STATISTICS,Route.STANDINGS, Route.FAVOURITES,Route.MORE -> true
                         else -> false
                     }
                 }
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                     ) { paddingValues ->
                         AnimatedNavHost(
                             navController = navController,
-                            startDestination = Route.STATISTICS,
+                            startDestination = Route.HOME,
                             modifier = Modifier.padding(paddingValues)
                         ) {
                             animatedComposable(Route.HOME) {
@@ -267,20 +267,22 @@ fun NavigationBar(
     navController: NavController,
     bottomBarState: Boolean
 ) {
-    var selectedScreen by remember { mutableStateOf(Route.STATISTICS) }
+    var selectedScreen by remember { mutableStateOf(Route.HOME) }
     val navBarScreens = listOf(
-        Pair(Route.STATISTICS, R.string.Statistics),
+//        Pair(Route.STATISTICS, R.string.Statistics),
         Pair(Route.HOME, R.string.Home),
+        Pair(Route.STATISTICS, R.string.Statistics),
         Pair(Route.STANDINGS, R.string.Standings),
         Pair(Route.FAVOURITES, R.string.Favourites),
         Pair(Route.MORE, R.string.More),
     )
     val navBarIcons = listOf(
-        painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
+//        painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
         painterResource(com.swayy.core.R.drawable.baseline_newspaper_24),
+        painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
         painterResource(com.swayy.core.R.drawable.baseline_leaderboard_24),
-        painterResource(com.swayy.core.R.drawable.baseline_star_border_24),
-        painterResource(com.swayy.core.R.drawable.ic_round_more_horiz_24)
+        painterResource(com.swayy.core.R.drawable.baseline_person_add_alt_1_24),
+        painterResource(com.swayy.core.R.drawable.baseline_settings_24)
     )
     AnimatedContent(
         targetState = bottomBarState

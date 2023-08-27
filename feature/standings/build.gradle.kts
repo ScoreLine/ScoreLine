@@ -102,4 +102,12 @@ dependencies {
 
     //support library
     implementation(libs.appcompat)
+
+    implementation(libs.jsoup)
+
+    implementation(libs.picasso)
+
+    implementation(libs.coil)
+
+    implementation ("com.google.android.gms:play-services-ads:22.2.0")
 }

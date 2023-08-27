@@ -1,5 +1,6 @@
 package com.swayy.favourites.presentation
 
+import android.content.pm.ApplicationInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
@@ -63,6 +65,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.swayy.core.R
 import com.swayy.favourites.presentation.components.TeamsScreen
 import com.swayy.shared.domain.model.ClubItem
@@ -87,32 +92,35 @@ fun FavouritesScreen(
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, start = 20.dp)
-                    .statusBarsPadding(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .height(100.dp)
+                    .padding(top = 0.dp, start = 0.dp)
+//                    .statusBarsPadding()
+                    .background(androidx.compose.material3.MaterialTheme.colorScheme.primary),
             ) {
-                androidx.compose.material3.Text(
-                    text = "Favourites",
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(top = 10.dp)
-                )
-                Spacer(modifier = Modifier.weight(2f))
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_delete_24),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = 17.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
 
-                )
+                Row(
+                    modifier = Modifier.padding(top = 50.dp, start = 12.dp, end = 12.dp),
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "Favourites",
+                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                    )
+                    Spacer(modifier = Modifier.weight(2f))
+                    androidx.compose.material.Icon(
+                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_download_24),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(end = 0.dp),
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.primary
+
+                    )
+                }
 
             }
             Spacer(modifier = Modifier.height(0.dp))
@@ -202,6 +210,34 @@ data class TabRowItem(
     val title: String,
     val screen: @Composable () -> Unit,
 )
+
+@Composable
+fun BannerAdView() {
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth(),
+        factory = { context ->
+            val adView = AdView(context)
+            adView.setAdSize(AdSize.LARGE_BANNER)
+
+            // Check if the app is in debug mode
+            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+            // Set the appropriate adUnitId based on the mode
+            val adUnitId = if (isDebuggable) {
+                "ca-app-pub-3940256099942544/6300978111" // Test adUnitId
+            } else {
+                "ca-app-pub-3376169146760040/3025749162" // Official adUnitId
+            }
+
+            adView.adUnitId = adUnitId
+            adView.loadAd(AdRequest.Builder().build())
+
+            adView
+        }
+    )
+}
+
 
 
 

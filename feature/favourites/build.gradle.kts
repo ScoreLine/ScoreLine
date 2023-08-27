@@ -116,6 +116,7 @@ dependencies {
 
     implementation(libs.batik)
 
+    implementation ("com.google.android.gms:play-services-ads:22.3.0")
 
 
 

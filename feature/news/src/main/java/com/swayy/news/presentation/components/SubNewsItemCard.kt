@@ -35,8 +35,8 @@ fun SubNewsItemCard(imageUrl: String, title: String,navigateNewsDetails: (String
         return encodedString
     }
     Row (modifier = Modifier
-        .padding(12.dp)
-        .height(80.dp)
+        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+        .height(90.dp)
         .clickable(onClick = {
             navigateNewsDetails(convertToEncodedString(data))
         })){
@@ -61,22 +61,22 @@ fun SubNewsItemCard(imageUrl: String, title: String,navigateNewsDetails: (String
         )
 
         Column (modifier = Modifier
-            .padding(12.dp)
+            .padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 10.dp)
             .align(Alignment.CenterVertically), verticalArrangement = Arrangement.SpaceBetween){
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                fontSize = 15.sp,
+                fontSize = 13.sp,
                 maxLines = 2
 
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Goal News",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                fontSize = 13.sp
+                fontSize = 12.sp
 
             )
         }

@@ -71,6 +71,7 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.SuccessResult
 import com.swayy.core.R
+import com.swayy.favourites.presentation.BannerAdView
 import com.swayy.shared.domain.model.Favorite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -149,11 +150,15 @@ fun TeamsScreen(
                             }
                         })
                     }
-                    Modifier.height(30.dp)
+                    Modifier.height(15.dp)
+
+                    BannerAdView()
+
+                    Modifier.height(15.dp)
                     Text(
                         text = "Top premier league teams",
                         style = MaterialTheme.typography.bodyLarge,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Normal,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(12.dp)
@@ -192,7 +197,7 @@ fun TeamsScreen(
                             Text(
                                 text = club.name,
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontSize = 14.sp,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Normal,
                                 modifier = Modifier.align(Alignment.CenterVertically)
 
@@ -223,7 +228,7 @@ fun TeamsScreen(
                                     Text(
                                         text = "Following",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontSize = 12.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
@@ -234,7 +239,7 @@ fun TeamsScreen(
                                     Text(
                                         text = "Follow",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontSize = 12.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
@@ -314,7 +319,7 @@ fun TeamItem(modifier: Modifier, favorite: Favorite) {
                 Text(
                     text = favorite.name,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = modifier.padding(12.dp),
                     color = Color.White

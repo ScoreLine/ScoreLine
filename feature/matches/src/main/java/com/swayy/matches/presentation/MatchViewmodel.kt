@@ -35,9 +35,9 @@ class MatchViewmodel @Inject constructor(
 
     private var isDataLoaded = false
 
-    init {
-        getMatches(date = LocalDate.now().toString())
-    }
+//    init {
+//        getMatches(date = LocalDate.now().toString())
+//    }
 
     fun getMatches(date: String) {
         viewModelScope.launch {

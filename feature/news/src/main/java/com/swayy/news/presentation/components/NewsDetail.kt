@@ -53,8 +53,6 @@ fun NewsDetail(
 
     val final = addPrefixToString(my_url)
 
-
-
     Column (modifier = Modifier
         .fillMaxSize()
         ){

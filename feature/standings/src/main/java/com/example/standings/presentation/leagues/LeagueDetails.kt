@@ -86,7 +86,6 @@ fun LeagueDetails(
 
                 Spacer(modifier = Modifier.weight(2f))
 
-
             }
 
             LazyColumn(){
@@ -127,8 +126,6 @@ fun LeagueDetails(
                                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                             )
                         }
-
-
                     }
                     Spacer(modifier = Modifier.height(1.dp))
                 }

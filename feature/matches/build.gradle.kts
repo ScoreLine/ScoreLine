@@ -114,8 +114,10 @@ dependencies {
 
     implementation(libs.picasso)
 
-    implementation ("com.google.android.gms:play-services-ads:22.2.0")
+    implementation ("com.google.android.gms:play-services-ads:22.3.0")
 
     // Swipe to refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.27.1")
+
+    implementation(libs.jsoup)
 }

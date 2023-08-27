@@ -43,6 +43,19 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "license/README.dom.txt"
+            excludes += "license/LICENSE.dom-documentation.txt"
+            excludes += "license/NOTICE"
+            excludes += "license/*"
+            resources.excludes.add("META-INF/*")
+            excludes += "META-INF/*"
+            excludes += "/META-INF/DEPENDENCIES"
+            resources.excludes.add("META-INF/**/*")
+            resources.excludes.add("META-INF/notice.txt")
+            resources.merges.add("META-INF/LICENSE")
+            resources.merges.add("META-INF/AL2.0")
+            resources.merges.add("META-INF/LGPL2.1")
+
         }
     }
 }
@@ -107,6 +120,12 @@ dependencies {
     implementation(libs.coil)
 
     implementation(libs.retrofit)
+
+    implementation ("org.seleniumhq.selenium:selenium-java:3.141.59")
+
+    implementation ("com.google.android.gms:play-services-ads:22.3.0")
+
+    implementation ("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 
 
 }

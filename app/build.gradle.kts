@@ -15,8 +15,8 @@ android {
         applicationId = "com.swayy.footballpro"
         minSdk = 24
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -53,6 +53,14 @@ android {
             excludes += "license/LICENSE.dom-documentation.txt"
             excludes += "license/NOTICE"
             excludes += "license/*"
+            resources.excludes.add("META-INF/*")
+            excludes += "META-INF/*"
+            excludes += "/META-INF/DEPENDENCIES"
+            resources.excludes.add("META-INF/**/*")
+            resources.excludes.add("META-INF/notice.txt")
+            resources.merges.add("META-INF/LICENSE")
+            resources.merges.add("META-INF/AL2.0")
+            resources.merges.add("META-INF/LGPL2.1")
         }
     }
 

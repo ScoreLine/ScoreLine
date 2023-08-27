@@ -46,9 +46,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.swayy.matches.R
-import com.swayy.matches.presentation.BannerAdView
 import com.swayy.matches.presentation.MatchViewmodel
-import com.swayy.matches.presentation.convertTimestampToTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
