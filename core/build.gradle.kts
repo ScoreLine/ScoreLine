@@ -97,4 +97,22 @@ dependencies {
 
     //support library
     implementation(libs.appcompat)
+
+    // Gson
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+
+    implementation(libs.jsoup)
+
+    implementation(libs.coil)
+
+    api ("com.airbnb.android:lottie-compose:5.2.0")
+
+    // Swipe to refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.27.1")
+
+    implementation ("com.google.android.gms:play-services-ads:22.3.0")
 }

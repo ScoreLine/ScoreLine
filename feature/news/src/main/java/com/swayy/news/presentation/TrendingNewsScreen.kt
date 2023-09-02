@@ -51,6 +51,9 @@ import coil.compose.rememberImagePainter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.swayy.core.core.components.AdaptiveBanner
+import com.swayy.core.core.components.LargeAdView
 import com.swayy.news.presentation.components.NewsItemCard
 import com.swayy.news.presentation.components.SubNewsItemCard
 import kotlinx.coroutines.Dispatchers
@@ -88,6 +91,9 @@ fun TrendingNewsScreen(
 
     val state = newsViewModel.news.value
 
+    val context = LocalContext.current
+    MobileAds.initialize(context) { }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             androidx.compose.material3.Text(
@@ -106,7 +112,7 @@ fun TrendingNewsScreen(
 
                     item {
                         Row() {
-                            BannerAdView()
+                            LargeAdView()
                         }
                     }
                     val subnews = state.news.drop(1).dropLast(1)
@@ -116,7 +122,7 @@ fun TrendingNewsScreen(
                     }
                     item {
                         Row() {
-                            BannerAdView()
+                            LargeAdView()
                         }
                     }
                 }
@@ -149,32 +155,27 @@ fun TrendingNewsScreen(
 
 }
 
-@Composable
-fun BannerAdView() {
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth(),
-        factory = { context ->
-            val adView = AdView(context)
-            adView.setAdSize(AdSize.LARGE_BANNER)
-
-            // Check if the app is in debug mode
-            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-
-            // Set the appropriate adUnitId based on the mode
-            val adUnitId = if (isDebuggable) {
-                "ca-app-pub-3940256099942544/6300978111" // Test adUnitId
-            } else {
-                "ca-app-pub-3376169146760040/3025749162" // Official adUnitId
-            }
-
-            adView.adUnitId = adUnitId
-            adView.loadAd(AdRequest.Builder().build())
-
-            adView
-        }
-    )
-}
+//@Composable
+//fun BannerAdView() {
+//    AndroidView(
+//        modifier = Modifier
+//            .fillMaxWidth(),
+//        factory = { context ->
+//            val adView = AdView(context)
+//            adView.setAdSize(AdSize.LARGE_BANNER)
+//
+//            // Check if the app is in debug mode
+//            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+//
+//            // Set the appropriate adUnitId based on the mode
+//
+//            adView.adUnitId = "ca-app-pub-3376169146760040/5555105317"
+//            adView.loadAd(AdRequest.Builder().build())
+//
+//            adView
+//        }
+//    )
+//}
 
 
 /////dummy

@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -58,6 +60,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
@@ -69,10 +72,20 @@ import androidx.palette.graphics.Palette
 import coil.Coil
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
 import coil.request.SuccessResult
+import coil.size.Precision
+import com.google.android.gms.ads.MobileAds
 import com.swayy.core.R
-import com.swayy.favourites.presentation.BannerAdView
+import com.swayy.core.core.components.LargeAdView
+import com.swayy.core.core.components.addInterstitialCallbacks
+import com.swayy.core.core.components.loadInterstitial
+import com.swayy.core.core.components.showInterstitial
 import com.swayy.shared.domain.model.Favorite
+import com.swayy.shared.presentation.SoccerViewModel
+import com.swayy.shared.presentation.state.SoccerListState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.batik.transcoder.TranscoderInput
@@ -87,11 +100,25 @@ import java.net.URL
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TeamsScreen(
-    state: ClubsListState,
-    viewModel: FavoriteViewModel = hiltViewModel()
+    state: SoccerListState,
+    viewModel: FavoriteViewModel = hiltViewModel(),
+    soccerViewModel: SoccerViewModel = hiltViewModel(),
+    matchLink: String,
+    navigateSoccerDetails: (String, String, String, String, String, String) -> Unit,
 ) {
+    fun convertToEncodedString(input: String): String {
+        val encodedString = input.replace("/", "_SLASH_")
+        return encodedString
+    }
+    val context = LocalContext.current
+    MobileAds.initialize(context) { }
+
     val snackbarHostState = remember { SnackbarHostState() }
     val favoritesUiState = viewModel.favoritesUiState.value
+
+    LaunchedEffect(key1 = true, block = {
+        soccerViewModel.getSoccer(matchLink = matchLink)
+    })
 
     LaunchedEffect(key1 = true, block = {
 
@@ -136,45 +163,73 @@ fun TeamsScreen(
                     val totalHeight = (numRows * itemHeight).coerceAtLeast(0.dp)
 
                     if (!favoritesUiState.isLoading) {
-                        LazyVerticalGrid(columns = GridCells.Fixed(numColumns), modifier = Modifier.height(
-                            totalHeight
-                        ), content = {
-                            items(
-                                favoritesUiState.favorites,
-                                key = { favorite -> favorite.name }
-                            ) { favorite ->
-                                TeamItem(
-                                    modifier = Modifier.animateItemPlacement(),
-                                    favorite = favorite,
-                                )
-                            }
-                        })
+                        LazyVerticalGrid(columns = GridCells.Fixed(numColumns),
+                            modifier = Modifier.height(
+                                totalHeight
+                            ),
+                            content = {
+                                items(
+                                    favoritesUiState.favorites,
+                                    key = { favorite -> favorite.name }
+                                ) { favorite ->
+                                    val beforeLogo = convertToEncodedString(favorite.imageUrl)
+                                    val beforeFlag = convertToEncodedString(favorite.flag)
+                                    val beforeLink = convertToEncodedString(favorite.websiteUrl)
+
+                                    TeamItem(
+                                        modifier = Modifier.animateItemPlacement(),
+                                        favorite = favorite,
+                                        beforeLogo = beforeLogo,
+                                        beforeFlag  = beforeFlag,
+                                        beforeLink = beforeLink,
+                                        navigateSoccerDetails = navigateSoccerDetails
+                                    )
+                                }
+                            })
                     }
                     Modifier.height(15.dp)
 
-                    BannerAdView()
+                    LargeAdView()
 
                     Modifier.height(15.dp)
-                    Text(
-                        text = "Top premier league teams",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(12.dp)
-                    )
+
                 }
 
 
-                items(state.clubs, key = { game -> game.name }) { club ->
+                items(state.soccer, key = { game -> game.leagueName }) { club ->
                     val isFavorite =
-                        viewModel.inOnlineFavorites(name = club.name).observeAsState().value != null
+                        viewModel.inOnlineFavorites(name = club.leagueName)
+                            .observeAsState().value != null
+
+
+
+                    val beforeLogo = convertToEncodedString(club.logo)
+                    val beforeFlag = convertToEncodedString(club.flag)
+                    val beforeLink = convertToEncodedString(club.link)
+
+                    val context = LocalContext.current
+
+                    loadInterstitial(context)
+                    // add the interstitial ad callbacks
+                    addInterstitialCallbacks(context)
 
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
-                            .height(56.dp),
+                            .height(86.dp)
+                            .clickable(onClick = {
+                                loadInterstitial(context)
+                                showInterstitial(context)
+                                navigateSoccerDetails(
+                                    club.leagueName,
+                                    club.games,
+                                    club.teams,
+                                    beforeLogo,
+                                    beforeFlag,
+                                    beforeLink
+                                )
+                            }),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary)
                     ) {
@@ -182,26 +237,60 @@ fun TeamsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(club.imageUrl)
+                                    .data(club.logo)
                                     .decoderFactory(SvgDecoder.Factory())
                                     .build(),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(48.dp)
+                                    .size(56.dp)
                                     .padding(8.dp)
                                     .align(Alignment.CenterVertically),
                                 contentScale = ContentScale.Crop
                             )
                             Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Row {
 
-                            Text(
-                                text = club.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier.align(Alignment.CenterVertically)
+                                    Text(
+                                        text = club.leagueName,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.align(Alignment.CenterVertically)
 
-                            )
+                                    )
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(club.flag)
+                                            .decoderFactory(SvgDecoder.Factory())
+                                            .build(),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .padding(8.dp)
+                                            .align(Alignment.CenterVertically),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                                Text(
+                                    text = club.games,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colorScheme.primary
+
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = club.teams,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Normal,
+
+                                    )
+                            }
+
+
 
                             Spacer(modifier = Modifier.weight(2f))
                             Row(
@@ -212,13 +301,18 @@ fun TeamsScreen(
                                     .padding(2.dp)
                                     .clickable(onClick = {
                                         if (isFavorite) {
-                                            viewModel.deleteAnOnlineFavorite(name = club.name)
+                                            viewModel.deleteAnOnlineFavorite(name = club.leagueName)
                                         } else {
                                             viewModel.insertAFavorite(
-                                                name = club.name,
-                                                imageUrl = club.imageUrl,
-                                                websiteUrl = club.websiteUrl
+                                                name = club.leagueName,
+                                                imageUrl = club.logo,
+                                                websiteUrl = club.link,
+                                                games = club.games,
+                                                teams = club.teams,
+                                                flag = club.flag
                                             )
+
+
                                         }
                                     })
                             ) {
@@ -266,7 +360,11 @@ fun TeamsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
-fun TeamItem(modifier: Modifier, favorite: Favorite) {
+fun TeamItem(
+    modifier: Modifier, favorite: Favorite,
+     beforeLogo: String,  beforeLink: String,  beforeFlag: String,
+    navigateSoccerDetails: (String, String, String, String, String, String) -> Unit,
+) {
     Card(
         onClick = { /*TODO*/ }, modifier = modifier
             .size(186.dp)
@@ -299,22 +397,40 @@ fun TeamItem(modifier: Modifier, favorite: Favorite) {
 
         val context = LocalContext.current
 
-        val dominantColor = extractDominantColor(context, painterResource)
+//        val dominantColor = extractDominantColor(context, painterResource)
+
+        val dominantColor = extractDominantColor(context = context, imageUrl = favorite.imageUrl)
 
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(dominantColor)
+                .clickable(onClick = {
+                    navigateSoccerDetails(
+                        favorite.name,
+                        favorite.games,
+                        favorite.teams,
+                        beforeLogo,
+                        beforeFlag,
+                        beforeLink
+                    )
+                })
         ) {
             Column(modifier = modifier.fillMaxSize()) {
 
+//                Image(
+//                    painter = painterResource(id = painterResource), modifier = Modifier
+//                        .size(70.dp)
+//                        .padding(12.dp), contentDescription = null,
+//                    contentScale = ContentScale.Crop
+//                )
                 Image(
-                    painter = painterResource(id = painterResource), modifier = Modifier
+                    painter = rememberImagePainter(favorite.imageUrl),
+                    contentDescription = null,
+                    modifier = Modifier
                         .size(70.dp)
-                        .padding(12.dp), contentDescription = null,
-                    contentScale = ContentScale.Crop
+                        .padding(12.dp),
                 )
-
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = favorite.name,
@@ -323,7 +439,6 @@ fun TeamItem(modifier: Modifier, favorite: Favorite) {
                     fontWeight = FontWeight.Normal,
                     modifier = modifier.padding(12.dp),
                     color = Color.White
-
                 )
             }
         }
@@ -333,11 +448,48 @@ fun TeamItem(modifier: Modifier, favorite: Favorite) {
 }
 
 
-fun extractDominantColor(context: Context, resourceId: Int): Color {
-    val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
+//fun extractDominantColor(context: Context, resourceId: Int): Color {
+//    val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
+//
+//    val palette = Palette.from(bitmap).generate()
+//    val dominantSwatch = palette.dominantSwatch ?: palette.vibrantSwatch ?: palette.mutedSwatch
+//
+//    return dominantSwatch?.rgb?.let { Color(it) } ?: Color.White
+//}
 
-    val palette = Palette.from(bitmap).generate()
-    val dominantSwatch = palette.dominantSwatch ?: palette.vibrantSwatch ?: palette.mutedSwatch
 
-    return dominantSwatch?.rgb?.let { Color(it) } ?: Color.White
+@Composable
+fun extractDominantColor(context: Context, imageUrl: String): Color {
+    val imageLoader = LocalImageLoader.current
+
+    val request = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .precision(Precision.EXACT)
+            .build()
+    }
+
+    val imagePainter = rememberImagePainter(request, imageLoader = imageLoader)
+    var dominantColor by remember(imagePainter) { mutableStateOf(Color.White) }
+
+    LaunchedEffect(imagePainter) {
+        val drawable = imageLoader.execute(request).drawable
+        val bitmap = (drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+
+        if (bitmap != null) {
+            val softwareBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+            val color = calculateDominantColor(softwareBitmap)
+            dominantColor = color
+        }
+    }
+
+    return dominantColor
+}
+
+private suspend fun calculateDominantColor(bitmap: Bitmap): Color {
+    return withContext(Dispatchers.Default) {
+        val palette = Palette.Builder(bitmap).generate()
+        val dominantSwatch = palette.dominantSwatch ?: palette.vibrantSwatch ?: palette.mutedSwatch
+        dominantSwatch?.rgb?.let { Color(it) } ?: Color.White
+    }
 }

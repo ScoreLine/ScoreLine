@@ -103,21 +103,21 @@ fun MatchDetailsScreen(
     val matchState = viewModel.matches.value
     val lineupState = lineupViewmodel.lineup.value
 
-    LaunchedEffect(key1 = true) {
-        viewModel.getMatches(date = date)
-    }
-
-    LaunchedEffect(key1 = true) {
-        lineupViewmodel.getLineup(fixture = id)
-    }
-
-    LaunchedEffect(key1 = true) {
-        h2hViewmodel.getH2H(h2h = id)
-    }
-
-    LaunchedEffect(key1 = true) {
-        eventsViewmodel.getEvents(fixture = id)
-    }
+//    LaunchedEffect(key1 = true) {
+//        viewModel.getMatches(date = date)
+//    }
+//
+//    LaunchedEffect(key1 = true) {
+//        lineupViewmodel.getLineup(fixture = id)
+//    }
+//
+//    LaunchedEffect(key1 = true) {
+//        h2hViewmodel.getH2H(h2h = id)
+//    }
+//
+//    LaunchedEffect(key1 = true) {
+//        eventsViewmodel.getEvents(fixture = id)
+//    }
 
     Box(
         modifier = Modifier

@@ -24,6 +24,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.swayy.core.R
+import com.swayy.core.core.components.addInterstitialCallbacks
+import com.swayy.core.core.components.loadInterstitial
+import com.swayy.core.core.components.showInterstitial
 
 @Composable
 fun NewsItemCard(imageUrl: String, title: String, navigateNewsDetails: (String) -> Unit,data:String) {
@@ -32,11 +35,19 @@ fun NewsItemCard(imageUrl: String, title: String, navigateNewsDetails: (String) 
         return encodedString
     }
     Log.e("hii",data)
+
+    val context = LocalContext.current
+    loadInterstitial(context)
+    // add the interstitial ad callbacks
+    addInterstitialCallbacks(context)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp)
             .clickable(onClick = {
+                loadInterstitial(context)
+                showInterstitial(context)
                 navigateNewsDetails(convertToEncodedString(data))
             })
     ) {

@@ -120,4 +120,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-swiperefresh:0.27.1")
 
     implementation(libs.jsoup)
+
+    api ("com.airbnb.android:lottie-compose:5.2.0")
 }

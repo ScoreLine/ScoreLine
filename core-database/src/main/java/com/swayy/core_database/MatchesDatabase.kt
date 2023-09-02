@@ -8,6 +8,7 @@ import com.swayy.core_database.dao.ClubsDao
 import com.swayy.core_database.dao.FavoritesDao
 import com.swayy.core_database.dao.MatchesDao
 import com.swayy.core_database.dao.NewsDao
+import com.swayy.core_database.dao.SoccerDao
 import com.swayy.core_database.dao.StandingsDao
 import com.swayy.core_database.model.ClubsEntity
 import com.swayy.core_database.model.EventsEntity
@@ -18,19 +19,22 @@ import com.swayy.core_database.model.LineupEntity
 import com.swayy.core_database.model.LiveMatchesEntity
 import com.swayy.core_database.model.MatchesEntity
 import com.swayy.core_database.model.NewsEntity
+import com.swayy.core_database.model.SoccerEntity
 import com.swayy.core_database.model.StandingsEntity
 import com.swayy.core_database.model.StatsEntity
 import com.swayy.core_database.model.TopAssistsEntity
 import com.swayy.core_database.model.TopScorersEntity
 
-@Database(entities = [
-    MatchesEntity::class, LineupEntity::class,
-    EventsEntity::class, NewsEntity::class,
-    StandingsEntity::class,LeaguesEntity::class,
-    TopScorersEntity::class,TopAssistsEntity::class,
-    ClubsEntity::class,FavoriteEntity::class,
-    StatsEntity::class,HeadToHeadEntity::class,
-    LiveMatchesEntity::class                 ], version = 20, exportSchema = true)
+@Database(
+    entities = [
+        MatchesEntity::class, LineupEntity::class,
+        EventsEntity::class, NewsEntity::class,
+        StandingsEntity::class, LeaguesEntity::class,
+        TopScorersEntity::class, TopAssistsEntity::class,
+        ClubsEntity::class, FavoriteEntity::class,
+        StatsEntity::class, HeadToHeadEntity::class,
+        LiveMatchesEntity::class, SoccerEntity::class], version = 22, exportSchema = true
+)
 @TypeConverters(Converters::class)
 abstract class MatchesDatabase : RoomDatabase() {
     abstract val matchesDao: MatchesDao
@@ -38,4 +42,5 @@ abstract class MatchesDatabase : RoomDatabase() {
     abstract val standingsDao: StandingsDao
     abstract val clubsDao: ClubsDao
     abstract val favoritesDao: FavoritesDao
+    abstract val soccerDao: SoccerDao
 }

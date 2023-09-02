@@ -1,6 +1,5 @@
 package com.swayy.footballpro
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +40,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.standings.presentation.components.LeagueItem
 import com.example.standings.presentation.leagues.LeagueDetails
 import com.example.standings.presentation.leagues.LeagueScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -58,13 +55,12 @@ import com.swayy.compose_ui.theme.AppTheme
 import com.swayy.compose_ui.theme.FootballProTheme
 import com.swayy.core.util.Route
 import com.swayy.favourites.presentation.FavouritesScreen
+import com.swayy.favourites.presentation.league_details.LeagueDetailScreen
 import com.swayy.matches.presentation.MatchesScreen
 import com.swayy.matches.presentation.match_details.MatchDetailsScreen
+import com.swayy.core.core.MatchInfoScreen
 import com.swayy.news.NewsScreen
-import com.swayy.news.presentation.NewsViewModel
-import com.swayy.news.presentation.TrendingNewsScreen
 import com.swayy.news.presentation.components.NewsDetail
-import com.swayy.shared.presentation.OnboardingScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Collections
@@ -82,7 +78,6 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this)
 
         val configuration = RequestConfiguration.Builder()
-            .setTestDeviceIds(Collections.singletonList("DEVICE ID"))
             .build()
         MobileAds.setRequestConfiguration(configuration)
 
@@ -131,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(navBackStackEntry) {
                     bottomBarState = when (navBackStackEntry?.destination?.route) {
-                         Route.HOME,  Route.STATISTICS,Route.STANDINGS, Route.FAVOURITES,Route.MORE -> true
+                        Route.STATISTICS, Route.FAVOURITES, Route.HOME, Route.MORE -> true
                         else -> false
                     }
                 }
@@ -147,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                     ) { paddingValues ->
                         AnimatedNavHost(
                             navController = navController,
-                            startDestination = Route.HOME,
+                            startDestination = Route.STATISTICS,
                             modifier = Modifier.padding(paddingValues)
                         ) {
                             animatedComposable(Route.HOME) {
@@ -166,7 +161,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
 
-                            animatedComposable(Route.STANDINGS,) {
+                            animatedComposable(Route.STANDINGS) {
 
                                 LeagueScreen(
                                     navigateLeagueDetails = { league ->
@@ -190,16 +185,56 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
 
+                            animatedComposable(Route.SOCCER_DETAIL,
+                                arguments = listOf(
+                                    navArgument("league") { type = NavType.StringType },
+                                    navArgument("games") { type = NavType.StringType },
+                                    navArgument("teams") { type = NavType.StringType },
+                                    navArgument("logo") { type = NavType.StringType },
+                                    navArgument("flag") { type = NavType.StringType },
+                                    navArgument("link") { type = NavType.StringType }
+                                )
+                            ) {
+                                val arguments = requireNotNull(it.arguments)
+                                val league = arguments.getString("league")
+                                val games = arguments.getString("games")
+                                val teams = arguments.getString("teams")
+                                val logo = arguments.getString("logo")
+                                val flag = arguments.getString("flag")
+                                val link = arguments.getString("link")
+                                LeagueDetailScreen(
+                                    navigateBack = { navController.popBackStack() },
+                                    leagueName = league!!,
+                                    link = link!!,
+                                    games = games!!,
+                                    teams = teams!!,
+                                    logo = logo!!,
+                                    flag = flag!!,
+                                    navigateMatchDetails = { matchLink ->
+                                        navController.navigate(
+                                            "match/${matchLink}"
+                                        )
+                                    }
+                                )
+                            }
+
                             animatedComposable(Route.FAVOURITES) {
-                                FavouritesScreen()
+                                FavouritesScreen(
+                                    navigateSoccerDetails = { league, games, teams, logo, flag, link ->
+                                        navController.navigate("soccer/${league}/${games}/${teams}/${logo}/${flag}/${link}")
+                                    }
+                                )
                             }
 
                             animatedComposable(Route.STATISTICS) {
                                 MatchesScreen(
-                                    navigateMatchDetails = { id, date ->
+                                    navigateMatchDetails = { matchLink ->
                                         navController.navigate(
-                                            "match/${id}/$date"
+                                            "match/${matchLink}"
                                         )
+                                    },
+                                    navigateSoccerDetails = { league, games, teams, logo, flag, link ->
+                                        navController.navigate("soccer/${league}/${games}/${teams}/${logo}/${flag}/${link}")
                                     }
                                 )
                             }
@@ -233,21 +268,38 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
 
+//                            animatedComposable(
+//                                route = Route.MATCH_DETAILS,
+//                                arguments = listOf(
+//                                    navArgument("id") { type = NavType.IntType },
+//                                    navArgument("date") { type = NavType.StringType },
+//                                )
+//                            ) {
+//                                val arguments = requireNotNull(it.arguments)
+//                                val id = arguments.getInt("id")
+//                                val date = arguments.getString("date")
+//                                if (date != null) {
+//                                    MatchDetailsScreen(
+//                                        navigateBack = { navController.popBackStack() },
+//                                        id = id,
+//                                        date = date
+//                                    )
+//                                }
+//
+//                            }
+
                             animatedComposable(
-                                route = Route.MATCH_DETAILS,
+                                route = Route.MATCH_INFO,
                                 arguments = listOf(
-                                    navArgument("id") { type = NavType.IntType },
-                                    navArgument("date") { type = NavType.StringType },
+                                    navArgument("matchLink") { type = NavType.StringType },
                                 )
                             ) {
                                 val arguments = requireNotNull(it.arguments)
-                                val id = arguments.getInt("id")
-                                val date = arguments.getString("date")
-                                if (date != null) {
-                                    MatchDetailsScreen(
+                                val matchLink = arguments.getString("matchLink")
+                                if (matchLink != null) {
+                                    MatchInfoScreen(
                                         navigateBack = { navController.popBackStack() },
-                                        id = id,
-                                        date = date
+                                        matchLink = matchLink
                                     )
                                 }
 
@@ -267,21 +319,21 @@ fun NavigationBar(
     navController: NavController,
     bottomBarState: Boolean
 ) {
-    var selectedScreen by remember { mutableStateOf(Route.HOME) }
+    var selectedScreen by remember { mutableStateOf(Route.STATISTICS) }
     val navBarScreens = listOf(
 //        Pair(Route.STATISTICS, R.string.Statistics),
-        Pair(Route.HOME, R.string.Home),
         Pair(Route.STATISTICS, R.string.Statistics),
-        Pair(Route.STANDINGS, R.string.Standings),
         Pair(Route.FAVOURITES, R.string.Favourites),
+//        Pair(Route.STANDINGS, R.string.Standings),
+        Pair(Route.HOME, R.string.Home),
         Pair(Route.MORE, R.string.More),
     )
     val navBarIcons = listOf(
 //        painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
-        painterResource(com.swayy.core.R.drawable.baseline_newspaper_24),
         painterResource(com.swayy.core.R.drawable.baseline_sports_soccer_24),
         painterResource(com.swayy.core.R.drawable.baseline_leaderboard_24),
-        painterResource(com.swayy.core.R.drawable.baseline_person_add_alt_1_24),
+//        painterResource(com.swayy.core.R.drawable.baseline_leaderboard_24),
+        painterResource(com.swayy.core.R.drawable.baseline_newspaper_24),
         painterResource(com.swayy.core.R.drawable.baseline_settings_24)
     )
     AnimatedContent(

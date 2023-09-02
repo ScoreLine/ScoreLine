@@ -3,6 +3,7 @@ package com.swayy.favourites.presentation
 import android.content.pm.ApplicationInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
@@ -68,10 +70,13 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.kanyideveloper.core.components.LoadingStateComponent
 import com.swayy.core.R
 import com.swayy.favourites.presentation.components.TeamsScreen
 import com.swayy.shared.domain.model.ClubItem
 import com.swayy.shared.presentation.ClubsViewModel
+import com.swayy.shared.presentation.FavoriteViewModel
+import com.swayy.shared.presentation.SoccerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,10 +89,14 @@ import kotlin.coroutines.suspendCoroutine
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun FavouritesScreen(
-    clubsViewModel: ClubsViewModel = hiltViewModel()
+    soccerViewModel: SoccerViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
+    navigateSoccerDetails: (String,String,String,String,String,String) -> Unit,
 ) {
-    val state = clubsViewModel.clubs.value
+    val state = soccerViewModel.soccer.value
     val coroutineScope = rememberCoroutineScope()
+
+
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -105,19 +114,43 @@ fun FavouritesScreen(
                     modifier = Modifier.padding(top = 50.dp, start = 12.dp, end = 12.dp),
                 ) {
                     androidx.compose.material3.Text(
-                        text = "Favourites",
+                        text = "Leagues",
                         style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                     )
                     Spacer(modifier = Modifier.weight(2f))
                     androidx.compose.material.Icon(
-                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_download_24),
+                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_search_24),
                         contentDescription = "",
                         modifier = Modifier
-                            .padding(end = 0.dp),
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                            .padding(end = 12.dp)
+                            .clickable(onClick = {
+
+                            }),
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
+
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    androidx.compose.material.Icon(
+                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_calendar_month_24),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .clickable(onClick = {
+
+                            }),
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
+
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    androidx.compose.material.Icon(
+                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_live_tv_24),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(end = 12.dp),
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
 
                     )
                 }
@@ -127,11 +160,42 @@ fun FavouritesScreen(
 
             val tabRowItems = listOf(
                 TabRowItem(
-                    title = "Teams",
+                    title = "Popular",
                     screen = {
-                        TeamsScreen(state)
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions",navigateSoccerDetails)
                     }
-                )
+                ),
+                TabRowItem(
+                    title = "Europe",
+                    screen = {
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions/eu",navigateSoccerDetails)
+                    }
+                ),
+                TabRowItem(
+                    title = "Americas",
+                    screen = {
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions/am",navigateSoccerDetails)
+                    }
+                ),
+                TabRowItem(
+                    title = "Asia/Oceania",
+                    screen = {
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions/ao",navigateSoccerDetails)
+                    }
+                ),
+                TabRowItem(
+                    title = "Africa",
+                    screen = {
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions/af",navigateSoccerDetails)
+                    }
+                ),
+                TabRowItem(
+                    title = "International",
+                    screen = {
+                        TeamsScreen(state,favoriteViewModel,soccerViewModel,"https://www.besoccer.com/competitions/international",navigateSoccerDetails)
+                    }
+                ),
+
 
             )
             val pagerState = rememberPagerState(initialPage = 0)
@@ -140,7 +204,7 @@ fun FavouritesScreen(
                 modifier = Modifier
                     .padding(0.dp)
             ) {
-                TabRow(
+                ScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
@@ -149,6 +213,7 @@ fun FavouritesScreen(
                         )
                     },
                     backgroundColor = Color.LightGray.copy(alpha = .0F),
+                    edgePadding = 0.dp
                 ) {
                     tabRowItems.forEachIndexed { index, item ->
                         Tab(
@@ -184,10 +249,7 @@ fun FavouritesScreen(
         }
 
         if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = MaterialTheme.colorScheme.primary
-            )
+           LoadingStateComponent()
         }
 
         if (state.error.isNotBlank()) {
@@ -211,32 +273,6 @@ data class TabRowItem(
     val screen: @Composable () -> Unit,
 )
 
-@Composable
-fun BannerAdView() {
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth(),
-        factory = { context ->
-            val adView = AdView(context)
-            adView.setAdSize(AdSize.LARGE_BANNER)
-
-            // Check if the app is in debug mode
-            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-
-            // Set the appropriate adUnitId based on the mode
-            val adUnitId = if (isDebuggable) {
-                "ca-app-pub-3940256099942544/6300978111" // Test adUnitId
-            } else {
-                "ca-app-pub-3376169146760040/3025749162" // Official adUnitId
-            }
-
-            adView.adUnitId = adUnitId
-            adView.loadAd(AdRequest.Builder().build())
-
-            adView
-        }
-    )
-}
 
 
 

@@ -29,13 +29,19 @@ class FavoriteViewModel @Inject constructor(
         name: String,
         imageUrl: String,
         websiteUrl: String,
+         games:String,
+         teams:String,
+         flag :String,
     ) {
         viewModelScope.launch {
             val favorite = Favorite(
                 name = name,
                 imageUrl = imageUrl,
                 websiteUrl = websiteUrl,
-                isFavorite = true
+                isFavorite = true,
+                games = games,
+                teams = teams,
+                flag = flag
             )
             when (
                 val result = favoritesRepository.insertFavorite(

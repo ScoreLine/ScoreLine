@@ -3,8 +3,8 @@
     <string name="Home">News</string>
     <string name="Statistics">Matches</string>
     <string name="More">Settings</string>
-    <string name="Standings">Standings</string>
-    <string name="Favourites">Follow</string>
+    <string name="Standings">Leagues</string>
+    <string name="Favourites">Leagues</string>
     <string name="Leagues">Leagues</string>
     <string name="pref_appearance">Appearance</string>
     <string name="pref_dark_theme">Dark theme</string>

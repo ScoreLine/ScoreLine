@@ -59,6 +59,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.swayy.core.R
+import com.swayy.core.core.components.AdaptiveBanner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -198,7 +199,7 @@ fun LeagueScreen(
         }
 
         Row(modifier = Modifier.align(Alignment.BottomCenter)) {
-            BannerAdView()
+            AdaptiveBanner()
         }
     }
 }
@@ -208,32 +209,7 @@ data class TabRowItem(
     val screen: @Composable () -> Unit,
 )
 
-@Composable
-fun BannerAdView() {
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth(),
-        factory = { context ->
-            val adView = AdView(context)
-            adView.setAdSize(AdSize.BANNER)
 
-            // Check if the app is in debug mode
-            val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-
-            // Set the appropriate adUnitId based on the mode
-            val adUnitId = if (isDebuggable) {
-                "ca-app-pub-3940256099942544/6300978111" // Test adUnitId
-            } else {
-                "ca-app-pub-3376169146760040/3025749162" // Official adUnitId
-            }
-
-            adView.adUnitId = adUnitId
-            adView.loadAd(AdRequest.Builder().build())
-
-            adView
-        }
-    )
-}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -242,15 +218,15 @@ fun LeagueData(league: String) {
 
     val tabRowItems = listOf(
         TabRowItem(
-            title = "Table",
-            screen = {
-                MatchLoad(league)
-            }
-        ),
-        TabRowItem(
             title = "Matches",
             screen = {
                 DayMatch(league = league)
+            }
+        ),
+        TabRowItem(
+            title = "Table",
+            screen = {
+                MatchLoad(league)
             }
         )
 
@@ -397,11 +373,11 @@ fun MatchLoad(league: String) {
 
 @Composable
 fun DayMatch(league: String) {
-    val matchList = remember { mutableStateListOf<MatchItem>() }
+    val soccerList = remember { mutableStateListOf<Soccer>() }
 
     LaunchedEffect(Unit) {
-        val url = "https://www.besoccer.com/competition/scores/$league"
-        fetchMatches(url, matchList)
+        val url = "https://www.besoccer.com/competitions"
+        fetchSoccer(url, soccerList)
 
         // Launch fetchMatchDetails concurrently for all match items
 //        matchList.forEach { matchItem ->
@@ -418,9 +394,16 @@ fun DayMatch(league: String) {
         ), elevation = 4.dp
     ) {
         LazyColumn {
-            items(matchList) { match ->
-                MatchItemCard(match)
-                Divider(thickness = 0.5.dp, color = Color.LightGray)
+            items(soccerList) { match ->
+
+                Text(
+                    text = match.leagueName +" "+match.games+" "+match.teams,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                )
+
             }
 
         }
@@ -744,6 +727,40 @@ private suspend fun fetchMatches(url: String, matchList: MutableList<MatchItem>)
 
                 matchList.add(matchItem)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+
+data class Soccer(
+    val leagueName:String,
+    val games:String,
+    val teams:String,
+    val logo:String,
+    val flag :String,
+    val link:String
+)
+
+private suspend fun fetchSoccer(matchLink: String, soccerList: MutableList<Soccer>) {
+    withContext(Dispatchers.IO) {
+        try {
+            val doc = Jsoup.connect(matchLink).get()
+
+            val leagueItems = doc.select(".item-list li a.item-box")
+
+            for (item in leagueItems) {
+                val leagueName = item.select(".main-text").text()
+                val games = item.select(".sub-text1 ").text()
+                val teams = item.select(".sub-text2").text()
+                val logo = item.select(".image-main img").attr("src")
+                val flag = item.select(".flag-round").attr("src")
+                val link = item.attr("href")
+
+                val soccer = Soccer(leagueName, games, teams, logo, flag,link)
+                soccerList.add(soccer)
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
