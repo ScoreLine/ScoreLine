@@ -122,4 +122,6 @@ dependencies {
     implementation(libs.jsoup)
 
     api ("com.airbnb.android:lottie-compose:5.2.0")
+
+    implementation ("com.google.ads.mediation:facebook:6.15.0.0")
 }

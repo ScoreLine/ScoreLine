@@ -1,7 +1,9 @@
 package com.swayy.footballpro
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +44,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.standings.presentation.leagues.LeagueDetails
 import com.example.standings.presentation.leagues.LeagueScreen
+import com.facebook.ads.AdSettings
+import com.facebook.ads.AudienceNetworkAds
+import com.facebook.ads.BuildConfig
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.gms.ads.MobileAds
@@ -76,6 +81,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         MobileAds.initialize(this)
+
+        AudienceNetworkAds.initialize(this)
 
         val configuration = RequestConfiguration.Builder()
             .build()
@@ -396,4 +403,34 @@ class MainActivityViewModel
     val darkTheme = themeSettingsManager.darkTheme
     val amoledBlack = themeSettingsManager.amoledBlack
     val currentTheme = themeSettingsManager.currentTheme
+}
+
+class AudienceNetworkInitializeHelper : AudienceNetworkAds.InitListener {
+
+    /**
+     * It's recommended to call this method from Application.onCreate().
+     * Otherwise you can call it from all Activity.onCreate()
+     * methods for Activities that contain ads.
+     *
+     * @param context Application or Activity.
+     */
+    companion object {
+        fun initialize(context: Context) {
+            if (!AudienceNetworkAds.isInitialized(context)) {
+                if (BuildConfig.DEBUG) {
+                    AdSettings.turnOnSDKDebugger(context)
+                }
+
+                AudienceNetworkAds
+                    .buildInitSettings(context)
+                    .withInitListener(AudienceNetworkInitializeHelper())
+                    .initialize()
+            }
+        }
+    }
+
+    override fun onInitialized(result: AudienceNetworkAds.InitResult) {
+        Log.d(AudienceNetworkAds.TAG, result.message)
+        Log.e("mbele","mbele iko sawa")
+    }
 }

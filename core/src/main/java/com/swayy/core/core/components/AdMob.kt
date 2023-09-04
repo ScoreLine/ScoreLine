@@ -96,7 +96,7 @@ fun LargeAdView() {
         factory = { context ->
             val adView = AdView(context)
             adView.setAdSize(AdSize.LARGE_BANNER)
-            adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+            adView.adUnitId = "ca-app-pub-3376169146760040/5555105317"
             adView.loadAd(AdRequest.Builder().build())
 
             adView
