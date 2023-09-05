@@ -343,7 +343,7 @@ fun MatchData(
                         !favoriteMatches.any { it.league == leagueName }
                     }
                     item {
-                        LargeAdView()
+//                        LargeAdView()
                     }
 
                     item {
@@ -406,7 +406,7 @@ fun MatchData(
                             }
                         }
                         item {
-                            LargeAdView()
+//                            LargeAdView()
                             Spacer(modifier = Modifier.height(2.dp))
                         }
                     }

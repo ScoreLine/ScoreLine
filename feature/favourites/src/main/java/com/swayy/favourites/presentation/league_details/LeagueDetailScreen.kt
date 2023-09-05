@@ -63,7 +63,6 @@ import com.kanyideveloper.core.components.LoadingStateComponent
 import com.kanyideveloper.core.components.SwipeRefreshComponent
 import com.swayy.core.R
 import com.swayy.core.core.LeagueDetail
-import com.swayy.core.core.MatchDetail
 import com.swayy.core.core.MatchItemCard
 import com.swayy.core.core.components.ErrorStateComponent
 import com.swayy.core.core.fetchLeagueDetails
@@ -387,7 +386,7 @@ fun LeagueMatchesScreen(
                 ) {
 
                     LazyColumn {
-                        items(matchState.matches) { match ->
+                        items(matchState.matches.filter { it.link != "" }) { match ->
                             MatchItemCard(match, navigateMatchDetails, context)
                             Divider(thickness = 0.5.dp, color = Color.LightGray)
                         }

@@ -2,6 +2,8 @@ package com.swayy.core.data.mapper
 
 import com.swayy.core.domain.model.LeagueStanding
 import com.swayy.core.domain.model.LeagueStandingResponse
+import com.swayy.core.domain.model.MatchInfo
+import com.swayy.core.domain.model.MatchInfoResponse
 import com.swayy.core.domain.model.WebMatch
 import com.swayy.core.domain.model.WebMatchResponse
 
@@ -38,5 +40,11 @@ internal fun LeagueStandingResponse.toStanding(): LeagueStanding {
         goalsFor,
         goalsAgainst,
         goalDifference
+    )
+}
+
+internal fun MatchInfoResponse.toMatchInfo(): MatchInfo {
+    return MatchInfo(
+        homeTeam, awayTeam, homeLogo, awayLogo, score, date, time
     )
 }

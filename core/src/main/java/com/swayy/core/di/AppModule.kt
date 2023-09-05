@@ -5,8 +5,10 @@ import android.content.Context
 import com.swayy.core.data.datastore.AppSettingsManager
 import com.swayy.core.data.datastore.ThemeSettingsManager
 import com.swayy.core.data.repository.LeagueStandingRepositoryImpl
+import com.swayy.core.data.repository.MatchInfoRepositoryImpl
 import com.swayy.core.data.repository.WebMatchRepositoryImpl
 import com.swayy.core.domain.repository.LeagueStandingRepository
+import com.swayy.core.domain.repository.MatchInfoRepository
 import com.swayy.core.domain.repository.WebMatchRepository
 import dagger.Module
 import dagger.Provides
@@ -37,6 +39,16 @@ class AppModule {
 
     ): LeagueStandingRepository {
         return LeagueStandingRepositoryImpl(
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMatchInfoRepository(
+
+    ): MatchInfoRepository {
+        return MatchInfoRepositoryImpl(
 
         )
     }

@@ -2,6 +2,7 @@ package com.swayy.core.data.WebData
 
 import android.util.Log
 import com.swayy.core.domain.model.LeagueStandingResponse
+import com.swayy.core.domain.model.MatchInfoResponse
 import com.swayy.core.domain.model.WebMatchResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +52,8 @@ suspend fun fetchMatches(url: String): List<WebMatchResponse> {
                     league = panelHeadElement.select("a[data-cy=competitionName] span.va-m")
                         .text()
                     leagueImage = panelHeadElement.select("img.comp-img").attr("src")
-                    leagueLink =  panelHeadElement.select("a[data-cy=competitionDetail]").attr("href")
+                    leagueLink =
+                        panelHeadElement.select("a[data-cy=competitionDetail]").attr("href")
                 }
 
                 matchList.add(
@@ -81,10 +83,10 @@ suspend fun fetchMatches(url: String): List<WebMatchResponse> {
 }
 
 
- suspend fun scrapePremierLeagueStandings(league: String): List<LeagueStandingResponse> {
+suspend fun scrapePremierLeagueStandings(league: String): List<LeagueStandingResponse> {
     val standings = mutableListOf<LeagueStandingResponse>()
     val document: Document = withContext(Dispatchers.IO) {
-        Jsoup.connect(league+"/table").get()
+        Jsoup.connect(league + "/table").get()
     }
 
     val rows = document.select("tr.row-body")
@@ -143,4 +145,47 @@ private fun parseNumericValue(text: String): Int {
     val numericPattern = Regex("\\d+")
     val match = numericPattern.find(text)
     return match?.value?.toInt() ?: 0
+}
+
+suspend fun fetchMatchDetails(matchLink: String): List<MatchInfoResponse> {
+    val gameDetail = mutableListOf<MatchInfoResponse>()
+    val doc = Jsoup.connect(matchLink).get()
+
+    val homeTeam = doc.select("div.team.match-team.left p.name a").text()
+    val awayTeam = doc.select("div.team.match-team.right p.name a").text()
+    val homeLogo = doc.select("div.circle-team.circle-local img").attr("src")
+    val awayLogo = doc.select("div.circle-team.circle-visitor img").attr("src")
+    val matchStatusElement = doc.select("div.marker .data")
+
+    val dateElement = doc.select(".date.header-match-date").text()
+    val timeElement = doc.select(".tag").text()
+
+    val matchStatus = when {
+        matchStatusElement.select("span.r1").isNotEmpty() -> {
+            val scoreHome = matchStatusElement.select("span.r1").text().toInt()
+            val scoreAway = matchStatusElement.select("span.r2").text().toInt()
+            "$scoreHome - $scoreAway"
+        }
+
+        matchStatusElement.select(".match_hour").isNotEmpty() -> {
+            matchStatusElement.select(".match_hour").text()
+        }
+
+        else -> ""
+    }
+
+    gameDetail.add(
+        MatchInfoResponse(
+            homeTeam,
+            awayTeam,
+            homeLogo,
+            awayLogo,
+            matchStatus,
+            dateElement,
+            timeElement
+        )
+    )
+
+    return gameDetail
+
 }
