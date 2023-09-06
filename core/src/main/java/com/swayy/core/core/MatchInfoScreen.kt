@@ -34,9 +34,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,6 +95,13 @@ fun MatchInfoScreen(
         viewModel.getMatchInfo(matchLink = my_url)
     }
 
+    var homeTeam by remember {
+        mutableStateOf("")
+    }
+    var awayTeam by remember {
+        mutableStateOf("")
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -144,6 +154,8 @@ fun MatchInfoScreen(
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
                     state.matchinfo.forEach { data ->
+                        homeTeam = data.homeTeam
+                        awayTeam = data.awayTeam
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -266,6 +278,7 @@ fun MatchInfoScreen(
             }
 
 
+            val context = LocalContext.current
             val tabRowItems = listOf(
                 TabRowItem(
                     title = "Events",
@@ -276,7 +289,10 @@ fun MatchInfoScreen(
                 TabRowItem(
                     title = "Lineup",
                     screen = {
-                        LineupScreen(my_url)
+                        LineupScreenTwo(my_url,MaterialTheme.colorScheme.primary,
+                            context,
+                           homeTeam,
+                            awayTeam)
                     }
 
                 ),
@@ -1421,7 +1437,9 @@ data class Lineup(
     val url: String,
     val image: String,
     val number: String,
-    val points: String
+    val points: String,
+    val tacticHome:String,
+    val tacticAway:String
 )
 
 @Composable
@@ -1585,7 +1603,7 @@ private fun determineSide(imgElements: Elements): String {
 }
 
 
-private suspend fun fetchMatchLineup(
+ suspend fun fetchMatchLineup(
     matchLink: String,
     matchLineupList: MutableList<Lineup>
 ) {
@@ -1594,6 +1612,13 @@ private suspend fun fetchMatchLineup(
             val doc = Jsoup.connect(matchLink + "/lineups").get()
 
             val playerElements = doc.select(".player-wrapper")
+
+            val lineupElementLocal = doc.select("ul.lineup.local")
+            val lineupElement = doc.select("ul.lineup.visitor")
+
+            val tacticHome = lineupElementLocal.attr("data-tacticName")
+            val tacticAway = lineupElement.attr("data-tacticName")
+
 
             for (playerElement in playerElements) {
                 val playerJson =
@@ -1607,7 +1632,7 @@ private suspend fun fetchMatchLineup(
                 val playerNumber = playerElement.select(".name.num-lineups span.bold").text()
                 val playerPoints = playerElement.select(".match-points").text()
 
-                val lineup = Lineup(playerName, playerUrl, playerImage, playerNumber, playerPoints)
+                val lineup = Lineup(playerName, playerUrl, playerImage, playerNumber, playerPoints,tacticHome,tacticAway)
                 matchLineupList.add(lineup)
             }
 

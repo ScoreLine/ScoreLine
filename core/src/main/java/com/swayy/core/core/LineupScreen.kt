@@ -1,44 +1,33 @@
-package com.swayy.matches.presentation.match_details
+package com.swayy.core.core
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapShader
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -50,10 +39,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.consumePositionChange
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -61,361 +46,34 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
-import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
-import com.swayy.core_network.model.lineup.Player
-import com.swayy.matches.R
-import com.swayy.matches.presentation.MatchViewmodel
-import com.swayy.matches.presentation.TabRowItem
-import com.swayy.matches.presentation.events.EventsViewModel
-import com.swayy.matches.presentation.h2h.HeadToHeadViewModel
-import com.swayy.matches.presentation.match_details.screens.FactsScreen
-import com.swayy.matches.presentation.match_details.screens.HeadScreen
-import com.swayy.matches.presentation.match_details.screens.StatsScreen
-import com.swayy.matches.presentation.state.LineupState
+import com.swayy.core.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
-fun MatchDetailsScreen(
-    id: Int,
-    navigateBack: () -> Unit,
-    viewModel: MatchViewmodel = hiltViewModel(),
-    lineupViewmodel: LineupViewmodel = hiltViewModel(),
-    eventsViewmodel: EventsViewModel = hiltViewModel(),
-    h2hViewmodel: HeadToHeadViewModel = hiltViewModel(),
-    date: String
-) {
-    Log.e("Tag", "THIS IS THE ID ${id}")
-
-    val matchState = viewModel.matches.value
-    val lineupState = lineupViewmodel.lineup.value
-
-//    LaunchedEffect(key1 = true) {
-//        viewModel.getMatches(date = date)
-//    }
-//
-//    LaunchedEffect(key1 = true) {
-//        lineupViewmodel.getLineup(fixture = id)
-//    }
-//
-//    LaunchedEffect(key1 = true) {
-//        h2hViewmodel.getH2H(h2h = id)
-//    }
-//
-//    LaunchedEffect(key1 = true) {
-//        eventsViewmodel.getEvents(fixture = id)
-//    }
-
-    Box(
-        modifier = Modifier
-            .padding(top = 40.dp)
-            .fillMaxSize()
-    ) {
-        if (lineupState.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        Column {
-            Row(modifier = Modifier.padding(start = 10.dp, end = 12.dp)) {
-
-                IconButton(onClick = navigateBack) {
-                    Icon(
-                        painter = painterResource(com.swayy.core.R.drawable.ic_round_arrow_back_24),
-                        contentDescription = null
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(2f))
-
-                IconButton(onClick = navigateBack) {
-                    Icon(
-                        painter = painterResource(com.swayy.matches.R.drawable.baseline_star_outline_24),
-                        contentDescription = null
-                    )
-                }
-
-                IconButton(onClick = navigateBack) {
-                    Icon(
-                        painter = painterResource(com.swayy.matches.R.drawable.baseline_more_vert_24),
-                        contentDescription = null
-                    )
-                }
-
-            }
-
-            Column {
-                val matchesWithSameLeagueId = matchState.matches.filter { it.fixture.id == id }
-
-                matchesWithSameLeagueId.forEach { match ->
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp), horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.width(100.dp)
-                        ) {
-                            val image = match.teams.home.logo
-
-                            //test
-                            val painter = rememberAsyncImagePainter(
-                                ImageRequest.Builder(LocalContext.current)
-                                    .data(data = image)
-                                    .apply(block = fun ImageRequest.Builder.() {
-                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                    }).build()
-                            )
-                            Image(
-                                painter = painter,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(68.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = match.teams.home.name,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        Column {
-                            val scorehome =
-                                (match.score.fulltime.home as? Double)?.toInt()
-                                    ?: 0
-                            val scoreaway =
-                                (match.score.fulltime.away as? Double)?.toInt()
-                                    ?: 0
-
-
-                            Text(
-                                text = scorehome.toString() + " - " + scoreaway,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                fontSize = 30.sp,
-                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Text(
-                                text = match.fixture.status.long,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                fontSize = 12.sp,
-                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.width(100.dp)
-                        ) {
-                            val image = match.teams.away.logo
-
-                            //test
-                            val painter = rememberAsyncImagePainter(
-                                ImageRequest.Builder(LocalContext.current)
-                                    .data(data = image)
-                                    .apply(block = fun ImageRequest.Builder.() {
-                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                    }).build()
-                            )
-                            Image(
-                                painter = painter,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(68.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = match.teams.away.name,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-
-                            )
-                        }
-                    }
-
-                    val pagerState = rememberPagerState(initialPage = 0)
-                    val coroutineScope = rememberCoroutineScope()
-                    val context = LocalContext.current
-
-//                    val tabRowItems = mutableListOf<TabRowItem>()
-
-//                    val lineupTabRowItem = TabRowItem(
-//                        title = "Lineup",
-//                        screen = {
-//                            LineupScreen(
-//                                lineupState,
-//                                MaterialTheme.colorScheme.primary,
-//                                context,
-//                                match.teams.away.name,
-//                                match.teams.home.name
-//                            )
-//                        }
-//                    )
-//
-//                    if (lineupState.lineup.any { it.formation != null }) {
-//                        tabRowItems.add(lineupTabRowItem)
-//                    }
-
-                    val tabRowItems = listOf(
-
-                        TabRowItem(
-                            title = "Facts",
-                            screen = {
-                                FactsScreen(
-                                    id = id,
-                                    home = match.teams.home.id,
-                                    away = match.teams.away.id
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Lineup",
-                            screen = {
-                                LineupScreen(
-                                    lineupState,
-                                    MaterialTheme.colorScheme.primary,
-                                    context,
-                                    match.teams.away.name,
-                                    match.teams.home.name
-                                )
-                            }
-                        ),
-                        TabRowItem(
-                            title = "Stats",
-                            screen = {
-                                StatsScreen()
-                            }
-                        ),
-                        TabRowItem(
-                            title = "H2H",
-                            screen = {
-                                HeadScreen()
-                            }
-                        )
-                    )
-
-//                    tabRowItems.addAll(remainingTabRowItems)
-
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Column(
-                        modifier = Modifier
-                            .padding(0.dp)
-                    ) {
-                        androidx.compose.material.TabRow(
-                            selectedTabIndex = pagerState.currentPage,
-                            indicator = { tabPositions ->
-                                TabRowDefaults.Indicator(
-                                    Modifier
-                                        .pagerTabIndicatorOffset(pagerState, tabPositions)
-                                        .width(10.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            },
-                            backgroundColor = Color.LightGray.copy(alpha = .0F),
-                        ) {
-                            tabRowItems.forEachIndexed { index, item ->
-                                Tab(
-                                    selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(
-                                                index
-                                            )
-                                        }
-                                    },
-
-                                    text = {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Spacer(Modifier.width(4.dp))
-                                            Text(
-                                                text = item.title,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 14.sp,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        HorizontalPager(
-                            count = tabRowItems.size,
-                            state = pagerState,
-                            userScrollEnabled = false,
-
-                            ) {
-                            tabRowItems[pagerState.currentPage].screen()
-                        }
-                    }
-
-
-                }
-
-            }
-
-        }
-
-    }
-
-}
-
-
-@Composable
-fun LineupScreen(
-    lineupState: LineupState,
+fun LineupScreenTwo(
+    link:String,
     background: Color,
     context: Context,
     hometeam: String,
     awayteam: String
 ) {
 
-    if (lineupState.lineup.isEmpty()) {
+    val matchLine = remember { mutableStateListOf<Lineup>() }
+
+    val teamA = matchLine.dropLast(11)
+    val teamB = matchLine.drop(11)
+
+    val formation = "4-3-3"
+
+    LaunchedEffect(Unit) {
+        fetchMatchLineup(link, matchLine)
+    }
+
+    if (matchLine.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -660,43 +318,45 @@ fun LineupScreen(
                     )
 
                     //home team
-                    lineupState.lineup.take(1).forEach {
+                    teamA.forEach {
+
+                        Log.e("tactic",it.tacticHome)
                         drawContext.canvas.nativeCanvas.apply {
                             val font: Typeface? =
-                                ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+                                ResourcesCompat.getFont(context, R.font.and)
 
-                            val paint = android.graphics.Paint().apply {
+                            val paint = Paint().apply {
                                 color = Color.White.toArgb()
-                                textAlign = android.graphics.Paint.Align.CENTER
+                                textAlign = Paint.Align.CENTER
                                 typeface = font
                                 isAntiAlias = true
                                 textSize = 16.sp.toPx()
                             }
 
-                            drawText(it.team.name, canvasWidth * 0.2f, canvasHeight * 0.02f, paint)
+                            drawText(hometeam, canvasWidth * 0.2f, canvasHeight * 0.02f, paint)
                         }
                         drawContext.canvas.nativeCanvas.apply {
                             val font: Typeface? =
-                                ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+                                ResourcesCompat.getFont(context, R.font.and)
 
-                            val paint = android.graphics.Paint().apply {
+                            val paint = Paint().apply {
                                 color = Color.White.toArgb()
-                                textAlign = android.graphics.Paint.Align.CENTER
+                                textAlign = Paint.Align.CENTER
                                 typeface = font
                                 isAntiAlias = true
                                 textSize = 16.sp.toPx()
                             }
 
-                            drawText(it.formation, canvasWidth * 0.89f, canvasHeight * 0.02f, paint)
+                            drawText(it.tacticHome, canvasWidth * 0.89f, canvasHeight * 0.02f, paint)
                         }
 
-                        if (it.formation == "3-2-4-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "3-2-4-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -718,11 +378,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -738,11 +398,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -757,11 +417,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -771,11 +431,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -784,13 +443,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-2-3-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-2-3-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -812,11 +471,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -832,11 +491,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -851,11 +510,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -865,11 +524,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -877,13 +535,13 @@ fun LineupScreen(
                             }
 
                         }
-                        if (it.formation == "4-4-1-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-4-1-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -905,11 +563,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -925,11 +583,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -944,11 +602,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -958,11 +616,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -971,8 +628,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-1-3-2") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-1-3-2") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -982,11 +639,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.45f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1002,11 +659,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1022,11 +679,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1041,11 +698,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1055,11 +712,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1068,8 +724,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-3-1-2") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-3-1-2") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1079,11 +735,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.45f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1099,11 +755,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1119,11 +775,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1138,11 +794,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1152,11 +808,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1165,13 +820,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-1-4-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-1-4-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -1193,11 +848,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1213,11 +868,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1232,11 +887,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1246,11 +901,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1259,8 +913,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "3-4-1-2") {
-                            val players = it.startXI
+                        if (it.tacticHome == "3-4-1-2") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1270,11 +924,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.45f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1290,11 +944,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1310,11 +964,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1329,11 +983,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1343,11 +997,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1356,13 +1009,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "3-4-2-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "3-4-2-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -1384,11 +1037,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.37f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1404,11 +1057,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1423,11 +1076,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1437,11 +1090,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1450,8 +1102,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-3-3") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-3-3") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1461,11 +1113,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.38f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1481,11 +1133,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.26f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1500,11 +1152,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1514,11 +1166,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1528,8 +1179,8 @@ fun LineupScreen(
                         }
 
 
-                        if (it.formation == "5-2-3") {
-                            val players = it.startXI
+                        if (it.tacticHome == "5-2-3") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1539,11 +1190,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.38f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1559,11 +1210,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.34f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1578,11 +1229,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1590,13 +1241,11 @@ fun LineupScreen(
                                     context
                                 )
                             }
-
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1605,8 +1254,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "5-3-2") {
-                            val players = it.startXI
+                        if (it.tacticHome == "5-3-2") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1616,11 +1265,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.38f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1636,11 +1285,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.34f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1655,11 +1304,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1669,11 +1318,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1682,13 +1330,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "5-4-1") {
-                            val players = it.startXI
+                        if (it.tacticHome == "5-4-1") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -1710,11 +1358,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.34f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1729,11 +1377,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1743,11 +1391,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1755,8 +1402,8 @@ fun LineupScreen(
                             }
 
                         }
-                        if (it.formation == "4-4-2") {
-                            val players = it.startXI
+                        if (it.tacticHome == "4-4-2") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1766,11 +1413,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.38f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1786,11 +1433,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1805,11 +1452,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1817,13 +1464,11 @@ fun LineupScreen(
                                     context
                                 )
                             }
-
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1831,8 +1476,8 @@ fun LineupScreen(
                             }
 
                         }
-                        if (it.formation == "3-4-3") {
-                            val players = it.startXI
+                        if (it.tacticHome == "3-4-3") {
+                            val players = teamA
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -1842,11 +1487,11 @@ fun LineupScreen(
                             val defenderSpacingt =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountt + 1)
                             playersAfterLastt.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingt * (index + 1)
                                 val yone = canvasHeight * 0.38f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1862,11 +1507,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.27f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1881,11 +1526,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.18f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1893,13 +1538,11 @@ fun LineupScreen(
                                     context
                                 )
                             }
-
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.08f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamA.take(1).forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -1909,44 +1552,44 @@ fun LineupScreen(
                         }
 
                     }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    //away team
-                    lineupState.lineup.takeLast(1).forEach {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                    //away team
+                    teamB.forEach {
                         drawContext.canvas.nativeCanvas.apply {
                             val font: Typeface? =
-                                ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+                                ResourcesCompat.getFont(context, R.font.and)
 
-                            val paint = android.graphics.Paint().apply {
+                            val paint = Paint().apply {
                                 color = Color.White.toArgb()
-                                textAlign = android.graphics.Paint.Align.CENTER
+                                textAlign = Paint.Align.CENTER
                                 typeface = font
                                 isAntiAlias = true
                                 textSize = 16.sp.toPx()
                             }
 
-                            drawText(it.team.name, canvasWidth * 0.2f, canvasHeight * 0.99f, paint)
+                            drawText(awayteam, canvasWidth * 0.2f, canvasHeight * 0.99f, paint)
                         }
                         drawContext.canvas.nativeCanvas.apply {
                             val font: Typeface? =
-                                ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+                                ResourcesCompat.getFont(context, R.font.and)
 
-                            val paint = android.graphics.Paint().apply {
+                            val paint = Paint().apply {
                                 color = Color.White.toArgb()
-                                textAlign = android.graphics.Paint.Align.CENTER
+                                textAlign = Paint.Align.CENTER
                                 typeface = font
                                 isAntiAlias = true
                                 textSize = 16.sp.toPx()
                             }
 
-                            drawText(it.formation, canvasWidth * 0.89f, canvasHeight * 0.99f, paint)
+                            drawText(it.tacticAway, canvasWidth * 0.89f, canvasHeight * 0.99f, paint)
                         }
-                        if (it.formation == "3-2-4-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "3-2-4-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -1968,11 +1611,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -1988,11 +1631,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2007,11 +1650,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2021,11 +1664,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2033,13 +1675,13 @@ fun LineupScreen(
                             }
                         }
 
-                        if (it.formation == "4-2-3-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-2-3-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -2060,11 +1702,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2080,11 +1722,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2099,11 +1741,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2113,11 +1755,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2125,13 +1766,13 @@ fun LineupScreen(
                             }
 
                         }
-                        if (it.formation == "4-4-1-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-4-1-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -2152,11 +1793,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2172,11 +1813,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2191,11 +1832,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2205,11 +1846,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2218,8 +1858,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-1-3-2") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-1-3-2") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2229,11 +1869,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2248,11 +1888,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2268,11 +1908,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2287,11 +1927,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2301,11 +1941,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2314,8 +1953,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-3-1-2") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-3-1-2") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2325,11 +1964,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2344,11 +1983,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2364,11 +2003,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2383,11 +2022,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2397,11 +2036,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2410,13 +2048,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-1-4-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-1-4-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -2437,11 +2075,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2457,11 +2095,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2476,11 +2114,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2490,11 +2128,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2502,8 +2139,8 @@ fun LineupScreen(
                             }
 
                         }
-                        if (it.formation == "3-4-1-2") {
-                            val players = it.startXI
+                        if (it.tacticAway == "3-4-1-2") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2513,11 +2150,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2532,11 +2169,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2552,11 +2189,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2571,11 +2208,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2585,11 +2222,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2598,13 +2234,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "3-4-2-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "3-4-2-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -2625,11 +2261,11 @@ fun LineupScreen(
                             val defenderSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCount + 1)
                             playersAfterLast.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacing * (index + 1)
                                 val yone = canvasHeight * 0.63f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2645,11 +2281,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.73f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2664,11 +2300,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2678,11 +2314,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2691,8 +2326,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-3-3") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-3-3") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2702,11 +2337,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.62f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2722,11 +2357,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.72f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2741,11 +2376,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2755,11 +2390,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2768,8 +2402,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "5-2-3") {
-                            val players = it.startXI
+                        if (it.tacticAway == "5-2-3") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2779,11 +2413,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.62f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2799,11 +2433,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.72f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2818,11 +2452,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2832,11 +2466,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2845,8 +2478,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "5-3-2") {
-                            val players = it.startXI
+                        if (it.tacticAway == "5-3-2") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -2856,11 +2489,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.62f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2876,11 +2509,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.72f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2895,11 +2528,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2909,11 +2542,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2922,13 +2554,13 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "5-4-1") {
-                            val players = it.startXI
+                        if (it.tacticAway == "5-4-1") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
                             //get the forward
-                            val lastPlayer = players[players.size - 1].player
+                            val lastPlayer = players[players.size - 1]
                             val forwardsCount = 1
                             val forwardSpacing =
                                 (canvasWidth - goalPostWidth * 2) / (forwardsCount + 1)
@@ -2950,11 +2582,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.66f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2969,11 +2601,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -2983,11 +2615,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -2996,8 +2627,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "4-4-2") {
-                            val players = it.startXI
+                        if (it.tacticAway == "4-4-2") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -3007,11 +2638,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.62f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3027,11 +2658,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.72f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3046,11 +2677,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3060,11 +2691,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -3073,8 +2703,8 @@ fun LineupScreen(
 
                         }
 
-                        if (it.formation == "3-4-3") {
-                            val players = it.startXI
+                        if (it.tacticAway == "3-4-3") {
+                            val players = teamB
 
                             val playerTextSize = 13.sp.toPx()
 
@@ -3084,11 +2714,11 @@ fun LineupScreen(
                             val defenderSpacings =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCounts + 1)
                             playersAfterLasts.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacings * (index + 1)
                                 val yone = canvasHeight * 0.62f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3104,11 +2734,11 @@ fun LineupScreen(
                             val defenderSpacingdef =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefense + 1)
                             playersAfterLastdef.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdef * (index + 1)
                                 val yone = canvasHeight * 0.72f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3123,11 +2753,11 @@ fun LineupScreen(
                             val defenderSpacingdefone =
                                 (canvasWidth - goalPostWidth * 2) / (defendersCountdefenseone + 1)
                             playersAfterLastdefone.forEachIndexed { index, playerData ->
-                                val player = playerData.player
+                                val player = playerData
                                 val xone = goalPostWidth + defenderSpacingdefone * (index + 1)
                                 val yone = canvasHeight * 0.81f
                                 val playerOffset = Offset(xone, yone)
-                                drawPlayer(playerData.player, playerOffset)
+                                drawPlayer(playerData, playerOffset)
                                 drawPlayerName(
                                     player.name,
                                     playerOffset,
@@ -3137,11 +2767,10 @@ fun LineupScreen(
                             }
 
                             val goalkeeperPosition = Offset((canvasWidth / 2), canvasHeight * 0.91f)
-                            val goalkeeper = it.startXI.find { it.player.pos == "G" }
-                            goalkeeper?.let {
-                                drawPlayer(it.player, goalkeeperPosition)
+                            teamB?.take(1)?.forEach {
+                                drawPlayer(it, goalkeeperPosition)
                                 drawPlayerName(
-                                    it.player.name,
+                                    it.name,
                                     goalkeeperPosition,
                                     playerTextSize,
                                     context
@@ -3158,10 +2787,8 @@ fun LineupScreen(
         }
     }
 
-
 }
 
-//test
 
 private suspend fun loadImage(url: String): ImageBitmap = withContext(Dispatchers.IO) {
     val bitmap = Picasso.get()
@@ -3196,9 +2823,9 @@ class RoundedTransformation(private val radius: Float) : Transformation {
     override fun key(): String = "rounded(radius=$radius)"
 }
 
-private fun DrawScope.drawPlayer(player: Player, position: Offset) {
+private fun DrawScope.drawPlayer(player: Lineup, position: Offset) {
 
-    val imageUrl = "https://media.api-sports.io/football/players/${player.id}.png"
+    val imageUrl = player.image
 
     val playerRadius = 23.dp.toPx()
     val circleCenter = position
@@ -3223,7 +2850,7 @@ private fun DrawScope.drawPlayerName(
     context: Context
 ) {
     drawContext.canvas.nativeCanvas.apply {
-        val font: Typeface? = ResourcesCompat.getFont(context, com.swayy.matches.R.font.and)
+        val font: Typeface? = ResourcesCompat.getFont(context, R.font.and)
 
         val paint = android.graphics.Paint().apply {
             color = Color.White.toArgb()
@@ -3235,7 +2862,7 @@ private fun DrawScope.drawPlayerName(
         val textOffsetY = text * 3.7f
 
         fun getFirstName(fullName: String): String {
-            return fullName.split(" ").firstOrNull() ?: fullName
+            return fullName.split(" ").lastOrNull() ?: fullName
         }
 
         val cleanedName = getFirstName(name)
@@ -3243,4 +2870,3 @@ private fun DrawScope.drawPlayerName(
         drawText(cleanedName, position.x, position.y + textOffsetY, paint)
     }
 }
-
