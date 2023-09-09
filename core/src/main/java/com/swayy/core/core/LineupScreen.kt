@@ -8,7 +8,9 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -2801,8 +2803,9 @@ private suspend fun loadImage(url: String): ImageBitmap = withContext(Dispatcher
 }
 
 class RoundedTransformation(private val radius: Float) : Transformation {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun transform(source: Bitmap): Bitmap {
-        val output = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+        val output = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.RGBA_F16)
         val canvas = Canvas(output)
 
         val paint = android.graphics.Paint().apply {

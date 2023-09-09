@@ -1,9 +1,15 @@
 package com.swayy.core.core
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Tab
@@ -41,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -51,11 +59,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.palette.graphics.Palette
+import coil.compose.LocalImageLoader
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import coil.size.Precision
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -95,11 +108,21 @@ fun MatchInfoScreen(
         viewModel.getMatchInfo(matchLink = my_url)
     }
 
+    val context = LocalContext.current
+
     var homeTeam by remember {
         mutableStateOf("")
     }
     var awayTeam by remember {
         mutableStateOf("")
+    }
+
+    var homeColor by remember {
+        mutableStateOf(Color.Blue)
+    }
+
+    var awayColor by remember {
+        mutableStateOf(Color.Blue)
     }
 
     Box(
@@ -167,6 +190,11 @@ fun MatchInfoScreen(
                                 modifier = Modifier.width(100.dp)
                             ) {
                                 val image = data.homeLogo
+
+                                homeColor = extractDominantColor(
+                                    context = context,
+                                    imageUrl = data.homeLogo
+                                )
 
                                 //test
                                 val painter = rememberAsyncImagePainter(
@@ -242,6 +270,11 @@ fun MatchInfoScreen(
                             ) {
                                 val image = data.awayLogo
 
+                                awayColor = extractDominantColor(
+                                    context = context,
+                                    imageUrl = data.awayLogo
+                                )
+
                                 //test
                                 val painter = rememberAsyncImagePainter(
                                     ImageRequest.Builder(LocalContext.current)
@@ -289,12 +322,20 @@ fun MatchInfoScreen(
                 TabRowItem(
                     title = "Lineup",
                     screen = {
-                        LineupScreenTwo(my_url,MaterialTheme.colorScheme.primary,
+                        LineupScreenTwo(
+                            my_url, MaterialTheme.colorScheme.primary,
                             context,
-                           homeTeam,
-                            awayTeam)
+                            homeTeam,
+                            awayTeam
+                        )
                     }
 
+                ),
+                TabRowItem(
+                    title = "Stats",
+                    screen = {
+                        StatisticsScreen(my_url, homeColor, awayColor)
+                    }
                 ),
                 TabRowItem(
                     title = "Table",
@@ -394,6 +435,7 @@ fun PreviewScreen(
     viewmodel: WebMatchViewModel = hiltViewModel()
 ) {
 
+    val state = viewmodel.matches.value
     val matchEve = remember { mutableStateListOf<MatchEvent>() }
     val matchClash = remember { mutableStateListOf<Clash>() }
 
@@ -403,7 +445,49 @@ fun PreviewScreen(
         viewmodel.getWebMatch(url = link + "/preview")
     }
 
-    val state = viewmodel.matches.value
+    if (matchClash.isEmpty() && matchEve.isNullOrEmpty()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.nolineup),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(180.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "No match events yet",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Text(
+                    text = "The match events are not yet available",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+        }
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -412,486 +496,494 @@ fun PreviewScreen(
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
-                androidx.compose.material.Card(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .wrapContentHeight(),
-                    elevation = 4.dp
-                ) {
+                if (matchEve.isNotEmpty()) {
+                    androidx.compose.material.Card(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .wrapContentHeight(),
+                        elevation = 4.dp
+                    ) {
 
-                Column(modifier = Modifier
-                    .wrapContentHeight()
-                    .padding(12.dp)) {
-                    if (matchEve.isNotEmpty()){
-                        Text(
-                            text = "Match Events",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
+                        Column(
                             modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
+                                .wrapContentHeight()
                                 .padding(12.dp)
+                        ) {
 
-                        )
-                    }
-                    matchEve.forEach { matchEvent->
+                            Text(
+                                text = "Match Events",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(12.dp)
 
-                        if (matchEvent.side == "left") {
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                Column(modifier = Modifier.align(Alignment.Start)) {
+                            )
 
-                                    if (matchEvent.eventType == "Goal") {
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                start = 16.dp,
-                                                top = 8.dp
-                                            )
-                                        ) {
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
+                            matchEve.forEach { matchEvent ->
+
+                                if (matchEvent.side == "left") {
+                                    Column(modifier = Modifier.fillMaxSize()) {
+                                        Column(modifier = Modifier.align(Alignment.Start)) {
+
+                                            if (matchEvent.eventType == "Goal") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        top = 8.dp
+                                                    )
                                                 ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
-                                                    )
-                                                }
-
-                                            }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            val painter = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.eventImage)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painter,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(38.dp)
-                                                    .align(Alignment.CenterVertically),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(4.dp))
-
-                                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                                matchEvent.player1?.let {
-                                                    Text(
-                                                        text = it,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                    )
-                                                }
-                                                if (matchEvent.player2 != null) {
-                                                    Text(
-                                                        text = "Assist by " + (matchEvent.player2
-                                                            ?: ""),
-                                                        fontSize = 12.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                    )
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                    if (matchEvent.eventType == "Substitution") {
-                                        Row(modifier = Modifier.padding(start = 16.dp, top = 14.dp)) {
-                                            Text(
-                                                text = matchEvent.toString(),
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.align(Alignment.CenterVertically),
-                                                fontSize = 15.sp,
-                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                            )
-
-                                            Spacer(modifier = Modifier.width(18.dp))
-
-                                            Column {
-                                                androidx.compose.material.Card(
-                                                    shape = RoundedCornerShape(100.dp),
-                                                    modifier = Modifier.padding(top = 4.dp)
-                                                ) {
-                                                    Column {
-                                                        Row(
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
                                                             modifier = Modifier
-                                                                .size(14.dp)
                                                                 .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
                                                         ) {
-                                                            Image(
-                                                                imageVector = Icons.Default.ArrowForward,
-                                                                modifier = Modifier
-                                                                    .fillMaxSize()
-                                                                    .padding(2.dp)
-                                                                    .align(Alignment.CenterVertically),
-                                                                contentDescription = "",
-                                                                colorFilter = ColorFilter.tint(
-                                                                    Color.White
-                                                                )
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
+                                                    )
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                                    val painter = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.eventImage)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
+                                                    )
+                                                    Image(
+                                                        painter = painter,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(38.dp)
+                                                            .align(Alignment.CenterVertically),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(4.dp))
+
+                                                    Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                                        matchEvent.player1?.let {
+                                                            Text(
+                                                                text = it,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                            )
+                                                        }
+                                                        if (matchEvent.player2 != null) {
+                                                            Text(
+                                                                text = "Assist by " + (matchEvent.player2
+                                                                    ?: ""),
+                                                                fontSize = 12.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                                                             )
                                                         }
                                                     }
+
                                                 }
-
-                                                Spacer(modifier = Modifier.height(1.dp))
-
-                                                androidx.compose.material.Card(
-                                                    shape = RoundedCornerShape(100.dp),
-                                                    modifier = Modifier
+                                            }
+                                            if (matchEvent.eventType == "Substitution") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        top = 14.dp
+                                                    )
                                                 ) {
+                                                    Text(
+                                                        text = matchEvent.toString(),
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.align(Alignment.CenterVertically),
+                                                        fontSize = 15.sp,
+                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(18.dp))
+
                                                     Column {
-                                                        Row(
-                                                            modifier = Modifier
-                                                                .size(14.dp)
-                                                                .background(Color.Red)
+                                                        androidx.compose.material.Card(
+                                                            shape = RoundedCornerShape(100.dp),
+                                                            modifier = Modifier.padding(top = 4.dp)
                                                         ) {
-                                                            Image(
-                                                                imageVector = Icons.Default.ArrowBack,
-                                                                modifier = Modifier
-                                                                    .fillMaxSize()
-                                                                    .padding(2.dp)
-                                                                    .align(Alignment.CenterVertically),
-                                                                contentDescription = "",
-                                                                colorFilter = ColorFilter.tint(
-                                                                    Color.White
-                                                                )
+                                                            Column {
+                                                                Row(
+                                                                    modifier = Modifier
+                                                                        .size(14.dp)
+                                                                        .background(MaterialTheme.colorScheme.primary)
+                                                                ) {
+                                                                    Image(
+                                                                        imageVector = Icons.Default.ArrowForward,
+                                                                        modifier = Modifier
+                                                                            .fillMaxSize()
+                                                                            .padding(2.dp)
+                                                                            .align(Alignment.CenterVertically),
+                                                                        contentDescription = "",
+                                                                        colorFilter = ColorFilter.tint(
+                                                                            Color.White
+                                                                        )
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+
+                                                        Spacer(modifier = Modifier.height(1.dp))
+
+                                                        androidx.compose.material.Card(
+                                                            shape = RoundedCornerShape(100.dp),
+                                                            modifier = Modifier
+                                                        ) {
+                                                            Column {
+                                                                Row(
+                                                                    modifier = Modifier
+                                                                        .size(14.dp)
+                                                                        .background(Color.Red)
+                                                                ) {
+                                                                    Image(
+                                                                        imageVector = Icons.Default.ArrowBack,
+                                                                        modifier = Modifier
+                                                                            .fillMaxSize()
+                                                                            .padding(2.dp)
+                                                                            .align(Alignment.CenterVertically),
+                                                                        contentDescription = "",
+                                                                        colorFilter = ColorFilter.tint(
+                                                                            Color.White
+                                                                        )
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+
+                                                    }
+                                                    Spacer(modifier = Modifier.width(20.dp))
+                                                    Column {
+                                                        Spacer(modifier = Modifier.height(3.dp))
+                                                        matchEvent.player1?.let {
+                                                            Text(
+                                                                text = it,
+                                                                fontSize = 14.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                                            )
+                                                        }
+                                                        Spacer(modifier = Modifier.height(1.dp))
+
+                                                        matchEvent.player2?.let {
+                                                            Text(
+                                                                text = it,
+                                                                fontSize = 14.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.error
                                                             )
                                                         }
                                                     }
                                                 }
-
                                             }
-                                            Spacer(modifier = Modifier.width(20.dp))
-                                            Column {
-                                                Spacer(modifier = Modifier.height(3.dp))
-                                                matchEvent.player1?.let {
-                                                    Text(
-                                                        text = it,
-                                                        fontSize = 14.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary
-                                                    )
-                                                }
-                                                Spacer(modifier = Modifier.height(1.dp))
 
-                                                matchEvent.player2?.let {
-                                                    Text(
-                                                        text = it,
-                                                        fontSize = 14.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                                            if (matchEvent.eventType == "Yellow card") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        top = 14.dp,
+                                                        bottom = 8.dp
                                                     )
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if (matchEvent.eventType == "Yellow card") {
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                start = 16.dp,
-                                                top = 14.dp,
-                                                bottom = 8.dp
-                                            )
-                                        ) {
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
                                                 ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
+                                                        ) {
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
                                                     )
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                                    androidx.compose.material.Card(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterVertically)
+                                                            .height(16.dp)
+                                                            .width(12.dp)
+                                                            .background(
+                                                                Color.Yellow
+                                                            )
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(Color.Yellow)
+                                                        )
+                                                    }
+
+                                                    Spacer(modifier = Modifier.width(20.dp))
+
+                                                    matchEvent.player1?.let {
+                                                        Text(
+                                                            text = it,
+                                                            fontSize = 14.sp,
+                                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                        )
+                                                    }
                                                 }
-
                                             }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
 
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            androidx.compose.material.Card(
-                                                modifier = Modifier
-                                                    .align(Alignment.CenterVertically)
-                                                    .height(16.dp)
-                                                    .width(12.dp)
-                                                    .background(
-                                                        Color.Yellow
+                                            if (matchEvent.eventType == "2nd Yellow/Red") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        top = 12.dp,
+                                                        bottom = 8.dp
                                                     )
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .background(Color.Yellow)
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.width(20.dp))
-
-                                            matchEvent.player1?.let {
-                                                Text(
-                                                    text = it,
-                                                    fontSize = 14.sp,
-                                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    if(matchEvent.eventType == "2nd Yellow/Red"){
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                start = 16.dp,
-                                                top = 12.dp,
-                                                bottom = 8.dp
-                                            )
-                                        ) {
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
                                                 ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
+                                                        ) {
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
                                                     )
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                                    androidx.compose.material.Card(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterVertically)
+                                                            .height(16.dp)
+                                                            .width(12.dp)
+                                                            .background(
+                                                                Color.Yellow
+                                                            )
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(MaterialTheme.colorScheme.error)
+                                                        )
+                                                    }
+
+                                                    Spacer(modifier = Modifier.width(20.dp))
+
+                                                    matchEvent.player1?.let {
+                                                        Text(
+                                                            text = it,
+                                                            fontSize = 14.sp,
+                                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                        )
+                                                    }
                                                 }
-
-                                            }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            androidx.compose.material.Card(
-                                                modifier = Modifier
-                                                    .align(Alignment.CenterVertically)
-                                                    .height(16.dp)
-                                                    .width(12.dp)
-                                                    .background(
-                                                        Color.Yellow
-                                                    )
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .background(MaterialTheme.colorScheme.error)
-                                                )
                                             }
 
-                                            Spacer(modifier = Modifier.width(20.dp))
 
-                                            matchEvent.player1?.let {
-                                                Text(
-                                                    text = it,
-                                                    fontSize = 14.sp,
-                                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                )
-                                            }
                                         }
                                     }
+                                } else {
+                                    Column(modifier = Modifier.fillMaxSize()) {
+                                        Column(modifier = Modifier.align(Alignment.End)) {
 
-
-                                }
-                            }
-                        } else {
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                Column(modifier = Modifier.align(Alignment.End)) {
-
-                                    if (matchEvent.eventType == "Goal") {
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                end = 16.dp,
-                                                top = 14.dp
-                                            )
-                                        ) {
-
-                                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                                matchEvent.player1?.let {
-                                                    Text(
-                                                        text = it,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                            if (matchEvent.eventType == "Goal") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        end = 16.dp,
+                                                        top = 14.dp
                                                     )
-                                                }
-                                                if (matchEvent.player2 != null) {
-                                                    Text(
-                                                        text = "Assist by " + (matchEvent.player2
-                                                            ?: ""),
-                                                        fontSize = 12.sp,
-                                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                    )
-                                                }
-                                            }
-
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            val painter = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.eventImage)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painter,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(38.dp)
-                                                    .align(Alignment.CenterVertically),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
                                                 ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
+
+                                                    Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                                        matchEvent.player1?.let {
+                                                            Text(
+                                                                text = it,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                            )
+                                                        }
+                                                        if (matchEvent.player2 != null) {
+                                                            Text(
+                                                                text = "Assist by " + (matchEvent.player2
+                                                                    ?: ""),
+                                                                fontSize = 12.sp,
+                                                                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                            )
+                                                        }
+                                                    }
+
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    val painter = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.eventImage)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
                                                     )
+                                                    Image(
+                                                        painter = painter,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(38.dp)
+                                                            .align(Alignment.CenterVertically),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
+                                                    )
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
+                                                        ) {
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+
+
                                                 }
-
                                             }
-
-
-                                        }
-                                    }
 //                                        if (match.type == "subst") {
 //                                            Row(modifier = Modifier.padding(end = 16.dp, top = 14.dp)) {
 //
@@ -989,173 +1081,173 @@ fun PreviewScreen(
 //                                        }
 
 
-                                    if (matchEvent.eventType == "Yellow card") {
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                end = 16.dp,
-                                                top = 14.dp,
-                                                bottom = 8.dp
-                                            )
-                                        ) {
-                                            matchEvent.player1?.let {
-                                                Text(
-                                                    text = it,
-                                                    fontSize = 14.sp,
-                                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(20.dp))
-                                            androidx.compose.material.Card(
-                                                modifier = Modifier
-                                                    .align(Alignment.CenterVertically)
-                                                    .height(16.dp)
-                                                    .width(12.dp)
-                                                    .background(
-                                                        Color.Yellow
+                                            if (matchEvent.eventType == "Yellow card") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        end = 16.dp,
+                                                        top = 14.dp,
+                                                        bottom = 8.dp
                                                     )
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .background(Color.Yellow)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
                                                 ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
+                                                    matchEvent.player1?.let {
+                                                        Text(
+                                                            text = it,
+                                                            fontSize = 14.sp,
+                                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.width(20.dp))
+                                                    androidx.compose.material.Card(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterVertically)
+                                                            .height(16.dp)
+                                                            .width(12.dp)
+                                                            .background(
+                                                                Color.Yellow
+                                                            )
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(Color.Yellow)
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
                                                     )
-                                                }
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
 
+                                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
+                                                        ) {
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+
+
+                                                }
+                                            }
+                                            if (matchEvent.eventType == "2nd Yellow/Red") {
+                                                Row(
+                                                    modifier = Modifier.padding(
+                                                        end = 16.dp,
+                                                        top = 14.dp,
+                                                        bottom = 8.dp
+                                                    )
+                                                ) {
+                                                    matchEvent.player1?.let {
+                                                        Text(
+                                                            text = it,
+                                                            fontSize = 14.sp,
+                                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.width(20.dp))
+                                                    androidx.compose.material.Card(
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterVertically)
+                                                            .height(16.dp)
+                                                            .width(12.dp)
+                                                            .background(
+                                                                Color.Yellow
+                                                            )
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(MaterialTheme.colorScheme.error)
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    val painterr = rememberAsyncImagePainter(
+                                                        ImageRequest.Builder(LocalContext.current)
+                                                            .data(data = matchEvent.player1Image)
+                                                            .apply(block = fun ImageRequest.Builder.() {
+                                                                crossfade(true).placeholder(R.drawable.placeholder)
+                                                            }).build()
+                                                    )
+                                                    Image(
+                                                        painter = painterr,
+                                                        contentDescription = "",
+                                                        modifier = Modifier
+                                                            .size(40.dp)
+                                                            .align(Alignment.CenterVertically)
+                                                            .padding(2.dp),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    Card(
+                                                        modifier = Modifier
+                                                            .size(34.dp)
+                                                            .background(MaterialTheme.colorScheme.surface)
+                                                            .clip(RoundedCornerShape(20.dp))
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(MaterialTheme.colorScheme.primary)
+                                                                .fillMaxSize()
+                                                        ) {
+                                                            Text(
+                                                                text = matchEvent.eventTime,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.surface,
+                                                                modifier = Modifier.align(Alignment.Center)
+                                                            )
+                                                        }
+
+                                                    }
+
+                                                }
                                             }
 
 
                                         }
                                     }
-                                    if(matchEvent.eventType =="2nd Yellow/Red"){
-                                        Row(
-                                            modifier = Modifier.padding(
-                                                end = 16.dp,
-                                                top = 14.dp,
-                                                bottom = 8.dp
-                                            )
-                                        ) {
-                                            matchEvent.player1?.let {
-                                                Text(
-                                                    text = it,
-                                                    fontSize = 14.sp,
-                                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(20.dp))
-                                            androidx.compose.material.Card(
-                                                modifier = Modifier
-                                                    .align(Alignment.CenterVertically)
-                                                    .height(16.dp)
-                                                    .width(12.dp)
-                                                    .background(
-                                                        Color.Yellow
-                                                    )
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .background(MaterialTheme.colorScheme.error)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            val painterr = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(data = matchEvent.player1Image)
-                                                    .apply(block = fun ImageRequest.Builder.() {
-                                                        crossfade(true).placeholder(R.drawable.placeholder)
-                                                    }).build()
-                                            )
-                                            Image(
-                                                painter = painterr,
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .align(Alignment.CenterVertically)
-                                                    .padding(2.dp),
-                                                contentScale = ContentScale.Crop
-                                            )
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            Card(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .background(MaterialTheme.colorScheme.surface)
-                                                    .clip(RoundedCornerShape(20.dp))
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(MaterialTheme.colorScheme.primary)
-                                                        .fillMaxSize()
-                                                ) {
-                                                    Text(
-                                                        text = matchEvent.eventTime,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 14.sp,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        modifier = Modifier.align(Alignment.Center)
-                                                    )
-                                                }
-
-                                            }
-
-                                        }
-                                    }
-
-
                                 }
                             }
                         }
-                    }
-                }
 
 //                    LazyColumn(modifier = Modifier.wrapContentHeight()) {
 //                        items(matchEve) { matchEvent ->
@@ -1164,126 +1256,131 @@ fun PreviewScreen(
 ////                            Divider(thickness = 0.5.dp, color = Color.LightGray)
 //                        }
 //                    }
+                    }
                 }
+
             }
 
             item {
-                androidx.compose.material.Card(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .wrapContentHeight(),
-                    elevation = 4.dp
-                ) {
-                    matchClash.forEach {
-                        Column {
-                            Text(
-                                text = "Last Meetings",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(12.dp)
+                if (!matchClash.isNullOrEmpty()) {
+                    androidx.compose.material.Card(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .wrapContentHeight(),
+                        elevation = 4.dp
+                    ) {
+                        matchClash.forEach {
+                            Column {
+                                Text(
+                                    text = "Last Meetings",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(12.dp)
 
-                            )
-                            Spacer(modifier = Modifier.height(0.dp))
+                                )
+                                Spacer(modifier = Modifier.height(0.dp))
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Column {
-                                    Text(
-                                        text = extractFirstValue(it.home).toString(),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 22.sp,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = extractFirstValue(it.home).toString(),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 22.sp,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.align(Alignment.CenterHorizontally)
 
-                                    )
-                                    Text(
-                                        text = extractFirstTwoWords(it.homeText).toString(),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 13.sp,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = extractFirstTwoWords(it.homeText).toString(),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 13.sp,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center
 
-                                    )
+                                        )
+                                    }
+                                    Column {
+                                        Text(
+                                            text = it.draw,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 22.sp,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+                                        )
+                                        Text(
+                                            text = it.drawText,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 13.sp,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center
+
+                                        )
+                                    }
+                                    Column {
+                                        Text(
+                                            text = it.away,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 22.sp,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+                                        )
+                                        Text(
+                                            text = it.awayText.toString(),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 13.sp,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center
+
+                                        )
+                                    }
                                 }
-                                Column {
-                                    Text(
-                                        text = it.draw,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 22.sp,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-
-                                    )
-                                    Text(
-                                        text = it.drawText,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 13.sp,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center
-
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        text = it.away,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 22.sp,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-
-                                    )
-                                    Text(
-                                        text = it.awayText.toString(),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 13.sp,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        textAlign = TextAlign.Center
-
-                                    )
-                                }
-                            }
-                            Divider(thickness = 0.5.dp, color = Color.LightGray)
-                            val context = LocalContext.current
-                            state.matches.filter { it.link != "" }.forEach { match ->
-                                MatchItemCard(match, {}, context)
                                 Divider(thickness = 0.5.dp, color = Color.LightGray)
+                                val context = LocalContext.current
+                                state.matches.filter { it.link != "" }.forEach { match ->
+                                    MatchItemCard(match, {}, context)
+                                    Divider(thickness = 0.5.dp, color = Color.LightGray)
+                                }
                             }
-                        }
 
+                        }
                     }
                 }
+
 
             }
 
@@ -1438,8 +1535,8 @@ data class Lineup(
     val image: String,
     val number: String,
     val points: String,
-    val tacticHome:String,
-    val tacticAway:String
+    val tacticHome: String,
+    val tacticAway: String
 )
 
 @Composable
@@ -1570,7 +1667,7 @@ private suspend fun fetchMatchEvents(
 
 
                 if (eventImage != null && eventImage.isNotEmpty()) {
-                    Log.e("event type",eventType!!)
+                    Log.e("event type", eventType!!)
                     val matchEvent = MatchEvent(
                         eventTime,
                         eventType ?: "",
@@ -1602,8 +1699,297 @@ private fun determineSide(imgElements: Elements): String {
     return "unknown"
 }
 
+@Composable
+fun StatisticsScreen(url: String, homeColor: Color, awayColor: Color) {
+    val matchLine = remember { mutableStateListOf<Statistic>() }
 
- suspend fun fetchMatchLineup(
+    if (matchLine.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.nolineup),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(180.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "No match stat yet",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Text(
+                    text = "The match statistics are not available",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        fetchStatistics(url, matchLine)
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn() {
+            items(matchLine) { data ->
+                Log.e("testing", data.statName + data.leftStat + data.rightStat)
+                Spacer(modifier = Modifier.height(20.dp))
+                extractIntFromString(data.leftStat)?.let {
+                    extractIntFromString(data.rightStat)?.let { it1 ->
+                        PokemonBaseStats(
+                            pokemonInfo = it,
+                            it1, data.statName, homeColor, awayColor
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+    }
+}
+
+fun extractIntFromString(inputString: String): Int? {
+    val regex = """(\d+)""".toRegex()
+    val matchResult = regex.find(inputString)
+
+    return matchResult?.value?.toIntOrNull()
+}
+
+data class Statistic(
+    val leftStat: String,
+    val rightStat: String,
+    val statName: String
+)
+
+suspend fun fetchStatistics(
+    matchLink: String,
+    matchStat: MutableList<Statistic>
+) {
+    withContext(Dispatchers.IO) {
+        try {
+            val doc = Jsoup.connect(matchLink + "/events").get()
+            // Select all <tr> elements that contain statistics
+            val statElements = doc.select("tr:has(td:not(.title))")
+
+            for (statElement in statElements) {
+                val statNameElement = statElement.selectFirst("p")
+                val statName =
+                    statNameElement?.text() ?: statElement.selectFirst("td.color-grey2")?.text()
+                    ?: ""
+
+                val leftStatElement = statElement.selectFirst("div.td-num.left")
+                val leftStat = leftStatElement?.text() ?: ""
+
+                val rightStatElement = statElement.selectFirst("div.td-num.right")
+                val rightStat = rightStatElement?.text() ?: ""
+
+                val cleanedName = extractTextFromMixedString(statName)
+
+                if (statName.isNotEmpty()) {
+                    matchStat.add(Statistic(leftStat, rightStat, cleanedName))
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+
+@Composable
+fun PokemonBaseStats(
+    pokemonInfo: Int,
+    rightStat: Int,
+    name: String, homeColor: Color, awayColor: Color,
+    animDelayPerItem: Int = 100
+) {
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = name,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            PokemonStat(
+                statName = if (name != "") name else "Completed passes",
+                statValue = pokemonInfo,
+                statMaxValue = 1,
+                statColor = homeColor,
+                animDelay = 10
+            )
+            PokemonStatTwo(
+                statName = if (name != "") name else "Completed passes",
+                statValue = rightStat,
+                statMaxValue = 1,
+                statColor = awayColor,
+                animDelay = 10
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+        }
+    }
+}
+
+@Composable
+fun PokemonStat(
+    statName: String,
+    statValue: Int,
+    statMaxValue: Int,
+    statColor: Color,
+    height: Dp = 15.dp,
+    animDuration: Int = 1000,
+    animDelay: Int = 0
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val curPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            statValue / statMaxValue.toFloat()
+        } else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        )
+    )
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+    Box(
+        modifier = Modifier
+            .width(150.dp)
+            .clip(CircleShape)
+            .background(
+                Color.LightGray
+
+            ),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Row(
+            horizontalArrangement = SpaceBetween,
+            verticalAlignment = CenterVertically,
+            modifier = Modifier
+
+                .fillMaxWidth(curPercent.value)
+                .clip(CircleShape)
+                .background(statColor)
+                .padding(horizontal = 8.dp, vertical = 2.dp)
+        ) {
+
+            Text(
+                text = (curPercent.value * statMaxValue).toInt()
+                    .toString(),
+                fontWeight = FontWeight.Bold, color = Color.White,
+                modifier = Modifier
+                    .height(height)
+                    .align(CenterVertically),
+            )
+        }
+    }
+}
+
+@Composable
+fun PokemonStatTwo(
+    statName: String,
+    statValue: Int,
+    statMaxValue: Int,
+    statColor: Color,
+    height: Dp = 15.dp,
+    animDuration: Int = 1000,
+    animDelay: Int = 0
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val curPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            statValue / statMaxValue.toFloat()
+        } else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        )
+    )
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+    Box(
+        modifier = Modifier
+            .width(150.dp)
+            .clip(CircleShape)
+            .background(
+                Color.LightGray
+
+            ),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Row(
+            horizontalArrangement = SpaceBetween,
+            verticalAlignment = CenterVertically,
+            modifier = Modifier
+
+                .fillMaxWidth(curPercent.value)
+                .clip(CircleShape)
+                .background(statColor)
+                .padding(horizontal = 8.dp, vertical = 2.dp)
+        ) {
+
+            Spacer(modifier = Modifier.weight(2f))
+            Text(
+                text = (curPercent.value * statMaxValue).toInt()
+                    .toString(),
+                fontWeight = FontWeight.Bold, color = Color.White,
+                modifier = Modifier
+                    .height(height)
+                    .align(CenterVertically),
+            )
+        }
+    }
+}
+
+
+fun extractTextFromMixedString(input: String): String {
+    // Use a regular expression to match the text part (letters and spaces)
+    val regex = Regex("[a-zA-Z\\s]+")
+
+    // Find the first match in the input string
+    val matchResult = regex.find(input)
+
+    // Extract and return the matched text (or an empty string if no match is found)
+    return matchResult?.value ?: ""
+}
+
+suspend fun fetchMatchLineup(
     matchLink: String,
     matchLineupList: MutableList<Lineup>
 ) {
@@ -1632,7 +2018,15 @@ private fun determineSide(imgElements: Elements): String {
                 val playerNumber = playerElement.select(".name.num-lineups span.bold").text()
                 val playerPoints = playerElement.select(".match-points").text()
 
-                val lineup = Lineup(playerName, playerUrl, playerImage, playerNumber, playerPoints,tacticHome,tacticAway)
+                val lineup = Lineup(
+                    playerName,
+                    playerUrl,
+                    playerImage,
+                    playerNumber,
+                    playerPoints,
+                    tacticHome,
+                    tacticAway
+                )
                 matchLineupList.add(lineup)
             }
 
@@ -1737,5 +2131,41 @@ private suspend fun fetchClash(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+}
+
+@Composable
+fun extractDominantColor(context: Context, imageUrl: String): Color {
+    val imageLoader = LocalImageLoader.current
+
+    val request = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .precision(Precision.EXACT)
+            .build()
+    }
+
+    val imagePainter = rememberImagePainter(request, imageLoader = imageLoader)
+    var dominantColor by remember(imagePainter) { mutableStateOf(Color.White) }
+
+    LaunchedEffect(imagePainter) {
+        val drawable = imageLoader.execute(request).drawable
+        val bitmap = (drawable as? BitmapDrawable)?.bitmap
+
+        if (bitmap != null) {
+            val softwareBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+            val color = calculateDominantColor(softwareBitmap)
+            dominantColor = color
+        }
+    }
+
+    return dominantColor
+}
+
+private suspend fun calculateDominantColor(bitmap: Bitmap): Color {
+    return withContext(Dispatchers.Default) {
+        val palette = Palette.Builder(bitmap).generate()
+        val dominantSwatch = palette.dominantSwatch ?: palette.vibrantSwatch ?: palette.mutedSwatch
+        dominantSwatch?.rgb?.let { Color(it) } ?: Color.White
     }
 }

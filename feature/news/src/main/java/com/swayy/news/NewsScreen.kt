@@ -130,14 +130,7 @@ fun NewsScreen(
                         color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                     )
                     Spacer(modifier = Modifier.weight(2f))
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_download_24),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(end = 0.dp),
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
 
-                    )
                 }
 
             }

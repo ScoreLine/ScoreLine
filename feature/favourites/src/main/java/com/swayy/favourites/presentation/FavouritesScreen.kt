@@ -121,38 +121,8 @@ fun FavouritesScreen(
                         color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                     )
                     Spacer(modifier = Modifier.weight(2f))
-                    androidx.compose.material.Icon(
-                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_search_24),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .clickable(onClick = {
 
-                            }),
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
 
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    androidx.compose.material.Icon(
-                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_calendar_month_24),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .clickable(onClick = {
-
-                            }),
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
-
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    androidx.compose.material.Icon(
-                        painter = painterResource(id = com.swayy.core.R.drawable.baseline_live_tv_24),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(end = 12.dp),
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.surface
-
-                    )
                 }
 
             }

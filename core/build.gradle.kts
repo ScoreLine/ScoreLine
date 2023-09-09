@@ -109,6 +109,8 @@ dependencies {
 
     implementation(libs.coil)
 
+    implementation(libs.palette)
+
     implementation(libs.picasso)
 
     api ("com.airbnb.android:lottie-compose:5.2.0")

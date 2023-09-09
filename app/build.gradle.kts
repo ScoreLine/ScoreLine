@@ -15,8 +15,8 @@ android {
         applicationId = "com.swayy.footballpro"
         minSdk = 24
         targetSdk = 33
-        versionCode = 7
-        versionName = "1.0.6"
+        versionCode = 10
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -1,6 +1,7 @@
 package com.swayy.more.settings.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -43,12 +44,11 @@ fun PreferenceRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (painter != null) {
-            Icon(
+            Image(
                 painter = painter,
                 modifier = Modifier
                     .padding(start = 12.dp, end = 14.dp)
                     .size(24.dp),
-                tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
             )
         }

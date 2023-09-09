@@ -33,9 +33,9 @@ fun MatchItemCard(
     navigateMatchDetails: (String) -> Unit,
     context:Context
 ) {
-//    loadInterstitial(context)
-//    // add the interstitial ad callbacks
-//    addInterstitialCallbacks(context)
+    loadInterstitial(context)
+    // add the interstitial ad callbacks
+    addInterstitialCallbacks(context)
 
     fun convertToEncodedString(input: String): String {
         val encodedString = input.replace("/", "_SLASH_")
@@ -48,8 +48,8 @@ fun MatchItemCard(
             .height(70.dp)
             .padding(start = 8.dp, end = 8.dp)
             .clickable(onClick = {
-//                loadInterstitial(context)
-//                showInterstitial(context)
+                loadInterstitial(context)
+                showInterstitial(context)
                 navigateMatchDetails(convertToEncodedString(match.link))
             }),
 //        elevation = 4.dp
