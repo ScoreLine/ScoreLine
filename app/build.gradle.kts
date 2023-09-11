@@ -15,8 +15,8 @@ android {
         applicationId = "com.swayy.footballpro"
         minSdk = 24
         targetSdk = 33
-        versionCode = 10
-        versionName = "1.0.9"
+        versionCode = 11
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -131,5 +131,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-ads:22.2.0")
 
     implementation ("com.google.ads.mediation:facebook:6.15.0.0")
+
+    implementation ("com.google.ads.mediation:applovin:11.11.3.0")
 
 }
